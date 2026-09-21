@@ -1,5 +1,11 @@
 from setuptools import setup, find_packages
 
+with open("requirements.txt", encoding="utf-8") as f:
+    requirements = [
+        line.strip() for line in f
+        if line.strip() and not line.startswith("#")
+    ]
+
 setup(
     name="rag-knowledge-qa-system",
     version="1.0.0",
@@ -8,32 +14,10 @@ setup(
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    python_requires=">=3.8",
-    install_requires=[
-        "fastapi==0.104.1",
-        "uvicorn[standard]==0.24.0",
-        "langchain==0.0.340",
-        "langchain-community==0.0.6",
-        "langchain-core==0.0.6",
-        "chromadb==0.4.18",
-        "pypdf2==3.0.1",
-        "python-docx==1.1.0",
-        "unstructured==0.11.0",
-        "sentence-transformers==2.2.2",
-        "python-dotenv==1.0.0",
-        "pydantic==2.5.2",
-        "python-multipart==0.0.6",
-    ],
+    python_requires=">=3.10",
+    install_requires=requirements,
     extras_require={
-        "dev": [
-            "pytest==7.4.3",
-            "black==23.11.0",
-            "flake8==6.1.0",
-        ],
-        "openai": [
-            "openai==1.6.1",
-            "tiktoken==0.5.2",
-        ],
+        "dev": ["pytest", "black", "flake8"],
     },
     entry_points={
         "console_scripts": [

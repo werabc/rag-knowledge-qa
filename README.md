@@ -16,33 +16,22 @@
 ```
 D:\rag\
 ├── app/                          # 应用主目录
-│   ├── __init__.py              # 应用初始化
 │   ├── main.py                  # FastAPI应用入口
-│   ├── config.py                # 配置管理
-│   ├── models/                  # 数据模型
-│   │   ├── __init__.py
-│   │   └── schemas.py          # Pydantic模型定义
+│   ├── config.py                # 配置管理 (pydantic-settings)
+│   ├── models/schemas.py        # Pydantic模型定义
 │   ├── services/                # 业务服务
-│   │   ├── __init__.py
-│   │   ├── document_service.py  # 文档处理服务
-│   │   ├── rag_service.py       # RAG核心服务
-│   │   └── vector_store.py      # 向量存储服务
-│   ├── api/                     # API路由
-│   │   ├── __init__.py
-│   │   └── endpoints/
-│   │       ├── __init__.py
-│   │       ├── documents.py     # 文档管理API
-│   │       └── chat.py          # 问答API
-│   └── utils/                   # 工具函数
-│       ├── __init__.py
-│       └── document_loader.py   # 文档加载器
-├── data/                        # 文档存储目录
-├── vector_db/                   # 向量数据库存储
-├── tests/                       # 测试文件
-├── docs/                        # 项目文档
+│   │   ├── document_service.py  # 文档提取与分块，写入向量库
+│   │   ├── qa_service.py        # 问答核心：检索→上下文→生成→会话记忆
+│   │   └── vector_store.py      # ChromaDB向量存储 (内置ONNX MiniLM embedding)
+│   └── api/endpoints/
+│       ├── documents.py         # 文档管理API
+│       └── chat.py              # 问答API
+├── data/                        # 文档分块与会话持久化 (sessions.json)
+├── vector_db/                   # ChromaDB持久化目录
+├── test_data/                   # 测试文档
 ├── requirements.txt             # 依赖包列表
 ├── .env.example                 # 环境变量示例
-├── README.md                    # 项目说明
+├── test_system.py               # 端到端测试脚本 (需先启动服务)
 ├── run.py                       # 启动脚本
 └── RAG_System_Plan.md           # 系统规划文档
 ```
@@ -50,11 +39,12 @@ D:\rag\
 ## 🛠️ 技术栈
 
 - **Web框架**: FastAPI
-- **RAG框架**: LangChain
-- **向量数据库**: ChromaDB
-- **嵌入模型**: sentence-transformers (本地模型)
+- **向量数据库**: ChromaDB 1.x (PersistentClient, cosine空间)
+- **嵌入模型**: chromadb内置 ONNX all-MiniLM-L6-v2（无需torch；中文效果弱，待换bge-small-zh）
+- **LLM生成**: OpenAI兼容接口（已接美团LongCat），未配置key时自动回退抽取式回答
+- **文档分块**: langchain-text-splitters
 - **文档处理**: PyPDF2, python-docx
-- **数据验证**: Pydantic
+- **数据验证**: Pydantic v2 + pydantic-settings
 
 ## 📋 前置要求
 
@@ -148,8 +138,10 @@ curl -X POST "http://127.0.0.1:8000/api/chat/query" \
 
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
-| `OPENAI_API_KEY` | - | OpenAI API密钥 |
-| `EMBEDDING_MODEL_NAME` | `all-MiniLM-L6-v2` | 本地嵌入模型名称 |
+| `OPENAI_API_KEY` | 空 | LLM密钥；为空时回答走抽取式回退 |
+| `OPENAI_API_BASE` | `https://api.openai.com/v1` | OpenAI兼容接口地址，如LongCat：`https://api.longcat.chat/openai/v1` |
+| `LLM_MODEL` | `gpt-4o-mini` | 模型名，如 `LongCat-2.0` |
+| `EMBEDDING_MODEL_NAME` | `all-MiniLM-L6-v2` | 嵌入模型（当前由chromadb内置ONNX实现） |
 | `CHROMA_PERSIST_DIRECTORY` | `./vector_db` | 向量数据库存储路径 |
 | `DOCUMENT_STORAGE_PATH` | `./data` | 文档存储路径 |
 | `CHUNK_SIZE` | `1000` | 文档分块大小 |
@@ -166,14 +158,13 @@ curl -X POST "http://127.0.0.1:8000/api/chat/query" \
 
 ### 添加新的文档格式支持
 
-1. 在 `app/services/document_service.py` 中添加新的提取方法
-2. 在 `app/utils/document_loader.py` 中添加对应的加载器
-3. 更新API的文件类型验证
+1. 在 `app/services/document_service.py` 中添加新的 `_extract_*` 方法
+2. 更新 `app/api/endpoints/documents.py` 的 `allowed_types`
 
 ### 集成新的LLM
 
-1. 在 `app/services/rag_service.py` 中修改 `_generate_answer` 方法
-2. 配置相应的API密钥和模型参数
+1. 在 `.env` 中配置 `OPENAI_API_KEY` / `OPENAI_API_BASE` / `LLM_MODEL`
+2. 生成逻辑位于 `app/services/qa_service.py` 的 `_generate_with_llm`
 
 ### 数据库迁移
 
@@ -185,14 +176,8 @@ curl -X POST "http://127.0.0.1:8000/api/chat/query" \
 ## 🧪 测试
 
 ```bash
-# 运行所有测试
-pytest tests/
-
-# 运行特定测试
-pytest tests/test_document_service.py
-
-# 生成测试报告
-pytest --cov=app tests/
+# 先启动服务: python run.py
+python test_system.py   # 端到端测试：上传→查询→会话
 ```
 
 ## 📝 注意事项
