@@ -35,6 +35,12 @@ os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
 app.include_router(documents.router, prefix="/api/documents", tags=["文档管理"])
 app.include_router(chat.router, prefix="/api/chat", tags=["智能问答"])
 
+@app.on_event("startup")
+async def startup_event():
+    """启动时恢复文档台账并认领向量库中的孤儿分块"""
+    from app.services.document_service import document_service
+    await document_service.startup()
+
 @app.get("/", tags=["根路径"])
 async def root():
     """系统首页"""

@@ -3,6 +3,8 @@
 """
 
 import os
+import json
+import logging
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
@@ -16,18 +18,71 @@ from app.config import settings
 from app.models.schemas import DocumentCreate, DocumentResponse, DocumentStats
 from app.services.vector_store import vector_store
 
+logger = logging.getLogger(__name__)
+
 class DocumentService:
     """文档处理服务类"""
     
     def __init__(self):
         """初始化文档服务"""
         self.documents_db: Dict[str, DocumentResponse] = {}
+        self._store_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "documents.json")
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.CHUNK_SIZE,
             chunk_overlap=settings.CHUNK_OVERLAP,
             length_function=len,
             add_start_index=True,
         )
+        self._load_db()
+
+    # ---------- 台账持久化 ----------
+
+    def _load_db(self):
+        if not os.path.exists(self._store_file):
+            return
+        try:
+            with open(self._store_file, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+            self.documents_db = {k: DocumentResponse(**v) for k, v in raw.items()}
+        except Exception:
+            logger.exception("加载文档台账失败，从空台账开始")
+
+    def _save_db(self):
+        try:
+            os.makedirs(settings.DOCUMENT_STORAGE_PATH, exist_ok=True)
+            tmp = self._store_file + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(
+                    {k: v.model_dump(mode="json") for k, v in self.documents_db.items()},
+                    f, ensure_ascii=False, indent=1,
+                )
+            os.replace(tmp, self._store_file)
+        except Exception:
+            logger.exception("保存文档台账失败")
+
+    async def startup(self):
+        """把向量库中无台账记录的孤儿分块认领回文档列表（断电/删库不同步时自愈）"""
+        summaries = await vector_store.get_all_doc_summaries()
+        recovered = False
+        for doc_id, s in summaries.items():
+            if doc_id in self.documents_db:
+                continue
+            try:
+                upload_time = datetime.fromisoformat(s["upload_time"]) if s.get("upload_time") else datetime.now()
+            except (TypeError, ValueError):
+                upload_time = datetime.now()
+            self.documents_db[doc_id] = DocumentResponse(
+                id=doc_id,
+                filename=s["filename"] or "(已恢复)",
+                file_type=s["file_type"] or "",
+                file_size=0,
+                upload_time=upload_time,
+                status="recovered",
+                chunk_count=s["chunk_count"],
+            )
+            recovered = True
+        if recovered:
+            self._save_db()
     
     async def upload_document(self, file_path: str, filename: str, file_size: int) -> DocumentResponse:
         """
@@ -53,12 +108,6 @@ class DocumentService:
         # 分块处理
         chunks = self.text_splitter.split_text(content)
 
-        # 写入向量库（embedding 由 chromadb 完成）
-        indexed = await vector_store.add_documents(
-            doc_id, chunks,
-            metadata={"filename": filename, "file_type": file_type},
-        )
-
         # 创建文档记录
         document = DocumentResponse(
             id=doc_id,
@@ -66,23 +115,32 @@ class DocumentService:
             file_type=file_type,
             file_size=file_size,
             upload_time=datetime.now(),
-            status="processed" if indexed else "index_failed",
+            status="pending",
             chunk_count=len(chunks)
         )
-        
-        # 存储文档信息
+
+        # 写入向量库（embedding 由 chromadb 完成）
+        indexed = await vector_store.add_documents(
+            doc_id, chunks,
+            metadata={
+                "filename": filename,
+                "file_type": file_type,
+                "upload_time": document.upload_time.isoformat(),
+            },
+        )
+        document.status = "processed" if indexed else "index_failed"
+
+        # 存储文档信息并落盘台账
         self.documents_db[doc_id] = document
+        self._save_db()
         
-        # 保存分块内容到文件（简化实现）
+        # 保存分块内容到文件，供查看
         chunks_dir = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks")
         os.makedirs(chunks_dir, exist_ok=True)
-        
-        chunks_file = os.path.join(chunks_dir, f"{doc_id}.txt")
+
+        chunks_file = os.path.join(chunks_dir, f"{doc_id}.json")
         with open(chunks_file, "w", encoding="utf-8") as f:
-            for i, chunk in enumerate(chunks):
-                f.write(f"--- Chunk {i+1} ---\n")
-                f.write(chunk)
-                f.write("\n\n")
+            json.dump(chunks, f, ensure_ascii=False, indent=1)
         
         return document
     
@@ -159,8 +217,9 @@ class DocumentService:
         """删除文档"""
         if doc_id in self.documents_db:
             del self.documents_db[doc_id]
+            self._save_db()
             # 删除分块文件
-            chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.txt")
+            chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.json")
             if os.path.exists(chunks_file):
                 os.remove(chunks_file)
             return True
@@ -187,31 +246,16 @@ class DocumentService:
     
     async def get_document_chunks(self, doc_id: str) -> List[str]:
         """获取文档分块内容"""
-        chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.txt")
-        
+        chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.json")
+
         if not os.path.exists(chunks_file):
             return []
-        
+
         try:
             with open(chunks_file, "r", encoding="utf-8") as f:
-                content = f.read()
-            
-            # 简单分块解析
-            chunks = []
-            current_chunk = ""
-            for line in content.split("\n"):
-                if line.startswith("--- Chunk") and current_chunk:
-                    chunks.append(current_chunk.strip())
-                    current_chunk = ""
-                else:
-                    current_chunk += line + "\n"
-            
-            if current_chunk.strip():
-                chunks.append(current_chunk.strip())
-            
-            return chunks
-        except Exception as e:
-            print(f"读取文档分块失败: {e}")
+                return json.load(f)
+        except Exception:
+            logger.exception("读取文档分块失败")
             return []
 
 # 创建全局文档服务实例

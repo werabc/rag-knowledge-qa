@@ -103,6 +103,29 @@ class VectorStore:
             logger.exception("删除文档分块失败")
             return False
 
+    async def get_all_doc_summaries(self) -> Dict[str, Dict[str, Any]]:
+        """按 doc_id 汇总向量库中所有分块（用于恢复文档台账）"""
+        try:
+            results = self.collection.get(include=["metadatas"])
+            summaries: Dict[str, Dict[str, Any]] = {}
+            for meta in results["metadatas"] or []:
+                doc_id = meta.get("doc_id")
+                if not doc_id:
+                    continue
+                if doc_id not in summaries:
+                    summaries[doc_id] = {
+                        "doc_id": doc_id,
+                        "filename": meta.get("filename", ""),
+                        "file_type": meta.get("file_type", ""),
+                        "upload_time": meta.get("upload_time"),
+                        "chunk_count": 0,
+                    }
+                summaries[doc_id]["chunk_count"] += 1
+            return summaries
+        except Exception:
+            logger.exception("汇总文档分块失败")
+            return {}
+
     async def get_collection_stats(self) -> Dict[str, Any]:
         """获取集合统计信息"""
         try:
