@@ -41,9 +41,13 @@ app.mount("/ui", StaticFiles(directory=os.path.join("app", "static"), html=True)
 
 @app.on_event("startup")
 async def startup_event():
-    """启动时恢复文档台账并认领向量库中的孤儿分块"""
+    """启动时恢复文档台账、认领孤儿分块，并重建 BM25 索引"""
+    from app.services.bm25_index import bm25_index
     from app.services.document_service import document_service
     await document_service.startup()
+    n = await bm25_index.rebuild(document_service)
+    import logging
+    logging.getLogger(__name__).info("BM25 索引加载 %d 个分块", n)
 
 @app.get("/", tags=["根路径"])
 async def root():

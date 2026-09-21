@@ -64,7 +64,7 @@ details summary{cursor:pointer;color:var(--dim);font-size:12px}
         <input type="file" id="upfile" accept=".txt,.pdf,.docx">
         <button class="act" style="flex:none" onclick="uploadDoc()">上传入库</button>
       </div>
-      <div class="dim">上传链路：提取文本 → 切块 → ONNX MiniLM 嵌入 → Chroma 向量库 + 分块明文 + 台账</div>
+      <div class="dim">上传链路：提取文本 → 切块 → 嵌入（EMBEDDING_MODEL_NAME，默认 bge-small-zh）→ Chroma 向量库 + BM25 + 分块明文 + 台账</div>
     </div>
     <div class="card"><table id="doctb"><thead><tr>
       <th>文件名</th><th>类型</th><th>大小</th><th>分块</th><th>状态</th><th>上传时间</th><th>操作</th>
@@ -156,8 +156,14 @@ function renderTrace(trace){
   const cls={retrieval:'',context:'ctx',generation:'gen',memory:'mem'};
   return '<details><summary>全链路 trace（'+trace.length+'步）</summary>'+trace.filter(t=>t.step!=='total').map(t=>{
     const d=t.detail||{};let body='';
-    if(t.step==='retrieval')body=`<table class="hits"><tr><th>#</th><th>文档</th><th>分数</th><th>内容预览</th></tr>`+
-      (d.hits||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.score.toFixed(3)}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;
+    if(t.step==='retrieval'){
+      if(d.hits){body=`<table class="hits"><tr><th>#</th><th>文档</th><th>分数</th><th>内容预览</th></tr>`+
+        (d.hits||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.score.toFixed(3)}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;}
+      else{const ch=d.channels||{};
+        body=`<div class="dim">向量路 ${(ch.vector||[]).length} 条 · BM25路 ${(ch.bm25||[]).length} 条 → RRF融合</div>
+        <table class="hits"><tr><th>#</th><th>文档</th><th>RRF</th><th>向量分</th><th>BM25分</th><th>预览</th></tr>`+
+        (d.merged||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.rrf}</td><td>${h.vec_score||'—'}</td><td>${h.bm25_score||'—'}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;}
+    }
     else if(t.step==='generation')body=`<span class="dim">mode=${esc(d.mode)} ${d.model?'model='+esc(d.model):''} ${d.history_messages_used!==undefined?'历史='+d.history_messages_used+'条':''} prompt=${d.prompt_chars||'-'}字 ${d.error?'<b style="color:#e06c75">error: '+esc(d.error)+'</b>':''}</span>`+
       (d.prompt_preview?`<details><summary>发给LLM的prompt预览</summary><pre>${esc(d.prompt_preview)}</pre></details>`:'');
     else if(t.step==='memory')body=`<span class="dim">session=${esc(d.session_id).slice(0,8)}… 累计${d.total_messages}条 → ${esc(d.store)}</span>`;
@@ -179,7 +185,7 @@ async function runQuery(){
     <pre style="max-height:none">${esc(r.answer)}</pre>
     ${renderTrace(r.trace||[])}</div>
     <div class="card"><h4>来源片段（${r.sources.length}）</h4>`+
-    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · ${s.score.toFixed(3)}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
+    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
   stats();
 }
 loadDocs();stats();

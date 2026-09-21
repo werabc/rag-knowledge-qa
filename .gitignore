@@ -5,6 +5,7 @@
 # 运行时数据
 vector_db/
 data/
+models/
 *.log
 
 # Python

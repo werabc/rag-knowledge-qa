@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from app.config import settings
+from app.services.bm25_index import bm25_index
 from app.services.vector_store import vector_store
 
 logger = logging.getLogger(__name__)
@@ -83,19 +84,24 @@ class QAService:
                 "detail": detail,
             })
 
-        # 1. 检索
+        # 1. 混合检索（向量语义 + BM25关键词，RRF融合）
         t0 = time.perf_counter()
-        results = await vector_store.search_similar(question, k=settings.SEARCH_K)
-        _step("retrieval", t0, query=question, k=settings.SEARCH_K, hits=[
-            {
-                "rank": i + 1,
-                "filename": r["metadata"].get("filename", ""),
-                "doc_id": r["metadata"].get("doc_id", ""),
-                "score": round(r["score"], 4),
-                "preview": r["content"][:80],
-            }
-            for i, r in enumerate(results)
-        ])
+        vec_results = await vector_store.search_similar(question, k=settings.SEARCH_K)
+        bm25_results = (bm25_index.search(question, k=settings.BM25_TOP_K)
+                        if settings.HYBRID_BM25 else [])
+        results = self._rrf_merge(vec_results, bm25_results, cap=settings.SEARCH_K)
+        _step("retrieval", t0, query=question, k=settings.SEARCH_K,
+              channels={
+                  "vector": [{"filename": r["metadata"].get("filename", ""),
+                              "score": round(r["score"], 4), "preview": r["content"][:60]}
+                             for r in vec_results],
+                  "bm25": [{"filename": r["filename"], "score": r["score"],
+                            "preview": r["content"][:60]} for r in bm25_results],
+              },
+              merged=[{"rank": i + 1, "filename": m["metadata"].get("filename", ""),
+                       "rrf": m["score"], "vec_score": round(m["vec_score"], 4),
+                       "bm25_score": round(m["bm25_score"], 4), "preview": m["content"][:80]}
+                      for i, m in enumerate(results)])
 
         # 2. 上下文构建
         t0 = time.perf_counter()
@@ -130,7 +136,7 @@ class QAService:
                       "ms": round((time.perf_counter() - t_total) * 1000, 1),
                       "detail": {}})
 
-        confidence = max((r["score"] for r in results), default=0.0)
+        confidence = max((r["vec_score"] for r in results), default=0.0)
 
         return {
             "answer": answer,
@@ -138,6 +144,8 @@ class QAService:
                 {
                     "content": r["content"],
                     "score": r["score"],
+                    "vec_score": round(r["vec_score"], 4),
+                    "bm25_score": round(r["bm25_score"], 4),
                     "filename": r["metadata"].get("filename", ""),
                     "doc_id": r["metadata"].get("doc_id", ""),
                 }
@@ -147,6 +155,30 @@ class QAService:
             "session_id": sid,
             "trace": trace,
         }
+
+    @staticmethod
+    def _rrf_merge(vec_results: List[Dict], bm25_results: List[Dict],
+                   cap: int, rrf_k: int = 60) -> List[Dict[str, Any]]:
+        """按名次做倒数排名融合：score = Σ 1/(rrf_k + rank)"""
+        items: Dict[str, Dict[str, Any]] = {}
+        for rank, r in enumerate(vec_results, 1):
+            meta = r["metadata"]
+            key = f"{meta.get('doc_id')}_chunk_{meta.get('chunk_index')}"
+            it = items.setdefault(key, {"content": r["content"], "metadata": meta,
+                                        "vec_score": 0.0, "bm25_score": 0.0, "rrf": 0.0})
+            it["vec_score"] = r["score"]
+            it["rrf"] += 1.0 / (rrf_k + rank)
+        for rank, r in enumerate(bm25_results, 1):
+            it = items.setdefault(r["chunk_id"], {
+                "content": r["content"],
+                "metadata": {"doc_id": r["doc_id"], "filename": r["filename"]},
+                "vec_score": 0.0, "bm25_score": 0.0, "rrf": 0.0})
+            it["bm25_score"] = r["score"]
+            it["rrf"] += 1.0 / (rrf_k + rank)
+        merged = sorted(items.values(), key=lambda x: -x["rrf"])[:cap]
+        for m in merged:
+            m["score"] = round(m["rrf"], 5)
+        return merged
 
     async def _generate_with_llm(self, question: str, context: str,
                                  session_id: Optional[str], use_history: bool,

@@ -16,6 +16,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.config import settings
 from app.models.schemas import DocumentCreate, DocumentResponse, DocumentStats
+from app.services.bm25_index import bm25_index
 from app.services.vector_store import vector_store
 
 logger = logging.getLogger(__name__)
@@ -129,6 +130,8 @@ class DocumentService:
             },
         )
         document.status = "processed" if indexed else "index_failed"
+        if indexed:
+            bm25_index.add_doc(doc_id, filename, chunks)
 
         # 存储文档信息并落盘台账
         self.documents_db[doc_id] = document
@@ -218,6 +221,7 @@ class DocumentService:
         if doc_id in self.documents_db:
             del self.documents_db[doc_id]
             self._save_db()
+            bm25_index.remove_doc(doc_id)
             # 删除分块文件
             chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.json")
             if os.path.exists(chunks_file):
@@ -257,6 +261,36 @@ class DocumentService:
         except Exception:
             logger.exception("读取文档分块失败")
             return []
+
+    async def reindex_all(self) -> Dict[str, Any]:
+        """用当前 embedding 模型重建整个向量库 + BM25（切换模型后维度不同必须执行）"""
+        await vector_store.recreate_collection()
+        bm25_index.build([])
+        ok, failed = 0, []
+        for doc in list(self.documents_db.values()):
+            chunks = await self.get_document_chunks(doc.id)
+            if not chunks:
+                failed.append({"doc_id": doc.id, "filename": doc.filename,
+                               "reason": "分块明文缺失"})
+                continue
+            indexed = await vector_store.add_documents(
+                doc.id, chunks,
+                metadata={
+                    "filename": doc.filename,
+                    "file_type": doc.file_type,
+                    "upload_time": doc.upload_time.isoformat(),
+                },
+            )
+            if indexed:
+                bm25_index.add_doc(doc.id, doc.filename, chunks)
+                doc.status = "processed"
+                ok += 1
+            else:
+                doc.status = "index_failed"
+                failed.append({"doc_id": doc.id, "filename": doc.filename,
+                               "reason": "向量写入失败"})
+        self._save_db()
+        return {"total": len(self.documents_db), "reindexed": ok, "failed": failed}
 
 # 创建全局文档服务实例
 document_service = DocumentService()

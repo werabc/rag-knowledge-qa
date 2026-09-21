@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
     SEARCH_K: int = 4
+    HYBRID_BM25: bool = True   # 向量+BM25 双路召回(RRF融合)
+    BM25_TOP_K: int = 4
 
     # FastAPI配置
     APP_HOST: str = "0.0.0.0"

@@ -136,6 +136,19 @@ async def delete_document(doc_id: str):
     else:
         raise HTTPException(status_code=500, detail="文档删除失败")
 
+@router.post("/reindex", summary="重建索引")
+async def reindex_documents():
+    """
+    用当前 embedding 模型重建整个向量库和 BM25 索引。
+
+    切换 EMBEDDING_MODEL_NAME 后（维度可能不同）必须调用一次。
+    分块明文来自 data/chunks/，无需重新上传文档。
+    """
+    try:
+        return await document_service.reindex_all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"重建索引失败：{str(e)}")
+
 @router.get("/stats/summary", response_model=DocumentStats, summary="获取文档统计")
 async def get_document_stats():
     """

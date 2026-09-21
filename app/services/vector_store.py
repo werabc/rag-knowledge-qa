@@ -9,12 +9,13 @@ from typing import Any, Dict, List, Optional
 import chromadb
 
 from app.config import settings
+from app.services.embeddings import make_embedding_function
 
 logger = logging.getLogger(__name__)
 
 
 class VectorStore:
-    """向量存储服务类（chromadb 1.x，内置 ONNX MiniLM embedding）"""
+    """向量存储服务类（chromadb 1.x；embedding 由 EMBEDDING_MODEL_NAME 决定，默认内置 ONNX MiniLM）"""
 
     def __init__(self):
         """初始化向量存储"""
@@ -23,11 +24,26 @@ class VectorStore:
         self.client = chromadb.PersistentClient(
             path=settings.CHROMA_PERSIST_DIRECTORY
         )
+        self.embedding_function = make_embedding_function()
+        self.collection = self._create_collection()
 
-        self.collection = self.client.get_or_create_collection(
-            name=settings.CHROMA_COLLECTION_NAME,
-            configuration={"hnsw": {"space": "cosine"}},
-        )
+    def _create_collection(self):
+        kwargs = {
+            "name": settings.CHROMA_COLLECTION_NAME,
+            "configuration": {"hnsw": {"space": "cosine"}},
+        }
+        if self.embedding_function is not None:
+            kwargs["embedding_function"] = self.embedding_function
+        return self.client.get_or_create_collection(**kwargs)
+
+    async def recreate_collection(self) -> bool:
+        """删除并重建集合（切换 embedding 模型后维度不同，必须重建）"""
+        try:
+            self.client.delete_collection(settings.CHROMA_COLLECTION_NAME)
+        except Exception:
+            logger.info("集合不存在，直接创建")
+        self.collection = self._create_collection()
+        return True
 
     async def add_documents(self, doc_id: str, chunks: List[str],
                             metadata: Optional[Dict[str, Any]] = None) -> bool:
@@ -66,11 +82,19 @@ class VectorStore:
             if count == 0:
                 return []
 
-            results = self.collection.query(
-                query_texts=[query],
-                n_results=min(k, count),
-                include=["documents", "metadatas", "distances"],
-            )
+            if self.embedding_function is not None:
+                # 自定义模型：查询侧编码（bge 系列需加检索指令前缀）
+                results = self.collection.query(
+                    query_embeddings=[self.embedding_function.embed_query(query)],
+                    n_results=min(k, count),
+                    include=["documents", "metadatas", "distances"],
+                )
+            else:
+                results = self.collection.query(
+                    query_texts=[query],
+                    n_results=min(k, count),
+                    include=["documents", "metadatas", "distances"],
+                )
 
             formatted_results = []
             if results["documents"]:
