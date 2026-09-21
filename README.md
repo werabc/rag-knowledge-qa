@@ -99,6 +99,7 @@ python run.py
 - `GET /api/documents` - 获取文档列表
 - `GET /api/documents/{doc_id}` - 获取文档详情
 - `DELETE /api/documents/{doc_id}` - 删除文档
+- `GET /api/documents/{doc_id}/chunks` - 查看文档分块明文
 - `GET /api/documents/stats/summary` - 获取文档统计
 
 ### 智能问答
