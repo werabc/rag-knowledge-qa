@@ -1,0 +1,12 @@
+Company Knowledge Base - Sample Document
+
+The flagship product of NovaTech is called QuantumLeap, launched on March 3, 2025.
+QuantumLeap supports up to 128 concurrent users on a single node and 2048 on a cluster.
+
+Retrieval-Augmented Generation (RAG) combines a retriever with a language model.
+Our internal RAG pipeline uses a chunk size of 1000 characters with 200 overlap.
+
+The on-call rotation for the platform team follows the Beijing time zone,
+and the escalation contact is the SRE lead, reachable via the #sre-oncall channel.
+
+星尘项目的预算为 420 万元，负责人是李文博，交付截止日期是 2026 年 11 月 30 日。

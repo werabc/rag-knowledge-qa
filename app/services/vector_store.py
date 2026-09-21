@@ -1,0 +1,119 @@
+"""
+向量存储服务
+"""
+
+import logging
+import os
+from typing import Any, Dict, List, Optional
+
+import chromadb
+
+from app.config import settings
+
+logger = logging.getLogger(__name__)
+
+
+class VectorStore:
+    """向量存储服务类（chromadb 1.x，内置 ONNX MiniLM embedding）"""
+
+    def __init__(self):
+        """初始化向量存储"""
+        os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
+
+        self.client = chromadb.PersistentClient(
+            path=settings.CHROMA_PERSIST_DIRECTORY
+        )
+
+        self.collection = self.client.get_or_create_collection(
+            name=settings.CHROMA_COLLECTION_NAME,
+            configuration={"hnsw": {"space": "cosine"}},
+        )
+
+    async def add_documents(self, doc_id: str, chunks: List[str],
+                            metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """添加文档分块到向量存储（自动做 embedding）"""
+        try:
+            if not chunks:
+                return False
+
+            ids = [f"{doc_id}_chunk_{i}" for i in range(len(chunks))]
+
+            metadatas = []
+            for i, chunk in enumerate(chunks):
+                chunk_metadata = {
+                    "doc_id": doc_id,
+                    "chunk_index": i,
+                    "chunk_size": len(chunk),
+                }
+                if metadata:
+                    chunk_metadata.update(metadata)
+                metadatas.append(chunk_metadata)
+
+            self.collection.add(documents=chunks, ids=ids, metadatas=metadatas)
+            return True
+
+        except Exception as e:
+            logger.exception("添加文档到向量存储失败")
+            return False
+
+    async def search_similar(self, query: str, k: int = None) -> List[Dict[str, Any]]:
+        """搜索相似文档分块"""
+        if k is None:
+            k = settings.SEARCH_K
+
+        try:
+            count = self.collection.count()
+            if count == 0:
+                return []
+
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=min(k, count),
+                include=["documents", "metadatas", "distances"],
+            )
+
+            formatted_results = []
+            if results["documents"]:
+                for i, doc in enumerate(results["documents"][0]):
+                    distance = results["distances"][0][i] if results["distances"] else 1.0
+                    formatted_results.append({
+                        "content": doc,
+                        "metadata": results["metadatas"][0][i] if results["metadatas"] else {},
+                        "score": max(0.0, 1 - distance),
+                    })
+
+            return formatted_results
+
+        except Exception:
+            logger.exception("搜索相似文档失败")
+            return []
+
+    async def delete_document(self, doc_id: str) -> bool:
+        """删除文档的所有分块"""
+        try:
+            results = self.collection.get(where={"doc_id": doc_id})
+
+            if results["ids"]:
+                self.collection.delete(ids=results["ids"])
+                return True
+
+            return False
+
+        except Exception:
+            logger.exception("删除文档分块失败")
+            return False
+
+    async def get_collection_stats(self) -> Dict[str, Any]:
+        """获取集合统计信息"""
+        try:
+            return {
+                "name": self.collection.name,
+                "count": self.collection.count(),
+            }
+        except Exception:
+            logger.exception("获取集合统计失败")
+            return {}
+
+
+# 创建全局向量存储实例
+vector_store = VectorStore()

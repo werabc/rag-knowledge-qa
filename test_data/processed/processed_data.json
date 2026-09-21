@@ -1,0 +1,1472 @@
+[
+  {
+    "id": "tech_doc_0",
+    "type": "technical",
+    "title": "Python编程指南 - 第1章",
+    "content": "Python编程指南  第1章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第1章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 232,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_1",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第2部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_2",
+    "type": "technical",
+    "title": "Python编程指南 - 第3章",
+    "content": "Python编程指南  第3章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第3章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 232,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_3",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第4部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_4",
+    "type": "technical",
+    "title": "Python编程指南 - 第5章",
+    "content": "Python编程指南  第5章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第5章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 232,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_5",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第6部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_6",
+    "type": "technical",
+    "title": "Python编程指南 - 第7章",
+    "content": "Python编程指南  第7章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第7章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 232,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_7",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第8部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_8",
+    "type": "technical",
+    "title": "Python编程指南 - 第9章",
+    "content": "Python编程指南  第9章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第9章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 232,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_9",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第10部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_10",
+    "type": "technical",
+    "title": "Python编程指南 - 第11章",
+    "content": "Python编程指南  第11章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第11章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 233,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_11",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第12部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_12",
+    "type": "technical",
+    "title": "Python编程指南 - 第13章",
+    "content": "Python编程指南  第13章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第13章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 233,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_13",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第14部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_14",
+    "type": "technical",
+    "title": "Python编程指南 - 第15章",
+    "content": "Python编程指南  第15章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第15章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 233,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_15",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第16部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_16",
+    "type": "technical",
+    "title": "Python编程指南 - 第17章",
+    "content": "Python编程指南  第17章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第17章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 233,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_17",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第18部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_18",
+    "type": "technical",
+    "title": "Python编程指南 - 第19章",
+    "content": "Python编程指南  第19章  概述 本章介绍Python编程的基础知识和高级特性。  主要内容 1. 变量和数据类型 2. 控制结构 3. 函数和模块 4. 面向对象编程  代码示例 python  示例代码 def example_function(): return \"Hello, World!\"   注意事项  遵循PEP8编码规范  使用类型提示提高代码可读性  编写单元测试确保代码质量",
+    "original_content": "\n# Python编程指南 - 第19章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python",
+      "content_length": 233,
+      "word_count": 36,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_19",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第20部分",
+    "content": "RESTful API设计最佳实践  API设计原则 1. 使用标准HTTP方法 2. 资源命名规范 3. 状态码使用 4. 错误处理  接口设计示例  GET apiv1usersbuiltin function id POST apiv1users PUT apiv1usersbuiltin function id DELETE apiv1usersbuiltin function id   认证和授权  JWT Token认证  OAuth2.0授权  API密钥管理  性能优化  缓存策略  分页处理  限流机制",
+    "original_content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest",
+      "content_length": 315,
+      "word_count": 48,
+      "has_code": true,
+      "has_list": true
+    },
+    "quality_score": 0.6,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_0",
+    "type": "enterprise",
+    "title": "产品使用手册 - 用户管理",
+    "content": "产品使用手册  功能概述 本手册介绍用户管理功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍用户管理功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_1",
+    "type": "enterprise",
+    "title": "产品使用手册 - 数据报表",
+    "content": "产品使用手册  功能概述 本手册介绍数据报表功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍数据报表功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_2",
+    "type": "enterprise",
+    "title": "产品使用手册 - 系统设置",
+    "content": "产品使用手册  功能概述 本手册介绍系统设置功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍系统设置功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_3",
+    "type": "enterprise",
+    "title": "产品使用手册 - 用户管理",
+    "content": "产品使用手册  功能概述 本手册介绍用户管理功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍用户管理功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_4",
+    "type": "enterprise",
+    "title": "产品使用手册 - 数据报表",
+    "content": "产品使用手册  功能概述 本手册介绍数据报表功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍数据报表功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_5",
+    "type": "enterprise",
+    "title": "产品使用手册 - 系统设置",
+    "content": "产品使用手册  功能概述 本手册介绍系统设置功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍系统设置功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_6",
+    "type": "enterprise",
+    "title": "产品使用手册 - 用户管理",
+    "content": "产品使用手册  功能概述 本手册介绍用户管理功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍用户管理功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_7",
+    "type": "enterprise",
+    "title": "产品使用手册 - 数据报表",
+    "content": "产品使用手册  功能概述 本手册介绍数据报表功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍数据报表功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_8",
+    "type": "enterprise",
+    "title": "产品使用手册 - 系统设置",
+    "content": "产品使用手册  功能概述 本手册介绍系统设置功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍系统设置功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_9",
+    "type": "enterprise",
+    "title": "产品使用手册 - 用户管理",
+    "content": "产品使用手册  功能概述 本手册介绍用户管理功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍用户管理功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_10",
+    "type": "enterprise",
+    "title": "产品使用手册 - 数据报表",
+    "content": "产品使用手册  功能概述 本手册介绍数据报表功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍数据报表功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_11",
+    "type": "enterprise",
+    "title": "产品使用手册 - 系统设置",
+    "content": "产品使用手册  功能概述 本手册介绍系统设置功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍系统设置功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_12",
+    "type": "enterprise",
+    "title": "产品使用手册 - 用户管理",
+    "content": "产品使用手册  功能概述 本手册介绍用户管理功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍用户管理功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_13",
+    "type": "enterprise",
+    "title": "产品使用手册 - 数据报表",
+    "content": "产品使用手册  功能概述 本手册介绍数据报表功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍数据报表功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "enterprise_doc_14",
+    "type": "enterprise",
+    "title": "产品使用手册 - 系统设置",
+    "content": "产品使用手册  功能概述 本手册介绍系统设置功能的使用方法。  操作步骤 1. 登录系统 2. 导航到相关页面 3. 按照提示操作 4. 保存设置  注意事项  请确保权限充足  操作前建议备份数据  遇到问题请联系管理员  常见问题 Q: 如何重置密码？ A: 在个人设置页面点击\"重置密码\"按钮。 Q: 如何导出数据？ A: 在数据报表页面选择\"导出\"功能。",
+    "original_content": "\n# 产品使用手册\n\n## 功能概述\n本手册介绍系统设置功能的使用方法。\n\n## 操作步骤\n1. 登录系统\n2. 导航到相关页面\n3. 按照提示操作\n4. 保存设置\n\n## 注意事项\n- 请确保权限充足\n- 操作前建议备份数据\n- 遇到问题请联系管理员\n\n## 常见问题\nQ: 如何重置密码？\nA: 在个人设置页面点击\"重置密码\"按钮。\n\nQ: 如何导出数据？\nA: 在数据报表页面选择\"导出\"功能。\n",
+    "metadata": {
+      "category": "product_manual",
+      "department": "技术部",
+      "version": "1.0",
+      "content_length": 201,
+      "word_count": 33,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_0",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第1部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_1",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第2部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_2",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第3部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_3",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第4部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_4",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第5部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_5",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第6部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_6",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第7部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_7",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第8部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_8",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第9部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "academic_doc_9",
+    "type": "academic",
+    "title": "基于深度学习的自然语言处理研究 - 第10部分",
+    "content": "基于深度学习的自然语言处理研究  摘要 本文研究了深度学习在自然语言处理领域的应用。  1. 引言 自然语言处理是人工智能的重要分支...  2. 相关工作  2.1 传统方法  2.2 深度学习方法  3. 方法论  3.1 模型架构  3.2 训练策略  4. 实验结果  4.1 数据集  4.2 评估指标  4.3 结果分析  5. 结论 本研究证明了深度学习在NLP任务中的有效性。  参考文献 [1] Smith et al. (2023) [2] Johnson et al. (2022)",
+    "original_content": "\n# 基于深度学习的自然语言处理研究\n\n## 摘要\n本文研究了深度学习在自然语言处理领域的应用。\n\n## 1. 引言\n自然语言处理是人工智能的重要分支...\n\n## 2. 相关工作\n### 2.1 传统方法\n### 2.2 深度学习方法\n\n## 3. 方法论\n### 3.1 模型架构\n### 3.2 训练策略\n\n## 4. 实验结果\n### 4.1 数据集\n### 4.2 评估指标\n### 4.3 结果分析\n\n## 5. 结论\n本研究证明了深度学习在NLP任务中的有效性。\n\n## 参考文献\n[1] Smith et al. (2023)\n[2] Johnson et al. (2022)\n",
+    "metadata": {
+      "category": "research",
+      "field": "nlp",
+      "year": 2024,
+      "authors": [
+        "张三",
+        "李四"
+      ],
+      "content_length": 298,
+      "word_count": 55,
+      "has_code": false,
+      "has_list": false
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_0",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_1",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_2",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_3",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_4",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_5",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_6",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_7",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_8",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_9",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_10",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_11",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_12",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_13",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_14",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_15",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_16",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_17",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_18",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_19",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_20",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_21",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_22",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 深度学习",
+    "content": "人工智能基础知识  深度学习简介  基本概念 深度学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 深度学习简介\n\n### 基本概念\n深度学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_23",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 自然语言处理",
+    "content": "人工智能基础知识  自然语言处理简介  基本概念 自然语言处理是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 自然语言处理简介\n\n### 基本概念\n自然语言处理是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 216,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "knowledge_doc_24",
+    "type": "knowledge",
+    "title": "人工智能基础知识 - 机器学习",
+    "content": "人工智能基础知识  机器学习简介  基本概念 机器学习是人工智能的重要分支。  主要方法 1. 监督学习 2. 无监督学习 3. 强化学习  应用场景  图像识别  语音识别  自然语言处理  推荐系统  学习资源  在线课程  开源项目  技术博客  学术论文  实践建议 1. 从基础开始学习 2. 多做项目实践 3. 参与开源社区 4. 持续学习更新",
+    "original_content": "\n# 人工智能基础知识\n\n## 机器学习简介\n\n### 基本概念\n机器学习是人工智能的重要分支。\n\n### 主要方法\n1. 监督学习\n2. 无监督学习\n3. 强化学习\n\n### 应用场景\n- 图像识别\n- 语音识别\n- 自然语言处理\n- 推荐系统\n\n### 学习资源\n- 在线课程\n- 开源项目\n- 技术博客\n- 学术论文\n\n## 实践建议\n1. 从基础开始学习\n2. 多做项目实践\n3. 参与开源社区\n4. 持续学习更新\n",
+    "metadata": {
+      "category": "ai_basics",
+      "level": "beginner",
+      "topics": [
+        "ai",
+        "machine_learning",
+        "deep_learning"
+      ],
+      "content_length": 212,
+      "word_count": 45,
+      "has_code": false,
+      "has_list": true
+    },
+    "quality_score": 0.5,
+    "source": "generated",
+    "format": "markdown"
+  }
+]

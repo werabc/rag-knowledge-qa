@@ -1,0 +1,262 @@
+[
+  {
+    "id": "tech_doc_0",
+    "type": "technical",
+    "title": "Python编程指南 - 第1章",
+    "content": "\n# Python编程指南 - 第1章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_1",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第2部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_2",
+    "type": "technical",
+    "title": "Python编程指南 - 第3章",
+    "content": "\n# Python编程指南 - 第3章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_3",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第4部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_4",
+    "type": "technical",
+    "title": "Python编程指南 - 第5章",
+    "content": "\n# Python编程指南 - 第5章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_5",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第6部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_6",
+    "type": "technical",
+    "title": "Python编程指南 - 第7章",
+    "content": "\n# Python编程指南 - 第7章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_7",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第8部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_8",
+    "type": "technical",
+    "title": "Python编程指南 - 第9章",
+    "content": "\n# Python编程指南 - 第9章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_9",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第10部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_10",
+    "type": "technical",
+    "title": "Python编程指南 - 第11章",
+    "content": "\n# Python编程指南 - 第11章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_11",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第12部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_12",
+    "type": "technical",
+    "title": "Python编程指南 - 第13章",
+    "content": "\n# Python编程指南 - 第13章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_13",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第14部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_14",
+    "type": "technical",
+    "title": "Python编程指南 - 第15章",
+    "content": "\n# Python编程指南 - 第15章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_15",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第16部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_16",
+    "type": "technical",
+    "title": "Python编程指南 - 第17章",
+    "content": "\n# Python编程指南 - 第17章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_17",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第18部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_18",
+    "type": "technical",
+    "title": "Python编程指南 - 第19章",
+    "content": "\n# Python编程指南 - 第19章\n\n## 概述\n本章介绍Python编程的基础知识和高级特性。\n\n## 主要内容\n1. 变量和数据类型\n2. 控制结构\n3. 函数和模块\n4. 面向对象编程\n\n## 代码示例\n```python\n# 示例代码\ndef example_function():\n    return \"Hello, World!\"\n```\n\n## 注意事项\n- 遵循PEP8编码规范\n- 使用类型提示提高代码可读性\n- 编写单元测试确保代码质量\n",
+    "metadata": {
+      "category": "programming",
+      "difficulty": "intermediate",
+      "language": "python"
+    },
+    "source": "generated",
+    "format": "markdown"
+  },
+  {
+    "id": "tech_doc_19",
+    "type": "technical",
+    "title": "RESTful API设计最佳实践 - 第20部分",
+    "content": "\n# RESTful API设计最佳实践\n\n## API设计原则\n1. 使用标准HTTP方法\n2. 资源命名规范\n3. 状态码使用\n4. 错误处理\n\n## 接口设计示例\n```\nGET /api/v1/users/<built-in function id>\nPOST /api/v1/users\nPUT /api/v1/users/<built-in function id>\nDELETE /api/v1/users/<built-in function id>\n```\n\n## 认证和授权\n- JWT Token认证\n- OAuth2.0授权\n- API密钥管理\n\n## 性能优化\n- 缓存策略\n- 分页处理\n- 限流机制\n",
+    "metadata": {
+      "category": "api",
+      "difficulty": "advanced",
+      "format": "rest"
+    },
+    "source": "generated",
+    "format": "markdown"
+  }
+]

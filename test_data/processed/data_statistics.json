@@ -1,0 +1,22 @@
+{
+  "total_documents": 70,
+  "total_content_length": 16802,
+  "source_statistics": {
+    "technical_docs": {
+      "document_count": 20,
+      "avg_content_length": 273.75
+    },
+    "enterprise_knowledge": {
+      "document_count": 15,
+      "avg_content_length": 201.0
+    },
+    "academic_papers": {
+      "document_count": 10,
+      "avg_content_length": 298.0
+    },
+    "general_knowledge": {
+      "document_count": 25,
+      "avg_content_length": 213.28
+    }
+  }
+}

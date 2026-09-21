@@ -1,0 +1,14 @@
+# 环境与密钥
+.env
+.env.detailed
+
+# 运行时数据
+vector_db/
+data/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
