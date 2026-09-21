@@ -31,6 +31,7 @@ class ChatMessage(BaseModel):
     role: str = Field(..., description="消息角色: user/assistant")
     content: str = Field(..., description="消息内容")
     timestamp: datetime = Field(default_factory=datetime.now, description="消息时间")
+    trace: Optional[List[Dict[str, Any]]] = Field(None, description="全链路追踪步骤")
     
     class Config:
         from_attributes = True
@@ -61,6 +62,7 @@ class QueryResponse(BaseModel):
     sources: List[Dict[str, Any]] = Field(default_factory=list, description="参考来源")
     confidence: float = Field(..., description="置信度", ge=0, le=1)
     session_id: str = Field(..., description="会话ID")
+    trace: Optional[List[Dict[str, Any]]] = Field(None, description="全链路追踪步骤")
     
     class Config:
         from_attributes = True

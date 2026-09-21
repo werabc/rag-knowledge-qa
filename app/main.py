@@ -4,6 +4,7 @@ FastAPI应用主入口
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import os
 
 from app.api.endpoints import documents, chat
@@ -34,6 +35,9 @@ os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
 # 注册路由
 app.include_router(documents.router, prefix="/api/documents", tags=["文档管理"])
 app.include_router(chat.router, prefix="/api/chat", tags=["智能问答"])
+
+# 可视化面板
+app.mount("/ui", StaticFiles(directory=os.path.join("app", "static"), html=True), name="ui")
 
 @app.on_event("startup")
 async def startup_event():

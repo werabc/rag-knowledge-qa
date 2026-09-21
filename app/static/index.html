@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>RAG 控制台</title>
+<style>
+:root{--bg:#0f1419;--panel:#171e26;--border:#2a3542;--fg:#d7e0ea;--dim:#8496a9;--acc:#4da3ff;--ok:#3fbf7f;--warn:#e0a838}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 "Segoe UI","Microsoft YaHei",sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:14px 24px;background:var(--panel);border-bottom:1px solid var(--border)}
+header h1{font-size:17px;margin:0}
+.stat{color:var(--dim)}.stat b{color:var(--acc);font-size:16px;margin:0 3px}
+nav{display:flex;gap:4px;padding:10px 24px 0;background:var(--panel)}
+nav button{background:none;border:none;color:var(--dim);padding:8px 18px;cursor:pointer;border-bottom:2px solid transparent;font-size:14px}
+nav button.on{color:var(--acc);border-bottom-color:var(--acc)}
+main{padding:20px 24px;max-width:1100px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--dim);font-weight:normal}
+button.act{background:none;border:1px solid var(--border);color:var(--acc);border-radius:5px;padding:3px 10px;cursor:pointer;margin-right:6px}
+button.act.red{color:#e06c75}
+input,textarea,select{background:#0c1116;border:1px solid var(--border);color:var(--fg);border-radius:6px;padding:8px 10px;font:inherit;width:100%}
+.row{display:flex;gap:10px;margin-bottom:10px}.row>*{flex:1}
+.chk{display:flex;align-items:center;gap:6px;color:var(--dim);flex:none;width:auto}
+.badge{display:inline-block;background:#1d2a38;color:var(--acc);border-radius:10px;padding:1px 9px;font-size:12px;margin-left:6px}
+.badge.g{background:#16281f;color:var(--ok)}
+.badge.y{background:#2a2416;color:var(--warn)}
+.step{border-left:3px solid var(--acc);margin:8px 0;padding:2px 0 2px 12px}
+.step.gen{border-color:var(--ok)}.step.mem{border-color:var(--warn)}.step.ctx{border-color:#b57edc}
+.step h4{margin:2px 0;font-size:13px}
+.bar{height:4px;background:var(--acc);opacity:.5;border-radius:2px;margin:4px 0}
+.hits td{font-size:12px}
+pre{white-space:pre-wrap;word-break:break-all;background:#0c1116;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:12px;color:#a8c7e6;max-height:260px;overflow:auto}
+details summary{cursor:pointer;color:var(--dim);font-size:12px}
+.msg{margin:8px 0;padding:10px 12px;border-radius:8px;max-width:92%}
+.msg.user{background:#1a2733}
+.msg.assistant{background:#16211a}
+.grid{display:grid;grid-template-columns:260px 1fr;gap:14px}
+.sess{padding:8px 10px;border-bottom:1px solid var(--border);cursor:pointer;color:var(--dim)}
+.sess.on{background:#1d2a38;color:var(--fg)}
+.dim{color:var(--dim);font-size:12px}
+#toasts{position:fixed;top:12px;right:12px}
+.toast{background:#232f3b;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>RAG 控制台</h1>
+  <span class="stat">向量分块<b id="st-chunks">-</b></span>
+  <span class="stat">文档<b id="st-docs">-</b></span>
+  <span class="stat">会话<b id="st-sess">-</b></span>
+  <span class="stat">消息<b id="st-msg">-</b></span>
+</header>
+<nav>
+  <button data-tab="kb" class="on">知识库</button>
+  <button data-tab="mem">对话记忆</button>
+  <button data-tab="dbg">问答调试</button>
+</nav>
+<main>
+  <section id="tab-kb">
+    <div class="card">
+      <div class="row">
+        <input type="file" id="upfile" accept=".txt,.pdf,.docx">
+        <button class="act" style="flex:none" onclick="uploadDoc()">上传入库</button>
+      </div>
+      <div class="dim">上传链路：提取文本 → 切块 → ONNX MiniLM 嵌入 → Chroma 向量库 + 分块明文 + 台账</div>
+    </div>
+    <div class="card"><table id="doctb"><thead><tr>
+      <th>文件名</th><th>类型</th><th>大小</th><th>分块</th><th>状态</th><th>上传时间</th><th>操作</th>
+    </tr></thead><tbody></tbody></table></div>
+    <div class="card" id="chunkview" style="display:none"><h4 id="chunktitle"></h4><div id="chunklist"></div></div>
+  </section>
+
+  <section id="tab-mem" style="display:none">
+    <div class="grid">
+      <div class="card" style="padding:0;overflow:auto;max-height:70vh"><div id="sellist"></div></div>
+      <div class="card" id="selview"><span class="dim">选择左侧会话查看消息与全链路 trace</span></div>
+    </div>
+  </section>
+
+  <section id="tab-dbg" style="display:none">
+    <div class="card">
+      <div class="row"><textarea id="q" rows="2" placeholder="输入问题，例如：第四季度混合召回的负责人是谁？"></textarea></div>
+      <div class="row">
+        <input id="sid" placeholder="session_id（留空自动新建）">
+        <label class="chk"><input type="checkbox" id="hist" checked style="width:auto">使用对话历史</label>
+        <button class="act" style="flex:none" onclick="runQuery()">发送</button>
+      </div>
+    </div>
+    <div id="dbgout"></div>
+  </section>
+</main>
+<div id="toasts"></div>
+<script>
+const $=s=>document.querySelector(s);
+const api=async(u,opt)=>{const r=await fetch(u,opt);if(!r.ok){let d;try{d=(await r.json()).detail}catch{d=r.statusText}throw new Error(d)}return r.json()};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),3500)};
+
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  ['kb','mem','dbg'].forEach(t=>$('#tab-'+t).style.display=t===b.dataset.tab?'':'none');
+  if(b.dataset.tab==='mem')loadSessions();
+});
+
+async function stats(){
+  const s=await api('/api/chat/stats');
+  $('#st-chunks').textContent=s.vector_store.count??'-';
+  $('#st-msg').textContent=s.sessions.total_messages;
+}
+async function loadDocs(){
+  const docs=await api('/api/documents/');
+  $('#st-docs').textContent=docs.length;
+  $('#doctb tbody').innerHTML=docs.map(d=>`<tr>
+    <td>${esc(d.filename)}</td><td>${esc(d.file_type)}</td>
+    <td>${(d.file_size/1024).toFixed(1)}KB</td><td>${d.chunk_count}</td>
+    <td><span class="badge ${d.status==='processed'?'g':'y'}">${esc(d.status)}</span></td>
+    <td class="dim">${esc((d.upload_time||'').slice(0,19).replace('T',' '))}</td>
+    <td><button class="act" onclick="viewChunks('${d.id}','${esc(d.filename)}')">查看分块</button>
+        <button class="act red" onclick="delDoc('${d.id}')">删除</button></td></tr>`).join('');
+}
+async function uploadDoc(){
+  const f=$('#upfile').files[0];if(!f)return toast('先选择文件');
+  const fd=new FormData();fd.append('file',f);
+  const d=await api('/api/documents/upload',{method:'POST',body:fd});
+  toast(`已入库 ${d.filename}（${d.chunk_count}块, ${d.status}）`);loadDocs();stats();
+}
+async function viewChunks(id,name){
+  const d=await api(`/api/documents/${id}/chunks`);
+  $('#chunkview').style.display='';$('#chunktitle').textContent=`${name} — ${d.chunk_count} 个分块`;
+  $('#chunklist').innerHTML=d.chunks.map((c,i)=>`<details ${i===0?'open':''}><summary>Chunk ${i+1}（${c.length}字）</summary><pre>${esc(c)}</pre></details>`).join('')||'<span class="dim">无明文文件（recovered文档需重新上传）</span>';
+}
+async function delDoc(id){
+  await api('/api/documents/'+id,{method:'DELETE'});toast('已删除（含向量库分块）');loadDocs();stats();
+}
+
+let sessions=[];
+async function loadSessions(){
+  sessions=await api('/api/chat/sessions');
+  $('#st-sess').textContent=sessions.length;
+  $('#sellist').innerHTML=sessions.map(s=>`<div class="sess" data-id="${s.id}" onclick="openSession('${s.id}')">
+    ${esc(s.title)}<div class="dim">${s.messages.length}条 · ${esc((s.updated_at||'').slice(0,16).replace('T',' '))}</div></div>`).join('')||'<div class="dim" style="padding:10px">暂无会话</div>';
+}
+async function openSession(id){
+  document.querySelectorAll('.sess').forEach(x=>x.classList.toggle('on',x.dataset.id===id));
+  const s=await api('/api/chat/sessions/'+id);
+  $('#selview').innerHTML=s.messages.map(m=>`<div class="msg ${m.role}">
+    <b class="dim">${m.role==='user'?'我':'助手'} · ${esc((m.timestamp||'').slice(11,19))}</b>
+    <div>${esc(m.content)}</div>
+    ${m.trace?renderTrace(m.trace):''}</div>`).join('');
+}
+
+function renderTrace(trace){
+  const total=(trace.find(t=>t.step==='total')||{ms:1}).ms||1;
+  const cls={retrieval:'',context:'ctx',generation:'gen',memory:'mem'};
+  return '<details><summary>全链路 trace（'+trace.length+'步）</summary>'+trace.filter(t=>t.step!=='total').map(t=>{
+    const d=t.detail||{};let body='';
+    if(t.step==='retrieval')body=`<table class="hits"><tr><th>#</th><th>文档</th><th>分数</th><th>内容预览</th></tr>`+
+      (d.hits||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.score.toFixed(3)}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;
+    else if(t.step==='generation')body=`<span class="dim">mode=${esc(d.mode)} ${d.model?'model='+esc(d.model):''} ${d.history_messages_used!==undefined?'历史='+d.history_messages_used+'条':''} prompt=${d.prompt_chars||'-'}字 ${d.error?'<b style="color:#e06c75">error: '+esc(d.error)+'</b>':''}</span>`+
+      (d.prompt_preview?`<details><summary>发给LLM的prompt预览</summary><pre>${esc(d.prompt_preview)}</pre></details>`:'');
+    else if(t.step==='memory')body=`<span class="dim">session=${esc(d.session_id).slice(0,8)}… 累计${d.total_messages}条 → ${esc(d.store)}</span>`;
+    else body=`<span class="dim">${esc(JSON.stringify(d))}</span>`;
+    return `<div class="step ${cls[t.step]||''}"><h4>${t.step} <span class="badge">${t.ms}ms</span></h4>
+      <div class="bar" style="width:${Math.max(2,t.ms/total*100)}%"></div>${body}</div>`;
+  }).join('')+'</details>';
+}
+
+async function runQuery(){
+  const q=$('#q').value.trim();if(!q)return toast('输入问题');
+  $('#dbgout').innerHTML='<div class="card dim">处理中…（检索+LLM生成可能需几秒）</div>';
+  const t0=performance.now();
+  const r=await api('/api/chat/query',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:q,session_id:$('#sid').value||null,use_history:$('#hist').checked})});
+  $('#sid').value=r.session_id;
+  $('#dbgout').innerHTML=`<div class="card">
+    <h4 style="margin:4px 0">回答 <span class="badge g">置信 ${r.confidence}</span><span class="badge">${((performance.now()-t0)/1000).toFixed(1)}s 端到端</span></h4>
+    <pre style="max-height:none">${esc(r.answer)}</pre>
+    ${renderTrace(r.trace||[])}</div>
+    <div class="card"><h4>来源片段（${r.sources.length}）</h4>`+
+    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · ${s.score.toFixed(3)}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
+  stats();
+}
+loadDocs();stats();
+</script>
+</body>
+</html>
