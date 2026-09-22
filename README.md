@@ -18,6 +18,7 @@ python run.py
 - 嵌入模型默认加载本地目录 `models/bge-small-zh-v1.5`（需自行下载权重；.gitignore 已排除）。换嵌入模型后必须 `POST /api/v1/documents/reindex` 全量重建向量库
 - 重排模型默认加载 `models/bge-reranker-base`（同样不入库，缺失时自动回退 RRF 顺序）。权重可从 HF 镜像获取，如 `https://hf-mirror.com/BAAI/bge-reranker-base/resolve/main/model.safetensors` 等文件放入该目录；`RERANK_MODE=llm|off` 可不装
 - 演示语料在 `test_data/`（含 4 个 txt）；扫描件演示用 `python scripts/make_scan_pdf.py` 生成
+- 切块默认 `CHUNK_MODE=structure`（标题/空行结构优先），金标语料实测 `CHUNK_SIZE=300` 最优；改切块策略后需 `python scripts/reload_corpus.py` 重灌语料（reindex 不重切块）
 
 ## 主要端点（/api/v1）
 
@@ -54,7 +55,8 @@ app/
                      （提取/分块/OCR）· vector_store（Chroma）· bm25_index · embeddings · reranker · memory_service
   static/            /ui 面板（单文件）
   config.py errors.py main.py models/schemas.py
-scripts/             api_contract_test · evaluate_retrieval · compare_rerank · make_scan_pdf
+scripts/             api_contract_test · evaluate_retrieval · compare_rerank ·
+                     experiment_chunking · reload_corpus · make_scan_pdf
 eval/                golden_set.json · baseline.json · report.json
 test_data/           演示语料（txt）
 docs/                AGENT_SPEC.md（能力分级 L1-L5 + 工程化基座）

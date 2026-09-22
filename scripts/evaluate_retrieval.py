@@ -36,6 +36,15 @@ def best_rank(names, expect):
     return min(ranks) if ranks else None
 
 
+def summarize(key, subset):
+    m = len(subset) or 1
+    hit1 = sum(1 for x in subset if x.get(key) == 1) / m
+    hitk = sum(1 for x in subset if x.get(key) and x[key] <= 4) / m
+    mrr = sum(1.0 / x[key] for x in subset if x.get(key)) / m
+    return {"hit@1": round(hit1, 3), "hit@4": round(hitk, 3),
+            "MRR": round(mrr, 3), "n": m}
+
+
 def evaluate():
     ap = argparse.ArgumentParser()
     ap.add_argument("--strict", action="store_true", help="与 baseline.json 对照，回退则退出码 1")
@@ -84,14 +93,6 @@ def evaluate():
     answerable = [x for x in rows if x["expect"] is not None]
     unanswerable = [x for x in rows if x["expect"] is None]
     n = len(answerable)
-
-    def summarize(key, subset):
-        m = len(subset) or 1
-        hit1 = sum(1 for x in subset if x.get(key) == 1) / m
-        hitk = sum(1 for x in subset if x.get(key) and x[key] <= 4) / m
-        mrr = sum(1.0 / x[key] for x in subset if x.get(key)) / m
-        return {"hit@1": round(hit1, 3), "hit@4": round(hitk, 3),
-                "MRR": round(mrr, 3), "n": m}
 
     refusal_acc = (sum(1 for x in unanswerable if x["refused"]) / len(unanswerable)
                    if unanswerable else 1.0)

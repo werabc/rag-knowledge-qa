@@ -1,10 +1,10 @@
 # 功能文档 — RAG 知识库问答系统
 
-> 版本：v1.2 · 更新日期：2026-09-22 · 对应提交：`54bb3c3`（G1 `c417945` / G2 `102a01d` / G3 `47077f3` / G4 `54bb3c3`）
+> 版本：v1.3 · 更新日期：2026-09-22 · 对应提交：P1 本地重排 `3033f51` / P2 结构分块（本次）
 
 ## 1. 系统概览
 
-本地部署的检索增强问答系统：上传文档（含无文本层的中文扫描件，自动 OCR）→ 切块（PDF 带页码元数据）→ 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 29 条六类金标（含对抗/多跳/扫描件OCR/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
+本地部署的检索增强问答系统：上传文档（含无文本层的中文扫描件，自动 OCR）→ 结构优先切块（标题/空行分节段，PDF 带页码元数据）→ 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ 重排（默认本地 cross-encoder）→ 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 29 条六类金标（含对抗/多跳/扫描件OCR/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
 
 Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-L5 全部落地。
 
@@ -19,11 +19,11 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
                      DocumentService            QAService / AgentService
                      ├ 文本提取(PyMuPDF逐页/docx)  ├ 查询改写(指代消解, LLM)
                      │ 扫描页→rapidocr中文OCR     │
-                     ├ 切块(1000/200)             ├ 向量召回 ──► VectorStore ──► ChromaDB(512维,cosine)
+                     ├ 切块(structure/300)         ├ 向量召回 ──► VectorStore ──► ChromaDB(512维,cosine)
                      ├ 写向量库 + BM25增量        ├ BM25召回 ──► BM25Index(内存, jieba分词)
-                     └ 台账 documents.json        ├ RRF融合(k=60, 召回池8) → LLM重排 → top4
+                     └ 台账 documents.json        ├ RRF融合(k=60, 召回池8) → 重排(ce本地) → top4
                        分块明文 chunks/*.json     ├ 上下文拼接 [资料N] + 长期记忆注入system prompt
-                       {text,page_num,ocr}       ├ LLM生成(LongCat) / 抽取式回退
+                       {text,page_num,ocr,section}├ LLM生成(LongCat) / 抽取式回退
                         Agent模式(L3)：同一LLM在 ├ 会话记忆 sessions.json
                         ReAct循环(≤5步)里自主调  └ 长期记忆 MemoryService(L4)
                         kb_search/kb_stats/         ├ 答后异步抽取事实 → longterm.json
@@ -44,11 +44,12 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 |---|---|---|
 | 配置 | `app/config.py` | pydantic-settings，读 `.env`，大小写敏感 |
 | 数据模型 | `app/models/schemas.py` | Pydantic 请求/响应模型（含 `trace` 字段） |
-| 文档服务 | `app/services/document_service.py` | 提取（PyMuPDF 逐页+扫描页 rapidocr 中文 OCR/docx/txt）/切块/入库/删除/台账持久化/孤儿恢复/全量重建 reindex_all |
+| 文档服务 | `app/services/document_service.py` | 提取（PyMuPDF 逐页+扫描页 rapidocr 中文 OCR/docx/txt）/结构优先切块（CHUNK_MODE）/入库/删除/台账持久化/孤儿恢复/全量重建 reindex_all |
 | 向量存储 | `app/services/vector_store.py` | chromadb 1.x PersistentClient，cosine HNSW，自定义 EF 接入，recreate_collection |
 | 嵌入服务 | `app/services/embeddings.py` | 按配置加载 sentence-transformers；bge 查询前缀；失败回退内置 MiniLM |
 | BM25 | `app/services/bm25_index.py` | jieba 分词倒排 + Lucene idf 公式 BM25；启动时从台账+分块明文重建 |
-| 问答服务 | `app/services/qa_service.py` | 查询改写→检索→融合→LLM重排→上下文→生成→记忆 主流程 + trace 采集；`hybrid_search` 供 Agent 复用 |
+| 问答服务 | `app/services/qa_service.py` | 查询改写→检索→融合→重排(ce/llm/off)→上下文→生成→记忆 主流程 + trace 采集；`hybrid_search` 供 Agent 复用 |
+| 重排服务 | `app/services/reranker.py` | 本地 cross-encoder（bge-reranker，CPU，懒加载单例，to_thread），`ce_rerank` 打分排序 |
 | Agent 服务 | `app/services/agent_service.py` | L3：ReAct 循环（JSON-in-text 协议），LLM 自主调用 kb_search/kb_stats/session_history，步数上限+强制收口+解析兜底 |
 | 长期记忆 | `app/services/memory_service.py` | L4：答后异步 LLM 抽取原子事实、去重落盘 longterm.json，按词重叠召回注入 prompt |
 | 检索评估 | `scripts/evaluate_retrieval.py` | L5：跑 golden set，输出 RRF 与 RRF+重排双通道 hit@1/hit@4/MRR |
@@ -67,7 +68,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 | POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`；PDF 逐页提取，无文本层的扫描页自动 OCR（页码+ocr 标记入元数据）；400 unsupported_file_type / 413 file_too_large |
 | GET | `/` | 文档台账列表（分页 `?page=&size=`，size≤100） |
 | GET | `/{doc_id}` | 单个文档详情；404 document_not_found |
-| GET | `/{doc_id}/chunks` | 该文档全部分块明文，JSON 数组，每块 `{text, page_num, ocr}`（非 PDF 页码为 null；旧格式纯字符串自动升级） |
+| GET | `/{doc_id}/chunks` | 该文档全部分块明文，JSON 数组，每块 `{text, page_num, ocr, section}`（非 PDF 页码为 null；旧格式纯字符串自动升级） |
 | DELETE | `/{doc_id}` | 删向量分块 + BM25 + 台账 + 分块明文；成功 204 |
 | POST | `/reindex` | **用当前 embedding 模型全量重建向量库+BM25**（切换模型后必调，见 §7）；并发再入 409 |
 | GET | `/stats/summary` | 文档数/分块数/总大小/类型分布 |
@@ -109,7 +110,7 @@ D:\rag\
 └── app\                      # 代码
 ```
 
-向量分块 id 规则：`{doc_id}_chunk_{i}`；metadata 含 `doc_id/chunk_index/filename/file_type/upload_time`，PDF 分块额外带 `page_num/ocr`（扫描件回答可标注「第N页（扫描件OCR）」）。
+向量分块 id 规则：`{doc_id}_chunk_{i}`；metadata 含 `doc_id/chunk_index/filename/file_type/upload_time`，PDF 分块额外带 `page_num/ocr`（扫描件回答可标注「第N页（扫描件OCR）」），所有分块带 `section`（结构节号，small-to-big 预留：检索小块、生成时可回查父节全文）。
 
 ## 6. 配置项（.env）
 
@@ -119,7 +120,8 @@ D:\rag\
 | `OPENAI_API_BASE` | `https://api.longcat.chat/openai/v1` | OpenAI 兼容端点 |
 | `LLM_MODEL` | `LongCat-2.0` | 生成模型 |
 | `EMBEDDING_MODEL_NAME` | `models/bge-small-zh-v1.5` | 本地路径=加载 sentence-transformers；`all-MiniLM-L6-v2`=chroma 内置 ONNX |
-| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 1000 / 200 | 切块参数 |
+| `CHUNK_MODE` | `structure` | 切块策略：structure=标题/空行结构优先 / fixed=固定字符数（改策略需删文档重传生效） |
+| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 1000 / 200 | 目标块大小与 fixed 模式重叠；structure 模式金标实测 300 最优 |
 | `SEARCH_K` | 4 | 融合后进入上下文的分块数 |
 | `HYBRID_BM25` | True | 双路召回开关 |
 | `CITATION_VERIFY` | True | 生成后引用核验（防幻觉）开关 |
@@ -140,6 +142,9 @@ D:\rag\
 ### 重排（`RERANK_MODE` 三通道）
 RRF 融合取召回池 8 条后进入重排，截取 top4 进上下文。默认 `ce`：本地 cross-encoder（`bge-reranker-base`，sentence-transformers CPU 推理，懒加载单例，`asyncio.to_thread` 避免阻塞事件循环），对每对 (问题, 候选) 打相关度分排序，模型加载失败自动回退 RRF 顺序（trace 标 `ce_fallback`）。`llm`：LLM listwise 重排作对照——对召回池只输出部分编号做容错（已列出的置顶、其余按 RRF 原序补齐），解析失败沿用 RRF 顺序。`off`：直接按 RRF 截断。ce 通道实测：单次打分 ~1.7s（对比 LLM 往返 3~11s），把向量+BM25 都排错的文档从第 4 顶到第 1。
 
+### 结构优先切块（`CHUNK_MODE=structure`）
+`split_structure`：markdown 标题行分节 → 节内空行分段 → 段按序合并到 `CHUNK_SIZE`（永不跨节合并）；单段超限交给固定 splitter 兜底。每块带 `section` 节号（small-to-big 预留）。P2 实验（`scripts/experiment_chunking.py`，进程内隔离库、不走 LLM，5 配置×26 题，数据在 `eval/chunk_experiment.json`）：kb_sample 这类"单文档单大块"把多条无关事实挤进同一向量，同义问法位次被稀释——structure@300 把它切成 3 块后，重排通道 hit@1 0.923→0.962、MRR 0.955→0.974、**paraphrase 类 hit@1 0.8→1.0**（「值班升级找谁」2→1），其余类别全部持平；@200/@500 时纯 RRF 通道 MRR 反而低于基线（0.892/0.897 < 0.905），故选 300。改块大小只需 `.env` 调 `CHUNK_SIZE` + `scripts/reload_corpus.py` 重灌 + 重跑门禁。
+
 ### 混合检索（RRF）
 向量路与 BM25 路各出候选，按分块 id 去重，`rrf = Σ 1/(60+排名)`，降序取 top `SEARCH_K`。向量管语义近似（同义改写也能命中），BM25 管关键词精确命中（型号、人名、编号）。`confidence` 取向量路最高相似度。
 
@@ -155,7 +160,7 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 ### 检索评估（L5/G3）
 `eval/golden_set.json`：**29 条**金标，六类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `ocr` 扫描件 OCR 命中：期望检索到 scan_xuanhe.pdf(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
 
-**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`RERANK_MODE=off` 重启后 strict 点名 `with_rerank.hit@1`、`adversarial` 等三项拦截；恢复配置后 strict 通过。当前基线数字见 `eval/baseline.json`（paraphrase 类 hit@1 偏低为 kb_sample 单大分块稀释所致，留作提升空间）。
+**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`RERANK_MODE=off` 重启后 strict 点名 `with_rerank.hit@1`、`adversarial` 等三项拦截；恢复配置后 strict 通过。当前基线（P2 后）：重排通道 hit@1 0.962 / hit@4 1.0 / MRR 0.974、仅 RRF hit@1 0.846 / MRR 0.905、拒答 1.0；paraphrase 类经结构分块已达 1.0，adversarial 0.75 为 ce 通道跨语言抢位边界（见 §9）。
 
 ### PDF 逐页提取 + 扫描件 OCR（G4）
 PyMuPDF 逐页 `get_text` 并按页切块（跨页不混块，页码进元数据）。页文本层 <20 字符且含图片 → 判为扫描页：`page.get_pixmap(dpi=200)` 转 PNG 交 rapidocr（onnxruntime，懒加载单例）识别中文。每块明文以 `{text, page_num, ocr}` 落 `chunks/*.json` 并写进 chroma metadata；上下文资料头标注「文件名，第N页（扫描件OCR）」，面板来源徽标与 `/chunks` 端点同步展示。实测零文本层两页扫描 PDF（`scripts/make_scan_pdf.py` 生成）：上传 28s（含 OCR 模型冷加载），问答「年度维保费+负责人」正确答出 90 万元/陈立，两条来源均带 页码+OCR+被引用 徽标。

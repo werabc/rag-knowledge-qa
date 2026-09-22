@@ -66,7 +66,7 @@ class VectorStore:
                     chunk_metadata.update(metadata)
                 if per_chunk and i < len(per_chunk):
                     extra = {k: v for k, v in per_chunk[i].items()
-                             if k in ("page_num", "ocr") and v is not None}
+                             if k in ("page_num", "ocr", "section") and v is not None}
                     chunk_metadata.update(extra)
                 metadatas.append(chunk_metadata)
 

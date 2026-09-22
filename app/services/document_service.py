@@ -5,6 +5,7 @@
 import os
 import json
 import logging
+import re
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
@@ -23,6 +24,40 @@ logger = logging.getLogger(__name__)
 
 _ocr_engine = None
 
+_SECTION_RE = re.compile(r"(?m)^(?=#{1,6}\s)")
+_PARA_RE = re.compile(r"\n[ \t]*\n+")
+
+
+def split_structure(text: str, chunk_size: int,
+                    oversize_splitter: RecursiveCharacterTextSplitter
+                    ) -> List[Dict[str, Any]]:
+    """结构优先切块：标题行分节 → 空行分段 → 段按序合并到 chunk_size（不跨节）。
+    单段超限交给固定 splitter 兜底。每块带 section 节号，预留 small-to-big（检索小块、生成喂父节）。"""
+    out: List[Dict[str, Any]] = []
+    sections = _SECTION_RE.split(text)
+    sections = [s for s in sections if s.strip()]
+    for sec, seg in enumerate(sections):
+        buf = ""
+        for para in _PARA_RE.split(seg):
+            para = para.strip()
+            if not para:
+                continue
+            if len(para) > chunk_size:
+                if buf:
+                    out.append({"text": buf, "section": sec})
+                    buf = ""
+                for t in oversize_splitter.split_text(para):
+                    out.append({"text": t, "section": sec})
+                continue
+            if buf and len(buf) + 2 + len(para) > chunk_size:
+                out.append({"text": buf, "section": sec})
+                buf = para
+            else:
+                buf = f"{buf}\n\n{para}" if buf else para
+        if buf:
+            out.append({"text": buf, "section": sec})
+    return out
+
 
 def _get_ocr():
     """RapidOCR 懒加载：只有遇到无文字层的 PDF 页才付出模型加载成本"""
@@ -39,13 +74,17 @@ class DocumentService:
         """初始化文档服务"""
         self.documents_db: Dict[str, DocumentResponse] = {}
         self._store_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "documents.json")
-        self.text_splitter = RecursiveCharacterTextSplitter(
+        self.text_splitter = self._make_splitter()
+        self._load_db()
+
+    @staticmethod
+    def _make_splitter() -> RecursiveCharacterTextSplitter:
+        return RecursiveCharacterTextSplitter(
             chunk_size=settings.CHUNK_SIZE,
             chunk_overlap=settings.CHUNK_OVERLAP,
             length_function=len,
             add_start_index=True,
         )
-        self._load_db()
 
     # ---------- 台账持久化 ----------
 
@@ -117,13 +156,21 @@ class DocumentService:
         # 逐页提取内容（含页码与是否OCR标记）
         pages = await self._extract_pages(file_path, file_type)
 
-        # 分块处理：页内切块，跨页不合并，保证页码归属准确
+        # 分块处理：页内切块，跨页不合并，保证页码归属准确；
+        # CHUNK_MODE=structure 时标题/空行结构优先，fixed 时固定字符数
         chunks: List[Dict[str, Any]] = []
         for p in pages:
-            for t in (self.text_splitter.split_text(p["text"])
-                      if p["text"].strip() else []):
-                chunks.append({"text": t, "page_num": p["page_num"],
-                               "ocr": p["ocr"]})
+            if not p["text"].strip():
+                continue
+            if settings.CHUNK_MODE == "structure":
+                parts = split_structure(p["text"], settings.CHUNK_SIZE,
+                                        self.text_splitter)
+            else:
+                parts = [{"text": t, "section": i} for i, t in
+                         enumerate(self.text_splitter.split_text(p["text"]))]
+            for part in parts:
+                chunks.append({"text": part["text"], "page_num": p["page_num"],
+                               "ocr": p["ocr"], "section": part["section"]})
 
         # 创建文档记录
         document = DocumentResponse(

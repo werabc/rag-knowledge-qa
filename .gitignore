@@ -13,3 +13,6 @@ __pycache__/
 *.pyc
 venv/
 .venv/
+vector_db_exp/
+data_exp/
+deep_test/

@@ -1,0 +1,1231 @@
+{
+ "generated_at": "2026-09-22 21:21:34",
+ "rerank_mode": "ce",
+ "configs": [
+  {
+   "mode": "fixed",
+   "chunk_size": 1000,
+   "chunks_per_doc": {
+    "kb_sample.txt": 1,
+    "decoy_zh.txt": 1,
+    "roadmap_zh.txt": 1,
+    "star_editor.txt": 1,
+    "scan_xuanhe.pdf": 2
+   },
+   "rrf": {
+    "hit@1": 0.846,
+    "hit@4": 0.962,
+    "MRR": 0.899,
+    "n": 26
+   },
+   "ce": {
+    "hit@1": 0.923,
+    "hit@4": 1.0,
+    "MRR": 0.955,
+    "n": 26
+   },
+   "by_category_ce": {
+    "adversarial": {
+     "hit@1": 0.75,
+     "hit@4": 1.0,
+     "MRR": 0.833,
+     "n": 4
+    },
+    "direct": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 11
+    },
+    "multihop": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "ocr": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "paraphrase": {
+     "hit@1": 0.8,
+     "hit@4": 1.0,
+     "MRR": 0.9,
+     "n": 5
+    }
+   },
+   "rows": [
+    {
+     "question": "朱雀系统的采购预算是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀系统单节点支持多少并发用户？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "王志刚担任什么角色？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "客服机器人小鹤的响应时间是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "产品路线图里第三季度的目标是什么？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回的负责人是谁？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "检索延迟要降到多少毫秒以内？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "What is NovaTech's flagship product?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "When was QuantumLeap launched?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器支持多少人同时在线协作？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器内测版什么时候发布、谁负责？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "公司旗舰产品是什么时候发布的？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 2,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器最多能几个人一起编辑？",
+     "expect": "star_editor.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "平台团队的值班升级找谁？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 2
+    },
+    {
+     "question": "星尘项目最晚什么时候要交付？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "智能客服能用哪几种语言答复？",
+     "expect": "decoy_zh.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "旗舰产品单节点能扛多少并发？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 5,
+     "final_rank": 3
+    },
+    {
+     "question": "QuantumLeap是哪个月上线的？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回这个检索功能预计多久能上线？",
+     "expect": "roadmap_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "日志分析平台的项目经理是谁？",
+     "expect": "decoy_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀和星尘两个项目哪个预算更高？",
+     "expect": [
+      "decoy_zh.txt",
+      "kb_sample.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
+     "expect": "roadmap_zh.txt",
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器和朱雀系统哪个先完成里程碑？",
+     "expect": [
+      "star_editor.txt",
+      "decoy_zh.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的年度维保费用是多少？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤项目的一期计划什么时候上线？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    }
+   ]
+  },
+  {
+   "mode": "structure",
+   "chunk_size": 200,
+   "chunks_per_doc": {
+    "kb_sample.txt": 5,
+    "decoy_zh.txt": 1,
+    "roadmap_zh.txt": 1,
+    "star_editor.txt": 1,
+    "scan_xuanhe.pdf": 2
+   },
+   "rrf": {
+    "hit@1": 0.846,
+    "hit@4": 0.962,
+    "MRR": 0.892,
+    "n": 26
+   },
+   "ce": {
+    "hit@1": 0.962,
+    "hit@4": 1.0,
+    "MRR": 0.981,
+    "n": 26
+   },
+   "by_category_ce": {
+    "adversarial": {
+     "hit@1": 0.75,
+     "hit@4": 1.0,
+     "MRR": 0.875,
+     "n": 4
+    },
+    "direct": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 11
+    },
+    "multihop": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "ocr": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "paraphrase": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 5
+    }
+   },
+   "rows": [
+    {
+     "question": "朱雀系统的采购预算是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀系统单节点支持多少并发用户？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "王志刚担任什么角色？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "客服机器人小鹤的响应时间是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "产品路线图里第三季度的目标是什么？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回的负责人是谁？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "检索延迟要降到多少毫秒以内？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "What is NovaTech's flagship product?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "When was QuantumLeap launched?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器支持多少人同时在线协作？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器内测版什么时候发布、谁负责？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "公司旗舰产品是什么时候发布的？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器最多能几个人一起编辑？",
+     "expect": "star_editor.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "平台团队的值班升级找谁？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "星尘项目最晚什么时候要交付？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "智能客服能用哪几种语言答复？",
+     "expect": "decoy_zh.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "旗舰产品单节点能扛多少并发？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 5,
+     "final_rank": 2
+    },
+    {
+     "question": "QuantumLeap是哪个月上线的？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回这个检索功能预计多久能上线？",
+     "expect": "roadmap_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "日志分析平台的项目经理是谁？",
+     "expect": "decoy_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀和星尘两个项目哪个预算更高？",
+     "expect": [
+      "decoy_zh.txt",
+      "kb_sample.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
+     "expect": "roadmap_zh.txt",
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器和朱雀系统哪个先完成里程碑？",
+     "expect": [
+      "star_editor.txt",
+      "decoy_zh.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的年度维保费用是多少？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤项目的一期计划什么时候上线？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    }
+   ]
+  },
+  {
+   "mode": "structure",
+   "chunk_size": 300,
+   "chunks_per_doc": {
+    "kb_sample.txt": 3,
+    "decoy_zh.txt": 1,
+    "roadmap_zh.txt": 1,
+    "star_editor.txt": 1,
+    "scan_xuanhe.pdf": 2
+   },
+   "rrf": {
+    "hit@1": 0.846,
+    "hit@4": 0.962,
+    "MRR": 0.905,
+    "n": 26
+   },
+   "ce": {
+    "hit@1": 0.962,
+    "hit@4": 1.0,
+    "MRR": 0.974,
+    "n": 26
+   },
+   "by_category_ce": {
+    "adversarial": {
+     "hit@1": 0.75,
+     "hit@4": 1.0,
+     "MRR": 0.833,
+     "n": 4
+    },
+    "direct": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 11
+    },
+    "multihop": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "ocr": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "paraphrase": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 5
+    }
+   },
+   "rows": [
+    {
+     "question": "朱雀系统的采购预算是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀系统单节点支持多少并发用户？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "王志刚担任什么角色？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "客服机器人小鹤的响应时间是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "产品路线图里第三季度的目标是什么？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回的负责人是谁？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "检索延迟要降到多少毫秒以内？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "What is NovaTech's flagship product?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "When was QuantumLeap launched?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器支持多少人同时在线协作？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器内测版什么时候发布、谁负责？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "公司旗舰产品是什么时候发布的？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 2,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器最多能几个人一起编辑？",
+     "expect": "star_editor.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "平台团队的值班升级找谁？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "星尘项目最晚什么时候要交付？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "智能客服能用哪几种语言答复？",
+     "expect": "decoy_zh.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "旗舰产品单节点能扛多少并发？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 5,
+     "final_rank": 3
+    },
+    {
+     "question": "QuantumLeap是哪个月上线的？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 2,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回这个检索功能预计多久能上线？",
+     "expect": "roadmap_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "日志分析平台的项目经理是谁？",
+     "expect": "decoy_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀和星尘两个项目哪个预算更高？",
+     "expect": [
+      "decoy_zh.txt",
+      "kb_sample.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
+     "expect": "roadmap_zh.txt",
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器和朱雀系统哪个先完成里程碑？",
+     "expect": [
+      "star_editor.txt",
+      "decoy_zh.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的年度维保费用是多少？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤项目的一期计划什么时候上线？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    }
+   ]
+  },
+  {
+   "mode": "structure",
+   "chunk_size": 500,
+   "chunks_per_doc": {
+    "kb_sample.txt": 2,
+    "decoy_zh.txt": 1,
+    "roadmap_zh.txt": 1,
+    "star_editor.txt": 1,
+    "scan_xuanhe.pdf": 2
+   },
+   "rrf": {
+    "hit@1": 0.846,
+    "hit@4": 1.0,
+    "MRR": 0.897,
+    "n": 26
+   },
+   "ce": {
+    "hit@1": 0.962,
+    "hit@4": 1.0,
+    "MRR": 0.981,
+    "n": 26
+   },
+   "by_category_ce": {
+    "adversarial": {
+     "hit@1": 0.75,
+     "hit@4": 1.0,
+     "MRR": 0.875,
+     "n": 4
+    },
+    "direct": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 11
+    },
+    "multihop": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "ocr": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "paraphrase": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 5
+    }
+   },
+   "rows": [
+    {
+     "question": "朱雀系统的采购预算是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀系统单节点支持多少并发用户？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "王志刚担任什么角色？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "客服机器人小鹤的响应时间是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "产品路线图里第三季度的目标是什么？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回的负责人是谁？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "检索延迟要降到多少毫秒以内？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "What is NovaTech's flagship product?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "When was QuantumLeap launched?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器支持多少人同时在线协作？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器内测版什么时候发布、谁负责？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "公司旗舰产品是什么时候发布的？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 4,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器最多能几个人一起编辑？",
+     "expect": "star_editor.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "平台团队的值班升级找谁？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "星尘项目最晚什么时候要交付？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "智能客服能用哪几种语言答复？",
+     "expect": "decoy_zh.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "旗舰产品单节点能扛多少并发？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 4,
+     "final_rank": 2
+    },
+    {
+     "question": "QuantumLeap是哪个月上线的？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 2,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回这个检索功能预计多久能上线？",
+     "expect": "roadmap_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "日志分析平台的项目经理是谁？",
+     "expect": "decoy_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀和星尘两个项目哪个预算更高？",
+     "expect": [
+      "decoy_zh.txt",
+      "kb_sample.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
+     "expect": "roadmap_zh.txt",
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器和朱雀系统哪个先完成里程碑？",
+     "expect": [
+      "star_editor.txt",
+      "decoy_zh.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的年度维保费用是多少？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤项目的一期计划什么时候上线？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    }
+   ]
+  },
+  {
+   "mode": "structure",
+   "chunk_size": 1000,
+   "chunks_per_doc": {
+    "kb_sample.txt": 1,
+    "decoy_zh.txt": 1,
+    "roadmap_zh.txt": 1,
+    "star_editor.txt": 1,
+    "scan_xuanhe.pdf": 2
+   },
+   "rrf": {
+    "hit@1": 0.846,
+    "hit@4": 0.962,
+    "MRR": 0.899,
+    "n": 26
+   },
+   "ce": {
+    "hit@1": 0.923,
+    "hit@4": 1.0,
+    "MRR": 0.955,
+    "n": 26
+   },
+   "by_category_ce": {
+    "adversarial": {
+     "hit@1": 0.75,
+     "hit@4": 1.0,
+     "MRR": 0.833,
+     "n": 4
+    },
+    "direct": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 11
+    },
+    "multihop": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "ocr": {
+     "hit@1": 1.0,
+     "hit@4": 1.0,
+     "MRR": 1.0,
+     "n": 3
+    },
+    "paraphrase": {
+     "hit@1": 0.8,
+     "hit@4": 1.0,
+     "MRR": 0.9,
+     "n": 5
+    }
+   },
+   "rows": [
+    {
+     "question": "朱雀系统的采购预算是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀系统单节点支持多少并发用户？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "王志刚担任什么角色？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "客服机器人小鹤的响应时间是多少？",
+     "expect": "decoy_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "产品路线图里第三季度的目标是什么？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回的负责人是谁？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "检索延迟要降到多少毫秒以内？",
+     "expect": "roadmap_zh.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "What is NovaTech's flagship product?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "When was QuantumLeap launched?",
+     "expect": "kb_sample.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器支持多少人同时在线协作？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器内测版什么时候发布、谁负责？",
+     "expect": "star_editor.txt",
+     "category": "direct",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "公司旗舰产品是什么时候发布的？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 2,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器最多能几个人一起编辑？",
+     "expect": "star_editor.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "平台团队的值班升级找谁？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 3,
+     "final_rank": 2
+    },
+    {
+     "question": "星尘项目最晚什么时候要交付？",
+     "expect": "kb_sample.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "智能客服能用哪几种语言答复？",
+     "expect": "decoy_zh.txt",
+     "category": "paraphrase",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "旗舰产品单节点能扛多少并发？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 5,
+     "final_rank": 3
+    },
+    {
+     "question": "QuantumLeap是哪个月上线的？",
+     "expect": "kb_sample.txt",
+     "category": "adversarial",
+     "rrf_rank": 3,
+     "final_rank": 1
+    },
+    {
+     "question": "混合召回这个检索功能预计多久能上线？",
+     "expect": "roadmap_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "日志分析平台的项目经理是谁？",
+     "expect": "decoy_zh.txt",
+     "category": "adversarial",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "朱雀和星尘两个项目哪个预算更高？",
+     "expect": [
+      "decoy_zh.txt",
+      "kb_sample.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
+     "expect": "roadmap_zh.txt",
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "星辰编辑器和朱雀系统哪个先完成里程碑？",
+     "expect": [
+      "star_editor.txt",
+      "decoy_zh.txt"
+     ],
+     "category": "multihop",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的年度维保费用是多少？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤项目的一期计划什么时候上线？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    },
+    {
+     "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
+     "expect": "scan_xuanhe.pdf",
+     "category": "ocr",
+     "rrf_rank": 1,
+     "final_rank": 1
+    }
+   ]
+  }
+ ]
+}
