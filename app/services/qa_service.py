@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 from app.config import settings
 from app.services.bm25_index import bm25_index
+from app.services.memory_service import memory_service
 from app.services.vector_store import vector_store
 
 logger = logging.getLogger(__name__)
@@ -129,6 +130,10 @@ class QAService:
         _step("memory", t0, session_id=sid,
               total_messages=len(self.sessions[sid]["messages"]),
               store=self._store_file)
+
+        # L4：后台抽取长期事实，不阻塞响应
+        if settings.LONGTERM_MEMORY:
+            memory_service.spawn_extraction(question, answer, sid)
 
         trace.append({"step": "total",
                       "ms": round((time.perf_counter() - t_total) * 1000, 1),
@@ -298,7 +303,9 @@ class QAService:
                 base_url=settings.OPENAI_API_BASE,
             )
 
-            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            messages = [{"role": "system", "content": SYSTEM_PROMPT
+                         + (memory_service.context_block(question)
+                            if settings.LONGTERM_MEMORY else "")}]
             n_history = 0
             if use_history and session_id and session_id in self.sessions:
                 for msg in self.sessions[session_id]["messages"][-HISTORY_ROUNDS:]:

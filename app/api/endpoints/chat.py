@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import ChatMessage, ChatSession, QueryRequest, QueryResponse
 from app.services.agent_service import agent_service
+from app.services.memory_service import memory_service
 from app.services.qa_service import qa_service
 from app.services.vector_store import vector_store
 
@@ -25,6 +26,27 @@ async def agent_query(request: QueryRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Agent 处理失败：{str(e)}")
+
+
+@router.get("/memories", summary="长期记忆列表")
+async def list_memories():
+    """L4 跨会话事实库"""
+    return {"count": len(memory_service.list_facts()), "facts": memory_service.list_facts()}
+
+
+@router.post("/memories", summary="手动添加长期记忆")
+async def add_memory(fact: str):
+    item = memory_service.add_fact(fact, source="manual")
+    if not item:
+        raise HTTPException(status_code=400, detail="事实为空或已存在")
+    return item
+
+
+@router.delete("/memories/{fact_id}", summary="删除一条长期记忆")
+async def delete_memory(fact_id: str):
+    if memory_service.delete_fact(fact_id):
+        return {"message": "已删除", "id": fact_id}
+    raise HTTPException(status_code=404, detail="记忆不存在")
 
 
 @router.post("/query", response_model=QueryResponse, summary="智能问答")

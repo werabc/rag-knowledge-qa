@@ -73,6 +73,14 @@ details summary{cursor:pointer;color:var(--dim);font-size:12px}
   </section>
 
   <section id="tab-mem" style="display:none">
+    <div class="card">
+      <h4 style="margin:4px 0">长期记忆（跨会话事实库 L4）</h4>
+      <div class="row">
+        <input id="newfact" placeholder="手动添加一条事实，如：用户是王总，偏好表格回答">
+        <button class="act" style="flex:none" onclick="addFact()">添加</button>
+      </div>
+      <div id="factlist"></div>
+    </div>
     <div class="grid">
       <div class="card" style="padding:0;overflow:auto;max-height:70vh"><div id="sellist"></div></div>
       <div class="card" id="selview"><span class="dim">选择左侧会话查看消息与全链路 trace</span></div>
@@ -102,7 +110,7 @@ const toast=m=>{const t=document.createElement('div');t.className='toast';t.text
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
   ['kb','mem','dbg'].forEach(t=>$('#tab-'+t).style.display=t===b.dataset.tab?'':'none');
-  if(b.dataset.tab==='mem')loadSessions();
+  if(b.dataset.tab==='mem'){loadSessions();loadFacts();}
 });
 
 async function stats(){
@@ -211,6 +219,20 @@ async function runQuery(){
     r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
   stats();
 }
+async function loadFacts(){
+  try{const m=await api('/api/chat/memories');
+    $('#factlist').innerHTML=m.count?m.facts.map(f=>
+      `<div class="row" style="margin:2px 0"><span style="flex:1">🧠 ${esc(f.fact)} <span class="dim">(${esc(f.source)} ${esc(f.created_at.slice(5,16))})</span></span>
+       <button class="act" style="flex:none;padding:2px 8px" onclick="delFact('${f.id}')">删</button></div>`).join('')
+      :'<span class="dim">暂无事实。问答后系统会自动抽取，也可手动添加。</span>';
+  }catch(e){$('#factlist').innerHTML='<span class="dim">'+esc(e.message)+'</span>';}
+}
+async function addFact(){
+  const v=$('#newfact').value.trim();if(!v)return toast('输入事实');
+  await api('/api/chat/memories?fact='+encodeURIComponent(v),{method:'POST'});
+  $('#newfact').value='';toast('已添加');loadFacts();
+}
+async function delFact(id){await api('/api/chat/memories/'+id,{method:'DELETE'});loadFacts();}
 loadDocs();stats();
 </script>
 </body>

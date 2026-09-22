@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     LLM_RERANK: bool = True      # LLM listwise 重排（融合召回后、上下文前）
     RERANK_CANDIDATES: int = 8   # 召回池大小=重排输入条数
     AGENT_MAX_STEPS: int = 5     # L3 Agent ReAct 最大步数
+    LONGTERM_MEMORY: bool = True  # L4 跨会话长期记忆（事实抽取+注入）
 
     # FastAPI配置
     APP_HOST: str = "0.0.0.0"
