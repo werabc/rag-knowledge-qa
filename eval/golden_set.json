@@ -1,5 +1,5 @@
 {
-  "description": "检索/回答质量金标集。expect=应排第一的文档（列表=任一命中即算，用于多跳）；expect=null 表示知识库无法回答、期望模型拒答。类别：direct 直查 / paraphrase 同义改写 / adversarial 对抗（跨文档近似句抢位）/ multihop 多跳 / ocr 扫描件OCR命中 / unanswerable 不可回答。",
+  "description": "检索/回答质量金标集。expect=应排第一的文档（列表=任一命中即算，用于多跳）；expect=null 表示知识库无法回答、期望模型拒答。类别：direct 直查 / paraphrase 同义改写 / adversarial 对抗（跨文档近似句抢位）/ multihop 多跳 / ocr 扫描件OCR命中 / unanswerable 不可回答。带 turns 的为多轮脚本题：前几轮在同一 session 内先问，末轮（带指代/省略）才计分。",
   "cases": [
     {"question": "朱雀系统的采购预算是多少？", "expect": "decoy_zh.txt", "category": "direct"},
     {"question": "朱雀系统单节点支持多少并发用户？", "expect": "decoy_zh.txt", "category": "direct"},
@@ -31,6 +31,17 @@
     {"question": "玄鹤平台的年度维保费用是多少？", "expect": "scan_xuanhe.pdf", "category": "ocr"},
     {"question": "玄鹤项目的一期计划什么时候上线？", "expect": "scan_xuanhe.pdf", "category": "ocr"},
     {"question": "玄鹤平台的推理节点规模和总负责人分别是什么？", "expect": "scan_xuanhe.pdf", "category": "ocr"},
+
+    {"turns": ["星尘项目的预算是多少？", "它的负责人是谁？"], "expect": "kb_sample.txt", "category": "multi_turn"},
+    {"turns": ["NovaTech的旗舰产品是什么？", "它是什么时候上线的？"], "expect": "kb_sample.txt", "category": "multi_turn"},
+    {"turns": ["朱雀系统是什么产品？", "他们家的项目经理叫什么？"], "expect": "decoy_zh.txt", "category": "multi_turn"},
+    {"turns": ["第四季度要上线什么功能？", "那个功能的负责人是谁？"], "expect": "roadmap_zh.txt", "category": "multi_turn"},
+    {"turns": ["QuantumLeap单节点能支持多少并发用户？", "集群呢？"], "expect": "kb_sample.txt", "category": "multi_turn"},
+    {"turns": ["星辰编辑器最多支持多少人同时在线？", "它的负责人是谁？"], "expect": "star_editor.txt", "category": "multi_turn"},
+    {"turns": ["朱雀系统计划什么时候上线？", "那星尘项目的交付截止日期呢？"], "expect": "kb_sample.txt", "category": "multi_turn"},
+    {"turns": ["客服机器人小鹤的响应时间是多少？", "它支持哪些语言？"], "expect": "decoy_zh.txt", "category": "multi_turn"},
+    {"turns": ["星尘项目的预算是多少？", "它的负责人毕业于哪所大学？"], "expect": null, "category": "multi_turn"},
+    {"turns": ["NovaTech的旗舰产品是什么？", "这家公司去年的营收是多少？"], "expect": null, "category": "multi_turn"},
 
     {"question": "公司CEO毕业于哪所大学？", "expect": null, "category": "unanswerable"},
     {"question": "本季度的销售额是多少？", "expect": null, "category": "unanswerable"},

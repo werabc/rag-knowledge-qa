@@ -1,10 +1,10 @@
 # 功能文档 — RAG 知识库问答系统
 
-> 版本：v1.3 · 更新日期：2026-09-22 · 对应提交：P1 本地重排 `3033f51` / P2 结构分块（本次）
+> 版本：v1.3 · 更新日期：2026-09-22 · 对应提交：P1 本地重排 `3033f51` / P2 结构分块 `48562ac` / P3 多轮金标+消融（本次）
 
 ## 1. 系统概览
 
-本地部署的检索增强问答系统：上传文档（含无文本层的中文扫描件，自动 OCR）→ 结构优先切块（标题/空行分节段，PDF 带页码元数据）→ 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ 重排（默认本地 cross-encoder）→ 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 29 条六类金标（含对抗/多跳/扫描件OCR/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
+本地部署的检索增强问答系统：上传文档（含无文本层的中文扫描件，自动 OCR）→ 结构优先切块（标题/空行分节段，PDF 带页码元数据）→ 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ 重排（默认本地 cross-encoder）→ 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 39 条七类金标（含对抗/多跳/扫描件OCR/多轮对话/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
 
 Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-L5 全部落地。
 
@@ -29,7 +29,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
                         kb_search/kb_stats/         ├ 答后异步抽取事实 → longterm.json
                         session_history 工具        └ 按词重叠召回
 
-                        评估(L5)：eval/golden_set.json 29条六类金标(含扫描件OCR)
+                        评估(L5)：eval/golden_set.json 39条七类金标(含扫描件OCR/多轮)
                         scripts/evaluate_retrieval.py → hit@1/hit@4/MRR
                         双通道报告(仅RRF vs RRF+重排) → eval/report.json
                                │
@@ -137,7 +137,7 @@ D:\rag\
 ## 7. 关键机制
 
 ### 查询改写（指代消解）
-带会话历史的追问先经 LLM 改写成自包含查询再检索（「那它的上线时间呢？」→「朱雀系统的上线时间和并发规格是什么？」）。首轮/关历史/未配 LLM 时跳过；改写失败用原问题。
+带会话历史的追问先经 LLM 改写成自包含查询再检索（「那它的上线时间呢？」→「朱雀系统的上线时间和并发规格是什么？」）。首轮/关历史/未配 LLM 时跳过；改写失败用原问题。P3 消融（`QUERY_REWRITE` 开/关各跑全量金标）：multi_turn 类 hit@1 1.0→0.5、MRR 1.0→0.688（hit@4 均 1.0，掉的是位次不是有无）；「集群呢？」「那个功能的负责人是谁？」等裸指代关掉改写后从第 1 掉到 2~4 名，改写实测 10/10 正确消解（明细在 `eval/report_rewrite_on/off.json`）。
 
 ### 重排（`RERANK_MODE` 三通道）
 RRF 融合取召回池 8 条后进入重排，截取 top4 进上下文。默认 `ce`：本地 cross-encoder（`bge-reranker-base`，sentence-transformers CPU 推理，懒加载单例，`asyncio.to_thread` 避免阻塞事件循环），对每对 (问题, 候选) 打相关度分排序，模型加载失败自动回退 RRF 顺序（trace 标 `ce_fallback`）。`llm`：LLM listwise 重排作对照——对召回池只输出部分编号做容错（已列出的置顶、其余按 RRF 原序补齐），解析失败沿用 RRF 顺序。`off`：直接按 RRF 截断。ce 通道实测：单次打分 ~1.7s（对比 LLM 往返 3~11s），把向量+BM25 都排错的文档从第 4 顶到第 1。
@@ -157,10 +157,10 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 ### 长期记忆（L4）
 每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/v1/chat/memories` + 面板卡片）。
 
-### 检索评估（L5/G3）
-`eval/golden_set.json`：**29 条**金标，六类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `ocr` 扫描件 OCR 命中：期望检索到 scan_xuanhe.pdf(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
+### 检索评估（L5/G3/P3）
+`eval/golden_set.json`：**39 条**金标，七类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `ocr` 扫描件 OCR 命中：期望检索到 scan_xuanhe.pdf(3) / `multi_turn` 多轮对话(10，其中 2 条会话内不可回答) / `unanswerable` 不可回答：期望拒答(3)。多轮题带 `turns` 脚本：前几轮在同一新 session 内先问（建立指代对象），末轮（「集群呢？」「它的负责人是谁？」）才计分；`evaluate_retrieval.py` 自动串跑 session 并把改写模式/改写结果记进逐题明细。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
 
-**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`RERANK_MODE=off` 重启后 strict 点名 `with_rerank.hit@1`、`adversarial` 等三项拦截；恢复配置后 strict 通过。当前基线（P2 后）：重排通道 hit@1 0.962 / hit@4 1.0 / MRR 0.974、仅 RRF hit@1 0.846 / MRR 0.905、拒答 1.0；paraphrase 类经结构分块已达 1.0，adversarial 0.75 为 ce 通道跨语言抢位边界（见 §9）。
+**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`RERANK_MODE=off` 重启后 strict 点名 `with_rerank.hit@1`、`adversarial` 等三项拦截；恢复配置后 strict 通过。当前基线（P3 后，39 题）：重排通道 hit@1 0.971 / hit@4 1.0 / MRR 0.98、仅 RRF hit@1 0.824 / MRR 0.893、拒答 1.0；multi_turn 类 hit@1/hit@4/MRR 全 1.0，改写开/关两份报告留存 `eval/report_rewrite_on.json` / `report_rewrite_off.json`；adversarial 0.75 为 ce 通道跨语言抢位边界（见 §9）。
 
 ### PDF 逐页提取 + 扫描件 OCR（G4）
 PyMuPDF 逐页 `get_text` 并按页切块（跨页不混块，页码进元数据）。页文本层 <20 字符且含图片 → 判为扫描页：`page.get_pixmap(dpi=200)` 转 PNG 交 rapidocr（onnxruntime，懒加载单例）识别中文。每块明文以 `{text, page_num, ocr}` 落 `chunks/*.json` 并写进 chroma metadata；上下文资料头标注「文件名，第N页（扫描件OCR）」，面板来源徽标与 `/chunks` 端点同步展示。实测零文本层两页扫描 PDF（`scripts/make_scan_pdf.py` 生成）：上传 28s（含 OCR 模型冷加载），问答「年度维保费+负责人」正确答出 90 万元/陈立，两条来源均带 页码+OCR+被引用 徽标。
@@ -215,7 +215,7 @@ trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Ag
 
 - **`RERANK_MODE=llm` 时重排多一次 LLM 往返**：LongCat 实测单次 3~11s，是端到端最大耗时项；默认 `ce` 通道本地打分 ~1.7s，无此问题（首次查询另含 ~26s 模型冷加载）。`QUERY_REWRITE` 的改写也是一次 LLM 往返。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
 - **ce 通道不吃跨文档/跨语言推理**：cross-encoder 逐对 (问题,片段) 打分，看不到片段间关系。实测「旗舰产品单节点能扛多少并发？」（期望 kb_sample 英文片段，decoy 是中文"单节点并发"近似句）：中文 decoy 表面词面分 0.34，英文目标片段仅 0.009 排第 3——LLM listwise 通道曾靠跨文档推断「旗舰产品=QuantumLeap」排第 1。该题最终答案仍正确（目标片段进了上下文且被引用），仅位次回退；为此 `adversarial.hit@1` 基线 1.0→0.75（整体 hit@4 1.0、MRR 0.955 均超旧基线），属换通道的刻意取舍。
-- **评估仍在 tiny 语料上**：29 条六类金标（含对抗/多跳/扫描件OCR/不可回答）已比 v1.0 的 11 条有区分度（paraphrase 类 hit@1 仅 0.6），但 5 文档池子仍小；拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动。
+- **评估仍在 tiny 语料上**：39 条七类金标（含对抗/多跳/扫描件OCR/多轮/不可回答）已比 v1.0 的 11 条有区分度，真实语料规模下的退化见下条；5 文档金标池子仍小。拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动（P3 实测：消融跑出一句「无法确定…」真实拒答因词典缺词被记为答✗，已补词）。
 - **真实语料深测（2026-09，7 书 3618 块 28 题）**：hit@1 0.75 / hit@4 0.92 / 拒答 4/4，无幻觉无崩溃，4 并发 p50 15.7s。三类退化定位：① 目录/封面等高词面命中但无事实的前言块挤占召回池（《潜规则》纯目录块进前 8，含"1983年《中国农民报》"的自序块反而没进）；② 同书多版本（血酬定律 2003/2009）近重复双占位，放大 ce 跨文档干扰；③ 生成层算术不可靠（1768 算成乾隆三十四年，实为三十三年；检索引用全对）。脚本与题目在 `deep_test/`（语料不入库），结果 `deep_test/results.json`。
 - **BM25 全内存**：启动时从台账+分块明文重建，语料规模适合万级分块以内；检索为线性扫描词频表，数据量大需换倒排跳过。
 - **reindex 是破坏性重建**：先删集合再重灌，期间检索结果不完整；分块明文丢失的文档无法恢复（原始文件上传后即删，只保留明文）。

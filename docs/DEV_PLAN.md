@@ -1,5 +1,7 @@
 # 开发计划 v1.3（2026-09-22 定）
 
+> 进度（2026-09-22 晚）：P1 ✅ / P2 ✅ / P3 ✅；另完成真实语料深测（7 书 3618 块，结论进 FEATURES §9）。以下"现状盘点"为定稿时快照。
+
 ## 现状盘点（全部可复核，数字来自 eval/baseline.json 与实测）
 
 - 链路：上传(PyMuPDF逐页/扫描页rapidocr) → Chroma(bge-small-zh) + jieba BM25 双路 → RRF(k=60,池8) → LLM listwise 重排 top4 → 生成 → 引用核验 → 会话/长期记忆。
@@ -16,20 +18,23 @@
 5. 语料 5 个文档，所有性能结论在 10² 数量级之外没有证据（BM25 全内存遍历、Chroma 单集合）。
 6. 无 CI；契约测试与门禁只能靠手跑。
 
-## P1 本地 cross-encoder 重排（先打延迟与评测独立性）
+## P1 本地 cross-encoder 重排 ✅（`3033f51`）
 
 - 方案：`bge-reranker-base`（onnxruntime 已有，CPU 可跑）作为新通道，配置 `RERANK_MODE = llm | ce`，默认 ce；LLM 通道保留作对照。
 - 验收：`--strict` 全绿（rerank 指标不低于基线）；单查询端到端 < 15s（同题同语料，实测贴数）；`scripts/compare_rerank.py` 输出 llm/ce 两通道每题位次对比。
+- 实测：热路径端到端 5.8s（原 30~50s）；重排 hit@1 0.923→0.962、hit@4 1.0；adversarial 0.75 为 ce 跨语言边界（见 FEATURES §9）。
 
-## P2 分块策略实验（打 paraphrase 0.6）
+## P2 分块策略实验 ✅（`48562ac`）
 
 - 方案：按标题/空行结构优先切（Markdown/文本），块大小做成可配；预留 small-to-big：检索用小块、喂生成用其父段。
 - 验收：金标其余类不掉，paraphrase 类 0.6 → ≥0.8，`--update-baseline` 固化并在提交说明写实验数据；trace 面板里能看到切块边界对命中的影响（拿值班/星尘那两个失败题做前后对照）。
+- 实测：structure@300 下 paraphrase hit@1 0.6→1.0，重排 hit@1 0.923→0.962（实验明细 eval/chunk_experiment.json）。
 
-## P3 多轮对话评测（证明查询改写不是摆设）
+## P3 多轮对话评测 ✅（本次提交）
 
 - 方案：金标新增"对话类"——每题是一段多轮脚本（先陈述背景，再问带指代的追问），期望经改写后命中正确文档；`evaluate_retrieval.py` 支持 session 模式（use_history=true 串跑）。
 - 验收：新增 ≥6 组多轮题，拒答类不受扰动的同时 multi_turn 类 hit@4 ≥0.8；给出"关掉改写"的 ablation 数字（预期显著掉分，否则说明改写本身无效，结论如实写）。
+- 实测：10 组多轮（8 可答 + 2 会话内拒答），改写开 multi_turn hit@1/hit@4/MRR = 1.0/1.0/1.0、拒答 5/5；改写关 hit@1 0.5、MRR 0.688（hit@4 仍 1.0，裸指代掉位次不掉命中）；改写 10/10 正确消解。金标扩至 39 题，基线随之刷新（重排 0.971/1.0/0.98）。
 
 ## P4 生成质量量化（faithfulness）
 

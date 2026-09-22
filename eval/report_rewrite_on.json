@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-22 23:09:16",
+ "generated_at": "2026-09-22 23:02:21",
  "cases": 39,
  "answerable": 34,
  "unanswerable": 5,
@@ -60,7 +60,7 @@
    "expect": "decoy_zh.txt",
    "category": "direct",
    "answer": "朱雀系统的采购预算是 **870 万元**。\n\n引用资料：[资料1]",
-   "seconds": 5.1,
+   "seconds": 4.3,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -70,7 +70,7 @@
    "expect": "decoy_zh.txt",
    "category": "direct",
    "answer": "根据资料1，朱雀系统单节点支持 **32 位并发用户**。\n\n引用资料：[资料1]",
-   "seconds": 5.1,
+   "seconds": 4.8,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -80,7 +80,7 @@
    "expect": "decoy_zh.txt",
    "category": "direct",
    "answer": "根据提供的参考资料，王志刚担任**朱雀系统的项目经理**。\n\n[资料1]",
-   "seconds": 6.3,
+   "seconds": 4.7,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -89,8 +89,8 @@
    "question": "客服机器人小鹤的响应时间是多少？",
    "expect": "decoy_zh.txt",
    "category": "direct",
-   "answer": "客服机器人小鹤的响应时间为1.2秒。\n\n引用资料：[资料1]",
-   "seconds": 5.0,
+   "answer": "客服机器人小鹤的响应时间为 1.2 秒。\n\n引用资料：[资料1]",
+   "seconds": 3.6,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -100,7 +100,7 @@
    "expect": "roadmap_zh.txt",
    "category": "direct",
    "answer": "根据产品路线图，2026年第三季度的目标是将知识库检索延迟降低到 300 毫秒以内。\n\n引用资料：[资料1]",
-   "seconds": 5.0,
+   "seconds": 4.3,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -109,8 +109,8 @@
    "question": "混合召回的负责人是谁？",
    "expect": "roadmap_zh.txt",
    "category": "direct",
-   "answer": "混合召回的负责人是**赵敏**。\n\n根据产品路线图，第四季度目标是上线混合召回（向量 + BM25），负责人为赵敏。[资料1]",
-   "seconds": 6.4,
+   "answer": "混合召回（向量 + BM25）的负责人是**赵敏**。\n\n根据产品路线图，混合召回是第四季度的目标，由赵敏负责。[资料1]",
+   "seconds": 10.6,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -119,8 +119,8 @@
    "question": "检索延迟要降到多少毫秒以内？",
    "expect": "roadmap_zh.txt",
    "category": "direct",
-   "answer": "检索延迟要降到 **300 毫秒以内**。\n\n这是第三季度的知识库检索延迟目标。\n\n引用资料：[资料1]",
-   "seconds": 6.6,
+   "answer": "检索延迟要降到 **300 毫秒以内**。\n\n根据产品路线图，第三季度的目标是将知识库检索延迟降低到 300 毫秒以内。[资料1]",
+   "seconds": 6.0,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -129,8 +129,8 @@
    "question": "What is NovaTech's flagship product?",
    "expect": "kb_sample.txt",
    "category": "direct",
-   "answer": "NovaTech's flagship product is **QuantumLeap**, launched on March 3, 2025. [资料1]",
-   "seconds": 6.2,
+   "answer": "NovaTech's flagship product is QuantumLeap, which was launched on March 3, 2025. [资料1]",
+   "seconds": 3.8,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -139,8 +139,8 @@
    "question": "When was QuantumLeap launched?",
    "expect": "kb_sample.txt",
    "category": "direct",
-   "answer": "QuantumLeap was launched on March 3, 2025. [资料1]",
-   "seconds": 4.7,
+   "answer": "QuantumLeap was launched on March 3, 2025.\n\n[资料1]",
+   "seconds": 5.3,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -149,8 +149,8 @@
    "question": "星辰编辑器支持多少人同时在线协作？",
    "expect": "star_editor.txt",
    "category": "direct",
-   "answer": "根据资料1，星辰编辑器支持实时协作，最大同时在线 **50 人**。\n\n引用：[资料1]",
-   "seconds": 5.8,
+   "answer": "根据参考资料，星辰编辑器支持实时协作，**最大同时在线 50 人**。\n\n引用资料：[资料1]",
+   "seconds": 5.5,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -159,8 +159,8 @@
    "question": "星辰编辑器内测版什么时候发布、谁负责？",
    "expect": "star_editor.txt",
    "category": "direct",
-   "answer": "根据提供的资料，星辰编辑器内测版于 **2026年8月** 发布，负责人是 **林芳**。\n\n**引用资料：** [资料1]",
-   "seconds": 6.8,
+   "answer": "根据提供的资料，星辰编辑器内测版于 **2026年8月** 发布，负责人是 **林芳**。\n\n参考资料：[资料1]",
+   "seconds": 4.9,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -169,8 +169,8 @@
    "question": "公司旗舰产品是什么时候发布的？",
    "expect": "kb_sample.txt",
    "category": "paraphrase",
-   "answer": "公司旗舰产品 QuantumLeap 于 **2025 年 3 月 3 日** 发布。\n\n引用资料：[资料1]",
-   "seconds": 6.1,
+   "answer": "根据资料，公司旗舰产品 QuantumLeap 于 **2025 年 3 月 3 日** 发布。\n\n引用资料：[资料1]",
+   "seconds": 5.7,
    "rrf_rank": 2,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -179,8 +179,8 @@
    "question": "星辰编辑器最多能几个人一起编辑？",
    "expect": "star_editor.txt",
    "category": "paraphrase",
-   "answer": "根据资料1，星辰编辑器支持实时协作，最大同时在线 **50 人**。\n\n引用资料：[资料1]",
-   "seconds": 5.2,
+   "answer": "根据资料1，星辰编辑器最多支持 **50人** 同时在线编辑。\n\n引用资料：[资料1]",
+   "seconds": 3.1,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -190,7 +190,7 @@
    "expect": "kb_sample.txt",
    "category": "paraphrase",
    "answer": "平台团队的值班升级联系人是 **SRE lead**，可以通过 **#sre-oncall 频道**联系。另外，平台团队的值班轮换遵循北京时间。\n\n（引用：资料1）\n\n（引用：资料1、资料2、资料3、资料4）",
-   "seconds": 7.6,
+   "seconds": 4.5,
    "rrf_rank": 3,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -199,8 +199,8 @@
    "question": "星尘项目最晚什么时候要交付？",
    "expect": "kb_sample.txt",
    "category": "paraphrase",
-   "answer": "星尘项目的最晚交付截止日期是 **2026 年 11 月 30 日**。\n\n根据资料，星尘项目预算为 420 万元，负责人是李文博，交付截止日期为 2026 年 11 月 30 日。\n\n（引用：资料1）\n\n（引用：资料1、资料2、资料3、资料4）",
-   "seconds": 6.3,
+   "answer": "根据资料，星尘项目的交付截止日期是 **2026 年 11 月 30 日**，即最晚需在此日期前完成交付。该项目预算为 420 万元，负责人是李文博。\n\n（引用：资料1）\n\n（引用：资料1、资料2、资料3、资料4）",
+   "seconds": 4.5,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -209,8 +209,8 @@
    "question": "智能客服能用哪几种语言答复？",
    "expect": "decoy_zh.txt",
    "category": "paraphrase",
-   "answer": "根据参考资料，智能客服机器人“小鹤”支持**中英文双语**答复。\n\n引用资料：[资料1]",
-   "seconds": 5.7,
+   "answer": "智能客服\"小鹤\"支持**中文**和**英文**两种语言进行答复。\n\n引用资料：[资料1]",
+   "seconds": 4.3,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -219,8 +219,8 @@
    "question": "旗舰产品单节点能扛多少并发？",
    "expect": "kb_sample.txt",
    "category": "adversarial",
-   "answer": "根据提供的资料，NovaTech 的旗舰产品 QuantumLeap 单节点支持 128 个并发用户。\n\n[资料3]",
-   "seconds": 9.5,
+   "answer": "根据资料3，NovaTech 旗舰产品 QuantumLeap 单节点支持最多 **128 个并发用户**。\n\n引用资料：[资料3]",
+   "seconds": 8.7,
    "rrf_rank": 5,
    "final_rank": 3,
    "rerank_mode": "ce"
@@ -229,8 +229,8 @@
    "question": "QuantumLeap是哪个月上线的？",
    "expect": "kb_sample.txt",
    "category": "adversarial",
-   "answer": "QuantumLeap 于 **3 月**上线（2025 年 3 月 3 日）。\n\n引用资料：[资料1]",
-   "seconds": 6.9,
+   "answer": "QuantumLeap是在3月上线的。\n\n引用资料：[资料1]",
+   "seconds": 4.8,
    "rrf_rank": 2,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -239,8 +239,8 @@
    "question": "混合召回这个检索功能预计多久能上线？",
    "expect": "roadmap_zh.txt",
    "category": "adversarial",
-   "answer": "根据产品路线图，混合召回（向量 + BM25）检索功能计划在**2026年第四季度**上线，该目标的负责人是赵敏。\n\n引用资料：[资料1]",
-   "seconds": 7.1,
+   "answer": "根据产品路线图，混合召回（向量 + BM25）检索功能预计在 **2026 年第四季度** 上线，负责人为赵敏。\n\n引用资料：[资料1]",
+   "seconds": 4.9,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -250,7 +250,7 @@
    "expect": "decoy_zh.txt",
    "category": "adversarial",
    "answer": "日志分析平台（朱雀系统）的项目经理是王志刚。\n\n（引用：资料1、资料2、资料3、资料4）",
-   "seconds": 4.4,
+   "seconds": 3.3,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -262,8 +262,8 @@
     "kb_sample.txt"
    ],
    "category": "multihop",
-   "answer": "根据资料：\n\n- **朱雀系统**的采购预算为 **870 万元**（资料2）\n- **星尘项目**的预算为 **420 万元**（资料1）\n\n因此，**朱雀系统的预算更高**，比星尘项目高出 450 万元。\n\n引用资料：[资料1]、[资料2]",
-   "seconds": 6.1,
+   "answer": "根据提供的资料：\n\n- **朱雀系统**的采购预算为 **870 万元**（资料2）\n- **星尘项目**的预算为 **420 万元**（资料1）\n\n因此，**朱雀系统的预算更高**，比星尘项目高出 450 万元。\n\n引用资料：[资料1]、[资料2]",
+   "seconds": 4.6,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -272,8 +272,8 @@
    "question": "第四季度要上线的检索功能，目标把延迟压到多少？",
    "expect": "roadmap_zh.txt",
    "category": "multihop",
-   "answer": "根据参考资料，第四季度计划上线混合召回（向量 + BM25）功能，但资料中没有明确说明该功能的具体延迟目标。第三季度的目标是将知识库检索延迟降低到300毫秒以内。[资料1]",
-   "seconds": 11.6,
+   "answer": "根据提供的参考资料，**没有明确说明**第四季度要上线的检索功能的具体延迟目标。\n\n资料1显示：\n- **第三季度目标**：将知识库检索延迟降低到 300 毫秒以内\n- **第四季度目标**：上线混合召回（向量 + BM25），负责人赵敏\n\n但资料中并未提及第四季度检索功能的延迟性能指标。\n\n[资料1]",
+   "seconds": 5.8,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -285,8 +285,8 @@
     "decoy_zh.txt"
    ],
    "category": "multihop",
-   "answer": "星辰编辑器先完成里程碑。\n\n根据提供的资料，星辰编辑器的内测版于2026年8月发布，而朱雀系统计划于2027年2月上线。因此，星辰编辑器的里程碑完成时间更早。\n\n引用资料：[资料1]、[资料2]",
-   "seconds": 10.0,
+   "answer": "根据提供的资料，星辰编辑器的里程碑（内测版发布）先于朱雀系统的里程碑（上线）完成。\n\n- 星辰编辑器的内测版于2026年8月发布（资料2）。\n- 朱雀系统计划于2027年2月上线（资料1）。\n\n因此，星辰编辑器的里程碑在2026年8月完成，而朱雀系统的里程碑在2027年2月完成，星辰编辑器更早。\n\n引用资料：[资料1]、[资料2]",
+   "seconds": 8.5,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -295,8 +295,8 @@
    "question": "玄鹤平台的年度维保费用是多少？",
    "expect": "scan_xuanhe.pdf",
    "category": "ocr",
-   "answer": "根据参考资料，玄鹤平台的年度维保费用为**90万元**。\n\n引用资料：[资料1]",
-   "seconds": 6.6,
+   "answer": "玄鹤平台的年度维保费用为**90万元**。\n\n参考资料：\n- [资料1] 玄鹤平台建设方案（续）：\"年度维保费用为90万元，2027年9月交付终验。\"",
+   "seconds": 4.4,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -306,7 +306,7 @@
    "expect": "scan_xuanhe.pdf",
    "category": "ocr",
    "answer": "根据参考资料，玄鹤项目一期计划于**2027年5月**上线试运行。\n\n引用资料：[资料1]",
-   "seconds": 6.6,
+   "seconds": 5.8,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -315,8 +315,8 @@
    "question": "玄鹤平台的推理节点规模和总负责人分别是什么？",
    "expect": "scan_xuanhe.pdf",
    "category": "ocr",
-   "answer": "根据提供的参考资料，玄鹤平台的总负责人是陈立。关于推理节点规模，资料中仅提到二期扩容300个推理节点，但未提及一期规模，因此总推理节点规模无法确定。\n\n引用资料：[资料1]、[资料2]",
-   "seconds": 14.2,
+   "answer": "根据提供的参考资料，玄鹤平台的总负责人是陈立（引用资料1）。关于推理节点规模，资料中提到二期扩容300个推理节点（引用资料2），但未明确说明平台总体的推理节点规模，因此无法提供完整的节点数量信息。\n\n引用资料编号：[资料1]、[资料2]",
+   "seconds": 12.5,
    "rrf_rank": 1,
    "final_rank": 1,
    "rerank_mode": "ce"
@@ -325,8 +325,8 @@
    "question": "它的负责人是谁？",
    "expect": "kb_sample.txt",
    "category": "multi_turn",
-   "answer": "根据提供的资料，星尘项目的负责人是李文博。\n\n引用资料：[资料1]",
-   "seconds": 14.7,
+   "answer": "根据您之前询问的上下文，\"它\"应该指的是**星尘项目**。\n\n星尘项目的负责人是 **李文博**。\n\n引用资料：[长期记忆]\n\n（引用：资料1、资料2、资料3、资料4）",
+   "seconds": 24.5,
    "rewrite": {
     "mode": "llm",
     "rewritten": "星尘项目的负责人是谁？"
@@ -339,8 +339,8 @@
    "question": "它是什么时候上线的？",
    "expect": "kb_sample.txt",
    "category": "multi_turn",
-   "answer": "QuantumLeap 于 **2025 年 3 月 3 日**发布上线。\n\n引用资料：[资料1]",
-   "seconds": 19.5,
+   "answer": "根据上下文，您询问的应该是 NovaTech 旗舰产品 QuantumLeap 的上线时间。\n\nQuantumLeap 于 **2025 年 3 月 3 日** 发布上线。\n\n引用资料：[资料1]",
+   "seconds": 20.3,
    "rewrite": {
     "mode": "llm",
     "rewritten": "QuantumLeap是什么时候上线的？"
@@ -353,8 +353,8 @@
    "question": "他们家的项目经理叫什么？",
    "expect": "decoy_zh.txt",
    "category": "multi_turn",
-   "answer": "他们家的项目经理叫王志刚。[资料1]",
-   "seconds": 31.8,
+   "answer": "他们家的项目经理叫**王志刚**。\n\n[资料1]",
+   "seconds": 14.3,
    "rewrite": {
     "mode": "llm",
     "rewritten": "朱雀系统的项目经理叫什么？"
@@ -367,8 +367,8 @@
    "question": "那个功能的负责人是谁？",
    "expect": "roadmap_zh.txt",
    "category": "multi_turn",
-   "answer": "根据对话上下文，您询问的应该是第四季度要上线的**混合召回（向量 + BM25）**功能的负责人。\n\n该功能的负责人是**赵敏**。\n\n引用资料：[资料1]",
-   "seconds": 21.4,
+   "answer": "混合召回（向量 + BM25）功能的负责人是赵敏。  \n引用资料：[资料1]",
+   "seconds": 22.9,
    "rewrite": {
     "mode": "llm",
     "rewritten": "混合召回（向量 + BM25）的负责人是谁？"
@@ -381,11 +381,11 @@
    "question": "集群呢？",
    "expect": "kb_sample.txt",
    "category": "multi_turn",
-   "answer": "根据资料1，QuantumLeap集群最多支持 **2048 个并发用户**。\n\n引用资料：[资料1]",
-   "seconds": 16.4,
+   "answer": "根据资料1，QuantumLeap集群支持最多 **2048** 个并发用户。\n\n引用资料：[资料1]",
+   "seconds": 18.5,
    "rewrite": {
     "mode": "llm",
-    "rewritten": "QuantumLeap集群模式能支持多少并发用户？"
+    "rewritten": "QuantumLeap集群能支持多少并发用户？"
    },
    "rrf_rank": 3,
    "final_rank": 1,
@@ -395,8 +395,8 @@
    "question": "它的负责人是谁？",
    "expect": "star_editor.txt",
    "category": "multi_turn",
-   "answer": "星辰编辑器的负责人是 **林芳**。\n\n[资料1]",
-   "seconds": 15.2,
+   "answer": "根据上下文，您应该是想问**星辰编辑器**的负责人。\n\n根据资料1，星辰编辑器的负责人是 **林芳**。\n\n引用资料：[资料1]",
+   "seconds": 17.4,
    "rewrite": {
     "mode": "llm",
     "rewritten": "星辰编辑器的负责人是谁？"
@@ -410,10 +410,10 @@
    "expect": "kb_sample.txt",
    "category": "multi_turn",
    "answer": "星尘项目的交付截止日期是 **2026 年 11 月 30 日**。\n\n引用资料：[资料1]",
-   "seconds": 22.0,
+   "seconds": 22.5,
    "rewrite": {
     "mode": "llm",
-    "rewritten": "星尘项目的交付截止日期"
+    "rewritten": "星尘项目的交付截止日期是什么时候？"
    },
    "rrf_rank": 1,
    "final_rank": 1,
@@ -423,8 +423,8 @@
    "question": "它支持哪些语言？",
    "expect": "decoy_zh.txt",
    "category": "multi_turn",
-   "answer": "客服机器人“小鹤”支持中英文双语。\n\n参考资料：[资料1]",
-   "seconds": 15.0,
+   "answer": "根据资料1，客服机器人\"小鹤\"支持 **中文和英文** 两种语言。\n\n[资料1]",
+   "seconds": 17.7,
    "rewrite": {
     "mode": "llm",
     "rewritten": "客服机器人小鹤支持哪些语言？"
@@ -437,8 +437,8 @@
    "question": "它的负责人毕业于哪所大学？",
    "expect": null,
    "category": "multi_turn",
-   "answer": "根据提供的参考资料，无法回答这个问题。\n\n星尘项目的负责人是李文博，但所有资料中都没有关于他毕业院校的信息，因此我不知道他毕业于哪所大学。\n\n引用资料：[资料1]（仅确认负责人为李文博，毕业院校信息资料中未提及）",
-   "seconds": 15.0,
+   "answer": "根据提供的参考资料，**无法回答这个问题**。\n\n资料中提到星尘项目的负责人是李文博，但所有参考资料中都没有关于李文博（或其他项目负责人）毕业院校的信息，因此我不知道他毕业于哪所大学。\n\n引用资料：[资料1]（仅确认负责人为李文博，未含毕业院校信息）",
+   "seconds": 19.2,
    "rewrite": {
     "mode": "llm",
     "rewritten": "星尘项目的负责人毕业于哪所大学？"
@@ -449,8 +449,8 @@
    "question": "这家公司去年的营收是多少？",
    "expect": null,
    "category": "multi_turn",
-   "answer": "抱歉，根据提供的参考资料，无法得知这家公司去年的营收情况。资料中未包含任何营收相关的信息。\n\n（引用：资料1、资料2、资料3、资料4）",
-   "seconds": 18.1,
+   "answer": "抱歉，根据提供的参考资料，我无法查到该公司去年的营收数据。\n\n【引用：资料1、资料2、资料3、资料4】\n\n（引用：资料1、资料2、资料3、资料4）",
+   "seconds": 16.3,
    "rewrite": {
     "mode": "llm",
     "rewritten": "NovaTech去年的营收是多少？"
@@ -461,24 +461,24 @@
    "question": "公司CEO毕业于哪所大学？",
    "expect": null,
    "category": "unanswerable",
-   "answer": "抱歉，根据提供的参考资料，我无法回答公司CEO毕业于哪所大学的问题。资料中未包含关于CEO教育背景的相关信息。\n\n（引用：资料1、资料2、资料3、资料4）",
-   "seconds": 5.1,
+   "answer": "抱歉，根据提供的参考资料和已知信息，我无法确定公司CEO毕业于哪所大学。资料中没有包含关于CEO教育背景的相关信息。\n\n（引用：资料1、资料2、资料3、资料4）",
+   "seconds": 7.0,
    "refused": true
   },
   {
    "question": "本季度的销售额是多少？",
    "expect": null,
    "category": "unanswerable",
-   "answer": "根据提供的参考资料，**无法回答**本季度的销售额是多少。\n\n资料中提到的财务信息仅限于：\n- 玄鹤平台总投资 560 万元（资料1）\n- 朱雀系统采购预算 870 万元（资料2）\n- 玄鹤平台年度维保费用 90 万元（资料3）\n\n这些均为项目投资或采购预算，并非销售额数据。\n\n**引用资料：** [资料1] [资料2] [资料3]",
-   "seconds": 13.0,
+   "answer": "根据您提供的参考资料，我没有找到关于“本季度销售额”的任何信息。资料中只涉及玄鹤平台和朱雀系统的建设方案、预算、上线时间、技术参数等内容，均未提及销售额数据。\n\n如果您需要查询销售额，建议联系财务部门或查阅相关业务报表。\n\n引用资料：[资料1][资料2][资料3][资料4]",
+   "seconds": 7.9,
    "refused": true
   },
   {
    "question": "竞对玄鲸科技的融资情况如何？",
    "expect": null,
    "category": "unanswerable",
-   "answer": "根据提供的参考资料，没有找到关于竞对玄鲸科技融资情况的信息。\n\n参考资料中涉及的内容包括：\n- 玄鹤平台建设方案（总投资560万元，陈立负责，2027年5月试运行）\n- NovaTech公司的QuantumLeap产品\n- 朱雀系统（采购预算870万元，王志刚负责）\n\n以上资料均未提及玄鲸科技的融资情况。如需了解该信息，请提供相关资料。\n\n引用资料：[资料1][资料2][资料3][资料4]",
-   "seconds": 9.4,
+   "answer": "根据您提供的四份参考资料，**没有找到关于竞对玄鲸科技融资情况的任何信息**。\n\n资料中涉及的内容包括：\n- **资料1、2**：玄鹤平台建设方案（总投资560万元，陈立负责，2027年5月试运行，二期扩容300个推理节点，年度维保90万元，2027年9月终验）\n- **资料3**：NovaTech公司旗舰产品QuantumLeap（2025年3月3日发布，单节点支持128并发用户，集群支持204",
+   "seconds": 11.7,
    "refused": true
   }
  ]

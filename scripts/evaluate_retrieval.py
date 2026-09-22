@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import time
+import uuid
 
 import requests
 
@@ -26,7 +27,7 @@ REPORT = os.path.join(HERE, "..", "eval", "report.json")
 BASELINE = os.path.join(HERE, "..", "eval", "baseline.json")
 
 REFUSAL_RE = re.compile(
-    r"(不知道|无法回答|无法得知|没有找到|未提及|无相关|不清楚|抱歉|未找到|资料中没有|未包含|未涉及|没有关于|没有.{0,8}信息)")
+    r"(不知道|无法回答|无法得知|无法确定|没有找到|未提及|无相关|不清楚|抱歉|未找到|资料中没有|未包含|未涉及|没有关于|没有.{0,8}信息)")
 
 
 def best_rank(names, expect):
@@ -58,27 +59,37 @@ def evaluate():
     for c in cases:
         t0 = time.perf_counter()
         # 单次问答含改写+重排+生成最多3次LLM往返，慢模型下可能超时：重试2次，每次上限300s
-        for attempt in range(3):
-            try:
-                r = requests.post(f"{BASE}/api/v1/chat/query", json={
-                    "question": c["question"], "use_history": False}, timeout=300)
-                r.raise_for_status()
-                break
-            except (requests.RequestException, OSError):
-                if attempt == 2:
-                    raise
-                time.sleep(3)
+        def post_query(payload):
+            for attempt in range(3):
+                try:
+                    r = requests.post(f"{BASE}/api/v1/chat/query", json=payload, timeout=300)
+                    r.raise_for_status()
+                    return r
+                except (requests.RequestException, OSError):
+                    if attempt == 2:
+                        raise
+                    time.sleep(3)
+
+        turns = c.get("turns") or [c["question"]]
+        sid = str(uuid.uuid4()) if len(turns) > 1 else None
+        for t in turns[:-1]:
+            post_query({"question": t, "session_id": sid, "use_history": True})
+        r = post_query({"question": turns[-1], "session_id": sid,
+                        "use_history": sid is not None})
         data = r.json()
         trace = {s["step"]: s for s in data["trace"]}
         rrf_order = [m["filename"] for m in trace["retrieval"]["detail"]["merged"]]
         final_order = [s["filename"] for s in data["sources"]]
         expect = c["expect"]
         row = {
-            "question": c["question"], "expect": expect,
+            "question": turns[-1], "expect": expect,
             "category": c.get("category", "direct"),
             "answer": data["answer"][:200],
             "seconds": round(time.perf_counter() - t0, 1),
         }
+        if sid:
+            rw = trace.get("query_rewrite", {}).get("detail", {})
+            row["rewrite"] = {"mode": rw.get("mode"), "rewritten": rw.get("rewritten")}
         if expect is None:
             row["refused"] = bool(REFUSAL_RE.search(data["answer"]))
             mark = "拒✓" if row["refused"] else "答✗"
@@ -88,7 +99,7 @@ def evaluate():
             row["rerank_mode"] = trace.get("rerank", {}).get("detail", {}).get("mode")
             mark = row["final_rank"] or "✗"
         rows.append(row)
-        print(f"  [{mark}] ({row['category']}) {c['question'][:30]}")
+        print(f"  [{mark}] ({row['category']}) {row['question'][:30]}")
 
     answerable = [x for x in rows if x["expect"] is not None]
     unanswerable = [x for x in rows if x["expect"] is None]

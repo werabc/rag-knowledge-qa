@@ -39,7 +39,7 @@ python run.py
 
 ```bash
 python scripts/api_contract_test.py               # 26 项端点×状态码契约矩阵
-python -X utf8 scripts/evaluate_retrieval.py      # 29 条六类金标：hit@k / MRR / 拒答正确率
+python -X utf8 scripts/evaluate_retrieval.py      # 39 条七类金标(含多轮)：hit@k / MRR / 拒答正确率
 python -X utf8 scripts/evaluate_retrieval.py --strict            # 回归门禁：任一核心指标低于 eval/baseline.json 则退出码非零
 python -X utf8 scripts/evaluate_retrieval.py --update-baseline   # 有意变更语料/配置后固化基线
 ```
