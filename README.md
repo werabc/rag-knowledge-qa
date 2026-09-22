@@ -1,6 +1,6 @@
 # RAG 知识库问答系统
 
-本地部署的中文知识库问答服务。完整链路：文档上传 → 逐页提取/分块（扫描页自动 OCR）→ Chroma 向量召回 + jieba BM25 双路 → RRF 融合 → LLM 重排 → 生成 → 引用核验 → 会话/长期记忆。全链路 trace 可视化。
+本地部署的中文知识库问答服务。完整链路：文档上传 → 逐页提取/分块（扫描页自动 OCR）→ Chroma 向量召回 + jieba BM25 双路 → RRF 融合 → 重排（默认本地 cross-encoder）→ 生成 → 引用核验 → 会话/长期记忆。全链路 trace 可视化。
 
 功能细节、存储布局、trace 字段见 [FEATURES.md](FEATURES.md)；能力分级与工程化基线见 [docs/AGENT_SPEC.md](docs/AGENT_SPEC.md)。
 
@@ -16,6 +16,7 @@ python run.py
 - API 文档：http://127.0.0.1:8000/docs
 - 不配 LLM key 也能跑：回答自动降级为抽取式（不依赖外部服务）
 - 嵌入模型默认加载本地目录 `models/bge-small-zh-v1.5`（需自行下载权重；.gitignore 已排除）。换嵌入模型后必须 `POST /api/v1/documents/reindex` 全量重建向量库
+- 重排模型默认加载 `models/bge-reranker-base`（同样不入库，缺失时自动回退 RRF 顺序）。权重可从 HF 镜像获取，如 `https://hf-mirror.com/BAAI/bge-reranker-base/resolve/main/model.safetensors` 等文件放入该目录；`RERANK_MODE=llm|off` 可不装
 - 演示语料在 `test_data/`（含 4 个 txt）；扫描件演示用 `python scripts/make_scan_pdf.py` 生成
 
 ## 主要端点（/api/v1）
@@ -50,10 +51,10 @@ python -X utf8 scripts/evaluate_retrieval.py --update-baseline   # 有意变更�
 app/
   api/endpoints/     documents.py / chat.py（/api/v1 路由）
   services/          qa_service（主流水线+trace）· agent_service（ReAct）· document_service
-                     （提取/分块/OCR）· vector_store（Chroma）· bm25_index · embeddings · memory_service
+                     （提取/分块/OCR）· vector_store（Chroma）· bm25_index · embeddings · reranker · memory_service
   static/            /ui 面板（单文件）
   config.py errors.py main.py models/schemas.py
-scripts/             api_contract_test · evaluate_retrieval · make_scan_pdf
+scripts/             api_contract_test · evaluate_retrieval · compare_rerank · make_scan_pdf
 eval/                golden_set.json · baseline.json · report.json
 test_data/           演示语料（txt）
 docs/                AGENT_SPEC.md（能力分级 L1-L5 + 工程化基座）

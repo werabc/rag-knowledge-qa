@@ -110,9 +110,9 @@ class QAService:
         results, ret_detail = await self.hybrid_search(search_query)
         yield {"event": "step", "data": _step("retrieval", t0, **ret_detail)}
 
-        # 1.5 LLM listwise 重排 → 截取 top SEARCH_K
+        # 1.5 重排（ce=本地cross-encoder / llm=listwise / off=截断）→ top SEARCH_K
         t0 = time.perf_counter()
-        results, rr_detail = await self._llm_rerank(search_query, results)
+        results, rr_detail = await self._rerank(search_query, results)
         yield {"event": "step", "data": _step("rerank", t0, **rr_detail)}
 
         # 2. 上下文构建
@@ -207,6 +207,7 @@ class QAService:
                     "doc_id": r["metadata"].get("doc_id", ""),
                     "page_num": r["metadata"].get("page_num"),
                     "ocr": bool(r["metadata"].get("ocr")),
+                    **({"ce_score": r["ce_score"]} if "ce_score" in r else {}),
                     "cited": (i + 1) in cited,
                 }
                 for i, r in enumerate(results)
@@ -218,7 +219,7 @@ class QAService:
 
     async def hybrid_search(self, query: str):
         """双路召回+RRF融合（不含改写/重排），返回 (候选列表, trace明细)。供问答主流程与 Agent 工具复用"""
-        pool = settings.RERANK_CANDIDATES if settings.LLM_RERANK else settings.SEARCH_K
+        pool = settings.RERANK_CANDIDATES if settings.RERANK_MODE != "off" else settings.SEARCH_K
         vec_results = await vector_store.search_similar(query, k=pool)
         bm25_results = (bm25_index.search(query, k=pool)
                         if settings.HYBRID_BM25 else [])
@@ -335,11 +336,31 @@ class QAService:
             return question, {"mode": "fallback", "original": question,
                               "rewritten": question, "error": str(e)[:200]}
 
+    async def _rerank(self, query: str, candidates: List[Dict[str, Any]]):
+        before = [c["metadata"].get("filename", "") for c in candidates]
+        mode = settings.RERANK_MODE
+        if mode == "llm":
+            return await self._llm_rerank(query, candidates)
+        if mode == "off" or not candidates:
+            return candidates[:settings.SEARCH_K], {
+                "mode": "off", "before": before,
+                "after": before[:settings.SEARCH_K]}
+        from app.services.reranker import ce_rerank
+        try:
+            ranked = await ce_rerank(query, candidates, settings.SEARCH_K)
+            return ranked, {
+                "mode": "ce", "model": settings.RERANKER_MODEL, "before": before,
+                "after": [c["metadata"].get("filename", "") for c in ranked],
+                "ce_scores": [c.get("ce_score") for c in ranked]}
+        except Exception as e:
+            logger.exception("cross-encoder 重排失败，沿用 RRF 顺序")
+            return candidates[:settings.SEARCH_K], {
+                "mode": "ce_fallback", "before": before,
+                "after": before[:settings.SEARCH_K], "error": str(e)[:200]}
+
     async def _llm_rerank(self, query: str, candidates: List[Dict[str, Any]]):
         """LLM listwise 重排：按与问题的相关度对候选排序，截取 top SEARCH_K"""
         before = [c["metadata"].get("filename", "") for c in candidates]
-        if not settings.LLM_RERANK:
-            return candidates[:settings.SEARCH_K], {"mode": "disabled", "before": before}
         if not settings.OPENAI_API_KEY or len(candidates) <= 1:
             return candidates[:settings.SEARCH_K], {
                 "mode": "skipped", "reason": "未配置LLM或候选≤1", "before": before}

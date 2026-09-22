@@ -123,7 +123,9 @@ D:\rag\
 | `SEARCH_K` | 4 | 融合后进入上下文的分块数 |
 | `HYBRID_BM25` | True | 双路召回开关 |
 | `CITATION_VERIFY` | True | 生成后引用核验（防幻觉）开关 |
-| `QUERY_REWRITE` / `LLM_RERANK` | True / True | 指代消解改写、LLM 重排开关 |
+| `QUERY_REWRITE` | True | 指代消解改写开关 |
+| `RERANK_MODE` | `ce` | 重排通道：`ce`=本地 cross-encoder / `llm`=LLM listwise / `off`=不重排 |
+| `RERANKER_MODEL` | `models/bge-reranker-base` | ce 通道的本地权重目录（需自行下载，见 README） |
 | `RERANK_CANDIDATES` | 8 | 召回池大小（重排输入条数） |
 | `AGENT_MAX_STEPS` | 5 | L3 Agent ReAct 循环最大轮数，超限强制收口 |
 | `LONGTERM_MEMORY` | True | L4 长期记忆开关（抽取+召回注入） |
@@ -135,8 +137,8 @@ D:\rag\
 ### 查询改写（指代消解）
 带会话历史的追问先经 LLM 改写成自包含查询再检索（「那它的上线时间呢？」→「朱雀系统的上线时间和并发规格是什么？」）。首轮/关历史/未配 LLM 时跳过；改写失败用原问题。
 
-### LLM 重排（listwise）
-RRF 融合取召回池 8 条，连同问题交给 LLM 按相关度重排，取 top4 进上下文。对召回池只输出部分编号（如 `[1]`）做容错：已列出的置顶、其余按 RRF 原序补齐；完全解析失败则沿用 RRF 顺序。实测能把向量+BM25 都排错的英文文档从第 2 顶到第 1。
+### 重排（`RERANK_MODE` 三通道）
+RRF 融合取召回池 8 条后进入重排，截取 top4 进上下文。默认 `ce`：本地 cross-encoder（`bge-reranker-base`，sentence-transformers CPU 推理，懒加载单例，`asyncio.to_thread` 避免阻塞事件循环），对每对 (问题, 候选) 打相关度分排序，模型加载失败自动回退 RRF 顺序（trace 标 `ce_fallback`）。`llm`：LLM listwise 重排作对照——对召回池只输出部分编号做容错（已列出的置顶、其余按 RRF 原序补齐），解析失败沿用 RRF 顺序。`off`：直接按 RRF 截断。ce 通道实测：单次打分 ~1.7s（对比 LLM 往返 3~11s），把向量+BM25 都排错的文档从第 4 顶到第 1。
 
 ### 混合检索（RRF）
 向量路与 BM25 路各出候选，按分块 id 去重，`rrf = Σ 1/(60+排名)`，降序取 top `SEARCH_K`。向量管语义近似（同义改写也能命中），BM25 管关键词精确命中（型号、人名、编号）。`confidence` 取向量路最高相似度。
@@ -153,7 +155,7 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 ### 检索评估（L5/G3）
 `eval/golden_set.json`：**29 条**金标，六类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `ocr` 扫描件 OCR 命中：期望检索到 scan_xuanhe.pdf(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
 
-**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`LLM_RERANK=False` 重启后 strict 点名 `with_rerank.hit@1 0.913→0.826`、`adversarial 1.0→0.5` 等三项拦截；恢复配置后 strict 通过。当前基线：重排通道 hit@1 0.913 / MRR 0.935、拒答 1.0（paraphrase 类 hit@1 0.6 为 kb_sample 单大分块稀释所致，留作提升空间）。
+**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`RERANK_MODE=off` 重启后 strict 点名 `with_rerank.hit@1`、`adversarial` 等三项拦截；恢复配置后 strict 通过。当前基线数字见 `eval/baseline.json`（paraphrase 类 hit@1 偏低为 kb_sample 单大分块稀释所致，留作提升空间）。
 
 ### PDF 逐页提取 + 扫描件 OCR（G4）
 PyMuPDF 逐页 `get_text` 并按页切块（跨页不混块，页码进元数据）。页文本层 <20 字符且含图片 → 判为扫描页：`page.get_pixmap(dpi=200)` 转 PNG 交 rapidocr（onnxruntime，懒加载单例）识别中文。每块明文以 `{text, page_num, ocr}` 落 `chunks/*.json` 并写进 chroma metadata；上下文资料头标注「文件名，第N页（扫描件OCR）」，面板来源徽标与 `/chunks` 端点同步展示。实测零文本层两页扫描 PDF（`scripts/make_scan_pdf.py` 生成）：上传 28s（含 OCR 模型冷加载），问答「年度维保费+负责人」正确答出 90 万元/陈立，两条来源均带 页码+OCR+被引用 徽标。
@@ -206,7 +208,8 @@ trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Ag
 
 ## 9. 已知边界
 
-- **LLM 重排/改写各多一次 LLM 往返**：LongCat 实测单次 3~11s，重排是端到端最大耗时项；对延迟敏感可 `LLM_RERANK=False`（RRF 兜底质量已可用）。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
+- **`RERANK_MODE=llm` 时重排多一次 LLM 往返**：LongCat 实测单次 3~11s，是端到端最大耗时项；默认 `ce` 通道本地打分 ~1.7s，无此问题（首次查询另含 ~26s 模型冷加载）。`QUERY_REWRITE` 的改写也是一次 LLM 往返。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
+- **ce 通道不吃跨文档/跨语言推理**：cross-encoder 逐对 (问题,片段) 打分，看不到片段间关系。实测「旗舰产品单节点能扛多少并发？」（期望 kb_sample 英文片段，decoy 是中文"单节点并发"近似句）：中文 decoy 表面词面分 0.34，英文目标片段仅 0.009 排第 3——LLM listwise 通道曾靠跨文档推断「旗舰产品=QuantumLeap」排第 1。该题最终答案仍正确（目标片段进了上下文且被引用），仅位次回退；为此 `adversarial.hit@1` 基线 1.0→0.75（整体 hit@4 1.0、MRR 0.955 均超旧基线），属换通道的刻意取舍。
 - **评估仍在 tiny 语料上**：29 条六类金标（含对抗/多跳/扫描件OCR/不可回答）已比 v1.0 的 11 条有区分度（paraphrase 类 hit@1 仅 0.6），但 5 文档池子仍小；拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动。
 - **BM25 全内存**：启动时从台账+分块明文重建，语料规模适合万级分块以内；检索为线性扫描词频表，数据量大需换倒排跳过。
 - **reindex 是破坏性重建**：先删集合再重灌，期间检索结果不完整；分块明文丢失的文档无法恢复（原始文件上传后即删，只保留明文）。
