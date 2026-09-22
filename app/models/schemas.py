@@ -15,14 +15,6 @@ class Page(BaseModel, Generic[T]):
     page: int = Field(1, description="页码，从1开始")
     size: int = Field(20, description="每页条数")
 
-class ErrorDetail(BaseModel):
-    code: str
-    message: str
-    detail: Dict[str, Any] = Field(default_factory=dict)
-
-class ErrorResponse(BaseModel):
-    error: ErrorDetail
-
 class DocumentBase(BaseModel):
     """文档基础模型"""
     filename: str = Field(..., description="文件名")
@@ -93,13 +85,6 @@ class DocumentStats(BaseModel):
     
     class Config:
         from_attributes = True
-
-class HealthResponse(BaseModel):
-    """健康检查响应"""
-    status: str = Field(..., description="系统状态")
-    service: str = Field(..., description="服务名称")
-    version: str = Field(..., description="版本号")
-    timestamp: datetime = Field(default_factory=datetime.now, description="检查时间")
 
 class ChunkListResponse(BaseModel):
     doc_id: str

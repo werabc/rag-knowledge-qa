@@ -15,7 +15,7 @@ from docx import Document as DocxDocument
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.config import settings
-from app.models.schemas import DocumentCreate, DocumentResponse, DocumentStats
+from app.models.schemas import DocumentResponse, DocumentStats
 from app.services.bm25_index import bm25_index
 from app.services.vector_store import vector_store
 

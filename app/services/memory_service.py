@@ -133,11 +133,4 @@ class MemoryService:
             return True
         return False
 
-    def clear(self) -> int:
-        n = len(self.facts)
-        self.facts = []
-        self._save()
-        return n
-
-
 memory_service = MemoryService()

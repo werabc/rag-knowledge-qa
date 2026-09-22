@@ -73,7 +73,7 @@ class VectorStore:
             self.collection.add(documents=chunks, ids=ids, metadatas=metadatas)
             return True
 
-        except Exception as e:
+        except Exception:
             logger.exception("添加文档到向量存储失败")
             return False
 

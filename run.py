@@ -14,7 +14,7 @@ def main():
     debug = os.getenv("DEBUG", "False").lower() == "true"
 
     print(f"访问地址: http://{host}:{port}")
-    print(f"面板: /ui  API文档: /docs")
+    print("面板: /ui  API文档: /docs")
 
     uvicorn.run("app.main:app", host=host, port=port, reload=debug, log_level="info")
 

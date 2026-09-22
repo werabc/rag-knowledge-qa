@@ -46,7 +46,6 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # 安全配置
-    SECRET_KEY: str = "your-secret-key-here"
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
 
 
