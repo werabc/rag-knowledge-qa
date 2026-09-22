@@ -4,7 +4,7 @@
 
 ## 1. 系统概览
 
-本地部署的检索增强问答系统：上传文档 → 切块 → 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 26 条五类金标（含对抗/多跳/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
+本地部署的检索增强问答系统：上传文档（含无文本层的中文扫描件，自动 OCR）→ 切块（PDF 带页码元数据）→ 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 29 条六类金标（含对抗/多跳/扫描件OCR/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
 
 Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-L5 全部落地。
 
@@ -17,18 +17,19 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
                         └──────┬───────────────────┬───────────────┘
                                │                   │
                      DocumentService            QAService / AgentService
-                     ├ 文本提取(PyPDF2/docx)      ├ 查询改写(指代消解, LLM)
+                     ├ 文本提取(PyMuPDF逐页/docx)  ├ 查询改写(指代消解, LLM)
+                     │ 扫描页→rapidocr中文OCR     │
                      ├ 切块(1000/200)             ├ 向量召回 ──► VectorStore ──► ChromaDB(512维,cosine)
                      ├ 写向量库 + BM25增量        ├ BM25召回 ──► BM25Index(内存, jieba分词)
                      └ 台账 documents.json        ├ RRF融合(k=60, 召回池8) → LLM重排 → top4
                        分块明文 chunks/*.json     ├ 上下文拼接 [资料N] + 长期记忆注入system prompt
-                                                 ├ LLM生成(LongCat) / 抽取式回退
+                       {text,page_num,ocr}       ├ LLM生成(LongCat) / 抽取式回退
                         Agent模式(L3)：同一LLM在 ├ 会话记忆 sessions.json
                         ReAct循环(≤5步)里自主调  └ 长期记忆 MemoryService(L4)
                         kb_search/kb_stats/         ├ 答后异步抽取事实 → longterm.json
                         session_history 工具        └ 按词重叠召回
 
-                        评估(L5)：eval/golden_set.json 11条金标
+                        评估(L5)：eval/golden_set.json 29条六类金标(含扫描件OCR)
                         scripts/evaluate_retrieval.py → hit@1/hit@4/MRR
                         双通道报告(仅RRF vs RRF+重排) → eval/report.json
                                │
@@ -43,7 +44,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 |---|---|---|
 | 配置 | `app/config.py` | pydantic-settings，读 `.env`，大小写敏感 |
 | 数据模型 | `app/models/schemas.py` | Pydantic 请求/响应模型（含 `trace` 字段） |
-| 文档服务 | `app/services/document_service.py` | 提取/切块/入库/删除/台账持久化/孤儿恢复/全量重建 reindex_all |
+| 文档服务 | `app/services/document_service.py` | 提取（PyMuPDF 逐页+扫描页 rapidocr 中文 OCR/docx/txt）/切块/入库/删除/台账持久化/孤儿恢复/全量重建 reindex_all |
 | 向量存储 | `app/services/vector_store.py` | chromadb 1.x PersistentClient，cosine HNSW，自定义 EF 接入，recreate_collection |
 | 嵌入服务 | `app/services/embeddings.py` | 按配置加载 sentence-transformers；bge 查询前缀；失败回退内置 MiniLM |
 | BM25 | `app/services/bm25_index.py` | jieba 分词倒排 + Lucene idf 公式 BM25；启动时从台账+分块明文重建 |
@@ -53,20 +54,20 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 | 检索评估 | `scripts/evaluate_retrieval.py` | L5：跑 golden set，输出 RRF 与 RRF+重排双通道 hit@1/hit@4/MRR |
 | 文档 API | `app/api/endpoints/documents.py` | 上传（流式限流+文件名清洗）、列表、详情、删除、分块查看、reindex、统计 |
 | 问答 API | `app/api/endpoints/chat.py` | 查询、Agent 查询、会话增删查、历史、统计、清空、长期记忆增删查 |
-| 可视化面板 | `app/static/index.html` | 三页签：知识库 / 对话记忆（含长期记忆卡片）/ 问答调试（全链路 trace、Agent 逐 turn、Agent 模式开关） |
+| 可视化面板 | `app/static/index.html` | 三页签：知识库（分块带 页码/OCR 徽标） / 对话记忆（含长期记忆卡片）/ 问答调试（全链路 trace、来源带 页码/OCR/被引用 徽标、流式打字机、Agent 逐 turn） |
 
 ## 4. API 参考（v1.2 起统一 `/api/v1` 前缀）
 
-**错误契约**：所有失败响应为 `{"error": {"code", "message", "detail"}}`，状态码语义化（400 参数错 / 404 不存在 / 409 冲突 / 413 超限 / 500 内部错）。删除成功返回 **204 无响应体**。列表端点统一分页信封 `{items, total, page, size}`。契约回归：`python -X utf8 scripts/api_contract_test.py`（21 项矩阵）。
+**错误契约**：所有失败响应为 `{"error": {"code", "message", "detail"}}`，状态码语义化（400 参数错 / 404 不存在 / 409 冲突 / 413 超限 / 500 内部错）。删除成功返回 **204 无响应体**。列表端点统一分页信封 `{items, total, page, size}`。契约回归：`python -X utf8 scripts/api_contract_test.py`（26 项矩阵）。
 
 ### 文档管理 `/api/v1/documents`
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`；400 unsupported_file_type / 413 file_too_large |
+| POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`；PDF 逐页提取，无文本层的扫描页自动 OCR（页码+ocr 标记入元数据）；400 unsupported_file_type / 413 file_too_large |
 | GET | `/` | 文档台账列表（分页 `?page=&size=`，size≤100） |
 | GET | `/{doc_id}` | 单个文档详情；404 document_not_found |
-| GET | `/{doc_id}/chunks` | 该文档全部分块明文 |
+| GET | `/{doc_id}/chunks` | 该文档全部分块明文，JSON 数组，每块 `{text, page_num, ocr}`（非 PDF 页码为 null；旧格式纯字符串自动升级） |
 | DELETE | `/{doc_id}` | 删向量分块 + BM25 + 台账 + 分块明文；成功 204 |
 | POST | `/reindex` | **用当前 embedding 模型全量重建向量库+BM25**（切换模型后必调，见 §7）；并发再入 409 |
 | GET | `/stats/summary` | 文档数/分块数/总大小/类型分布 |
@@ -108,7 +109,7 @@ D:\rag\
 └── app\                      # 代码
 ```
 
-向量分块 id 规则：`{doc_id}_chunk_{i}`；metadata 含 `doc_id/chunk_index/filename/file_type/upload_time`。
+向量分块 id 规则：`{doc_id}_chunk_{i}`；metadata 含 `doc_id/chunk_index/filename/file_type/upload_time`，PDF 分块额外带 `page_num/ocr`（扫描件回答可标注「第N页（扫描件OCR）」）。
 
 ## 6. 配置项（.env）
 
@@ -150,9 +151,12 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/v1/chat/memories` + 面板卡片）。
 
 ### 检索评估（L5/G3）
-`eval/golden_set.json`：**26 条**金标，五类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
+`eval/golden_set.json`：**29 条**金标，六类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `ocr` 扫描件 OCR 命中：期望检索到 scan_xuanhe.pdf(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
 
 **回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`LLM_RERANK=False` 重启后 strict 点名 `with_rerank.hit@1 0.913→0.826`、`adversarial 1.0→0.5` 等三项拦截；恢复配置后 strict 通过。当前基线：重排通道 hit@1 0.913 / MRR 0.935、拒答 1.0（paraphrase 类 hit@1 0.6 为 kb_sample 单大分块稀释所致，留作提升空间）。
+
+### PDF 逐页提取 + 扫描件 OCR（G4）
+PyMuPDF 逐页 `get_text` 并按页切块（跨页不混块，页码进元数据）。页文本层 <20 字符且含图片 → 判为扫描页：`page.get_pixmap(dpi=200)` 转 PNG 交 rapidocr（onnxruntime，懒加载单例）识别中文。每块明文以 `{text, page_num, ocr}` 落 `chunks/*.json` 并写进 chroma metadata；上下文资料头标注「文件名，第N页（扫描件OCR）」，面板来源徽标与 `/chunks` 端点同步展示。实测零文本层两页扫描 PDF（`scripts/make_scan_pdf.py` 生成）：上传 28s（含 OCR 模型冷加载），问答「年度维保费+负责人」正确答出 90 万元/陈立，两条来源均带 页码+OCR+被引用 徽标。
 
 ### 切换 embedding 模型（三步）
 1. `.env` 改 `EMBEDDING_MODEL_NAME`（模型名或本地目录）；
@@ -203,11 +207,11 @@ trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Ag
 ## 9. 已知边界
 
 - **LLM 重排/改写各多一次 LLM 往返**：LongCat 实测单次 3~11s，重排是端到端最大耗时项；对延迟敏感可 `LLM_RERANK=False`（RRF 兜底质量已可用）。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
-- **评估仍在 tiny 语料上**：26 条金标（含对抗/多跳/不可回答）已比 v1.0 的 11 条有区分度（paraphrase 类 hit@1 仅 0.6），但 4 文档池子仍小；拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动。
+- **评估仍在 tiny 语料上**：29 条六类金标（含对抗/多跳/扫描件OCR/不可回答）已比 v1.0 的 11 条有区分度（paraphrase 类 hit@1 仅 0.6），但 5 文档池子仍小；拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动。
 - **BM25 全内存**：启动时从台账+分块明文重建，语料规模适合万级分块以内；检索为线性扫描词频表，数据量大需换倒排跳过。
 - **reindex 是破坏性重建**：先删集合再重灌，期间检索结果不完整；分块明文丢失的文档无法恢复（原始文件上传后即删，只保留明文）。
 - **单进程文件存储**：sessions/documents 为 JSON 整文件读写，无并发锁，不适合多 worker 横向扩展。
-- **PDF 能力有限**：PyPDF2 纯文本提取，无 OCR、不保留表格结构。
+- **OCR 边界**：扫描页判定是启发式（文本层<20字符且含图片），排版复杂/手写/表格截图识别质量有限；rapidocr 首次调用有模型加载冷启动（整文件 28s 里占大头），逐页位图按 200dpi，过大页面内存敏感。表格结构仍不保留。
 - **无鉴权/多租户**：面板与 API 均裸奔，仅适合本机或内网使用。
 - **API key 安全**：`.env` 已 gitignore，但 key 曾出现在聊天记录中，建议轮换。
 

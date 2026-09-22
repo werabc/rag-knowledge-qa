@@ -139,7 +139,7 @@ async function uploadDoc(){
 async function viewChunks(id,name){
   const d=await api(`/api/v1/documents/${id}/chunks`);
   $('#chunkview').style.display='';$('#chunktitle').textContent=`${name} — ${d.chunk_count} 个分块`;
-  $('#chunklist').innerHTML=d.chunks.map((c,i)=>`<details ${i===0?'open':''}><summary>Chunk ${i+1}（${c.length}字）</summary><pre>${esc(c)}</pre></details>`).join('')||'<span class="dim">无明文文件（recovered文档需重新上传）</span>';
+  $('#chunklist').innerHTML=d.chunks.map((c,i)=>`<details ${i===0?'open':''}><summary>Chunk ${i+1}（${(c.text||'').length}字）${c.page_num?` · 第${c.page_num}页`:''}${c.ocr?' · <b style="color:#e5c07b">OCR</b>':''}</summary><pre>${esc(c.text)}</pre></details>`).join('')||'<span class="dim">无明文文件（recovered文档需重新上传）</span>';
 }
 async function delDoc(id){
   await api('/api/v1/documents/'+id,{method:'DELETE'});toast('已删除（含向量库分块）');loadDocs();stats();
@@ -218,7 +218,7 @@ function renderResult(r,msElapsed){
     <pre style="max-height:none">${esc(r.answer)}</pre>
     ${renderTrace(r.trace||[])}</div>
     <div class="card"><h4>来源片段（${r.sources.length}）</h4>`+
-    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}${s.cited?' · <b style="color:#98c379">被答案引用</b>':''}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
+    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)}${s.page_num?` · 第${s.page_num}页`:''}${s.ocr?' · <b style="color:#e5c07b">OCR</b>':''} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}${s.cited?' · <b style="color:#98c379">被答案引用</b>':''}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
 }
 
 async function runQuery(){

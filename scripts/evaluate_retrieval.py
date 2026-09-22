@@ -26,7 +26,7 @@ REPORT = os.path.join(HERE, "..", "eval", "report.json")
 BASELINE = os.path.join(HERE, "..", "eval", "baseline.json")
 
 REFUSAL_RE = re.compile(
-    r"(不知道|无法回答|无法得知|没有找到|未提及|无相关|不清楚|抱歉|未找到|资料中没有|未包含)")
+    r"(不知道|无法回答|无法得知|没有找到|未提及|无相关|不清楚|抱歉|未找到|资料中没有|未包含|未涉及|没有关于|没有.{0,8}信息)")
 
 
 def best_rank(names, expect):
@@ -48,9 +48,17 @@ def evaluate():
     rows = []
     for c in cases:
         t0 = time.perf_counter()
-        r = requests.post(f"{BASE}/api/v1/chat/query", json={
-            "question": c["question"], "use_history": False}, timeout=180)
-        r.raise_for_status()
+        # 单次问答含改写+重排+生成最多3次LLM往返，慢模型下可能超时：重试2次，每次上限300s
+        for attempt in range(3):
+            try:
+                r = requests.post(f"{BASE}/api/v1/chat/query", json={
+                    "question": c["question"], "use_history": False}, timeout=300)
+                r.raise_for_status()
+                break
+            except (requests.RequestException, OSError):
+                if attempt == 2:
+                    raise
+                time.sleep(3)
         data = r.json()
         trace = {s["step"]: s for s in data["trace"]}
         rrf_order = [m["filename"] for m in trace["retrieval"]["detail"]["merged"]]

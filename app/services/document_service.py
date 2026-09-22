@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pathlib import Path
 
-import PyPDF2
+import pymupdf
 from docx import Document as DocxDocument
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -20,6 +20,17 @@ from app.services.bm25_index import bm25_index
 from app.services.vector_store import vector_store
 
 logger = logging.getLogger(__name__)
+
+_ocr_engine = None
+
+
+def _get_ocr():
+    """RapidOCR 懒加载：只有遇到无文字层的 PDF 页才付出模型加载成本"""
+    global _ocr_engine
+    if _ocr_engine is None:
+        from rapidocr_onnxruntime import RapidOCR
+        _ocr_engine = RapidOCR()
+    return _ocr_engine
 
 class DocumentService:
     """文档处理服务类"""
@@ -103,11 +114,16 @@ class DocumentService:
         # 获取文件类型
         file_type = Path(filename).suffix.lower()
         
-        # 提取文档内容
-        content = await self._extract_content(file_path, file_type)
-        
-        # 分块处理
-        chunks = self.text_splitter.split_text(content)
+        # 逐页提取内容（含页码与是否OCR标记）
+        pages = await self._extract_pages(file_path, file_type)
+
+        # 分块处理：页内切块，跨页不合并，保证页码归属准确
+        chunks: List[Dict[str, Any]] = []
+        for p in pages:
+            for t in (self.text_splitter.split_text(p["text"])
+                      if p["text"].strip() else []):
+                chunks.append({"text": t, "page_num": p["page_num"],
+                               "ocr": p["ocr"]})
 
         # 创建文档记录
         document = DocumentResponse(
@@ -122,16 +138,17 @@ class DocumentService:
 
         # 写入向量库（embedding 由 chromadb 完成）
         indexed = await vector_store.add_documents(
-            doc_id, chunks,
+            doc_id, [c["text"] for c in chunks],
             metadata={
                 "filename": filename,
                 "file_type": file_type,
                 "upload_time": document.upload_time.isoformat(),
             },
+            per_chunk=chunks,
         )
         document.status = "processed" if indexed else "index_failed"
         if indexed:
-            bm25_index.add_doc(doc_id, filename, chunks)
+            bm25_index.add_doc(doc_id, filename, [c["text"] for c in chunks])
 
         # 存储文档信息并落盘台账
         self.documents_db[doc_id] = document
@@ -146,6 +163,13 @@ class DocumentService:
             json.dump(chunks, f, ensure_ascii=False, indent=1)
         
         return document
+
+    async def _extract_pages(self, file_path: str, file_type: str) -> List[Dict[str, Any]]:
+        """统一按页返回 [{page_num, text, ocr}]；txt/docx 视为单页"""
+        if file_type == ".pdf":
+            return await self._extract_pdf(file_path)
+        content = await self._extract_content(file_path, file_type)
+        return [{"page_num": None, "text": content, "ocr": False}]
     
     async def _extract_content(self, file_path: str, file_type: str) -> str:
         """
@@ -177,17 +201,28 @@ class DocumentService:
         
         return content
     
-    async def _extract_pdf(self, file_path: str) -> str:
-        """提取PDF文档内容"""
-        text = ""
+    async def _extract_pdf(self, file_path: str) -> List[Dict[str, Any]]:
+        """PyMuPDF 逐页提取；文字层稀薄且含图像的页判定为扫描页，渲染 200dpi 走 OCR"""
+        pages: List[Dict[str, Any]] = []
         try:
-            with open(file_path, "rb") as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                for page in pdf_reader.pages:
-                    text += page.extract_text() + "\n"
+            doc = pymupdf.open(file_path)
         except Exception as e:
-            text = f"PDF读取失败: {str(e)}"
-        return text
+            return [{"page_num": None, "text": f"PDF读取失败: {e}", "ocr": False}]
+        with doc:
+            for i, page in enumerate(doc, 1):
+                text = page.get_text().strip()
+                ocr = False
+                if len(text) < 20 and page.get_images():
+                    try:
+                        pix = page.get_pixmap(dpi=200)
+                        result, _ = _get_ocr()(pix.tobytes("png"))
+                        text = "\n".join(line[1] for line in (result or []))
+                        ocr = True
+                    except Exception as e:
+                        logger.exception("PDF 页 %s OCR 失败", i)
+                        text = text or f"（第{i}页 OCR 失败: {e}）"
+                pages.append({"page_num": i, "text": text, "ocr": ocr})
+        return pages
     
     async def _extract_docx(self, file_path: str) -> str:
         """提取Word文档内容"""
@@ -248,8 +283,8 @@ class DocumentService:
             file_types=file_types
         )
     
-    async def get_document_chunks(self, doc_id: str) -> List[str]:
-        """获取文档分块内容"""
+    async def get_document_chunks(self, doc_id: str) -> List[Dict[str, Any]]:
+        """获取文档分块（新格式 [{text,page_num,ocr}]，兼容旧的纯字符串分块）"""
         chunks_file = os.path.join(settings.DOCUMENT_STORAGE_PATH, "chunks", f"{doc_id}.json")
 
         if not os.path.exists(chunks_file):
@@ -257,7 +292,9 @@ class DocumentService:
 
         try:
             with open(chunks_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                raw = json.load(f)
+            return [{"text": c, "page_num": None, "ocr": False} if isinstance(c, str) else c
+                    for c in raw]
         except Exception:
             logger.exception("读取文档分块失败")
             return []
@@ -274,15 +311,16 @@ class DocumentService:
                                "reason": "分块明文缺失"})
                 continue
             indexed = await vector_store.add_documents(
-                doc.id, chunks,
+                doc.id, [c["text"] for c in chunks],
                 metadata={
                     "filename": doc.filename,
                     "file_type": doc.file_type,
                     "upload_time": doc.upload_time.isoformat(),
                 },
+                per_chunk=chunks,
             )
             if indexed:
-                bm25_index.add_doc(doc.id, doc.filename, chunks)
+                bm25_index.add_doc(doc.id, doc.filename, [c["text"] for c in chunks])
                 doc.status = "processed"
                 ok += 1
             else:

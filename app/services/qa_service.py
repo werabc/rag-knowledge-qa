@@ -117,8 +117,15 @@ class QAService:
 
         # 2. 上下文构建
         t0 = time.perf_counter()
+        def _src_tag(r):
+            tag = r['metadata'].get('filename', '未知文档')
+            if r['metadata'].get('page_num'):
+                tag += f"，第{r['metadata']['page_num']}页"
+            if r['metadata'].get('ocr'):
+                tag += "（扫描件OCR）"
+            return tag
         context = "\n\n".join(
-            f"[资料{i + 1}] (来源: {r['metadata'].get('filename', '未知文档')})\n{r['content']}"
+            f"[资料{i + 1}] (来源: {_src_tag(r)})\n{r['content']}"
             for i, r in enumerate(results)
         )
         yield {"event": "step", "data": _step(
@@ -198,6 +205,8 @@ class QAService:
                     "bm25_score": round(r["bm25_score"], 4),
                     "filename": r["metadata"].get("filename", ""),
                     "doc_id": r["metadata"].get("doc_id", ""),
+                    "page_num": r["metadata"].get("page_num"),
+                    "ocr": bool(r["metadata"].get("ocr")),
                     "cited": (i + 1) in cited,
                 }
                 for i, r in enumerate(results)

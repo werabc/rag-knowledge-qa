@@ -46,8 +46,9 @@ class VectorStore:
         return True
 
     async def add_documents(self, doc_id: str, chunks: List[str],
-                            metadata: Optional[Dict[str, Any]] = None) -> bool:
-        """添加文档分块到向量存储（自动做 embedding）"""
+                            metadata: Optional[Dict[str, Any]] = None,
+                            per_chunk: Optional[List[Dict[str, Any]]] = None) -> bool:
+        """添加文档分块到向量库（自动做 embedding）；per_chunk 提供逐块附加元数据（页码/OCR）"""
         try:
             if not chunks:
                 return False
@@ -63,6 +64,10 @@ class VectorStore:
                 }
                 if metadata:
                     chunk_metadata.update(metadata)
+                if per_chunk and i < len(per_chunk):
+                    extra = {k: v for k, v in per_chunk[i].items()
+                             if k in ("page_num", "ocr") and v is not None}
+                    chunk_metadata.update(extra)
                 metadatas.append(chunk_metadata)
 
             self.collection.add(documents=chunks, ids=ids, metadatas=metadatas)

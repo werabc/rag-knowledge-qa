@@ -40,7 +40,7 @@ class BM25Index:
                     "chunk_id": f"{doc.id}_chunk_{i}",
                     "doc_id": doc.id,
                     "filename": doc.filename,
-                    "content": c,
+                    "content": c["text"] if isinstance(c, dict) else c,
                 })
         self.build(items)
         return len(self.docs)

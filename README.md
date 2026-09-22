@@ -4,7 +4,7 @@
 
 ## 🚀 功能特性
 
-- **多格式文档支持**: PDF、Word、TXT等文档格式
+- **多格式文档支持**: PDF（逐页页码元数据，无文本层的中文扫描件自动 OCR）、Word、TXT
 - **智能问答**: 基于文档内容的智能问答
 - **对话历史**: 支持多轮对话和历史记录
 - **文档管理**: 上传、删除、查看文档信息
@@ -40,10 +40,10 @@ D:\rag\
 
 - **Web框架**: FastAPI
 - **向量数据库**: ChromaDB 1.x (PersistentClient, cosine空间)
-- **嵌入模型**: chromadb内置 ONNX all-MiniLM-L6-v2（无需torch；中文效果弱，待换bge-small-zh）
+- **嵌入模型**: 默认本地 bge-small-zh-v1.5（sentence-transformers，查询侧加检索指令前缀）；可切回 chromadb 内置 ONNX MiniLM，切换后需 `POST /api/v1/documents/reindex`
 - **LLM生成**: OpenAI兼容接口（已接美团LongCat），未配置key时自动回退抽取式回答
 - **文档分块**: langchain-text-splitters
-- **文档处理**: PyPDF2, python-docx
+- **文档处理**: PyMuPDF（逐页提取+扫描页渲染位图）、rapidocr-onnxruntime（中文 OCR）、python-docx
 - **数据验证**: Pydantic v2 + pydantic-settings
 
 ## 📋 前置要求
@@ -185,7 +185,7 @@ python test_system.py   # 端到端测试：上传→查询→会话
 ## 📝 注意事项
 
 1. **文件大小限制**: 默认最大50MB，可在 `.env` 中调整
-2. **支持格式**: 目前支持PDF、DOCX、TXT格式
+2. **支持格式**: 目前支持PDF、DOCX、TXT格式；扫描版 PDF 的无文本页会自动走 OCR（首次有模型加载冷启动，较慢属正常）。可用 `python scripts/make_scan_pdf.py` 生成一个中文扫描件演示 PDF（`data/scan_xuanhe.pdf`，零文本层）
 3. **存储空间**: 确保有足够的磁盘空间存储文档和向量数据库
 4. **性能**: 大量文档时建议使用更好的硬件或分布式部署
 
