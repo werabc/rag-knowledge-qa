@@ -15,4 +15,5 @@ venv/
 .venv/
 vector_db_exp/
 data_exp/
-deep_test/
+deep_test/corpus/
+deep_test/results.json

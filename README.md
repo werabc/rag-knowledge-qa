@@ -57,6 +57,7 @@ app/
   config.py errors.py main.py models/schemas.py
 scripts/             api_contract_test · evaluate_retrieval · compare_rerank ·
                      experiment_chunking · reload_corpus · make_scan_pdf
+deep_test/           真实语料深测（run_deep_test + 28 题；corpus/results 不入库）
 eval/                golden_set.json · baseline.json · report.json
 test_data/           演示语料（txt）
 docs/                AGENT_SPEC.md（能力分级 L1-L5 + 工程化基座）

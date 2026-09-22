@@ -1,0 +1,33 @@
+{
+ "note": "深度测试题集：语料为 GitHub 下载的真实书籍/文档（deep_test/corpus/），每题事实均已对原文 grep 验证。expect 为文件名或列表（任一命中）；null=期望拒答。answer_contains 竖线分隔表示或。",
+ "cases": [
+  {"question": "叫魂事件发生在清朝哪一年？", "expect": "叫魂.md", "category": "direct", "answer_contains": ["1768"]},
+  {"question": "《叫魂》这本书的作者是谁？", "expect": "叫魂.md", "category": "direct", "answer_contains": ["孔飞力"]},
+  {"question": "叫魂妖术恐慌发生时在位的皇帝是谁？", "expect": "叫魂.md", "category": "direct", "answer_contains": ["乾隆|弘历"]},
+  {"question": "《叫魂》的英文书名是什么？", "expect": "叫魂.md", "category": "paraphrase", "answer_contains": ["Soulstealers"]},
+  {"question": "妖术恐慌最初在浙江德清牵涉的是哪类手艺人？", "expect": "叫魂.md", "category": "paraphrase", "answer_contains": ["石匠"]},
+  {"question": "「潜规则」这个词是谁杜撰的？", "expect": "潜规则.md", "category": "direct", "answer_contains": ["吴思"]},
+  {"question": "吴思提出潜规则这个词时在哪份报纸工作？", "expect": "潜规则.md", "category": "direct", "answer_contains": ["农民报"]},
+  {"question": "潜规则一词来源于吴思哪一年当编辑记者时的经历？", "expect": "潜规则.md", "category": "paraphrase", "answer_contains": ["1983"]},
+  {"question": "《潜规则》里讲官场上司按资历排序排挤后者的章节叫什么？", "expect": "潜规则.md", "category": "adversarial", "answer_contains": ["论资排辈"]},
+  {"question": "《潜规则》哪一章讲刚上任的官员如何被同化？", "expect": "潜规则.md", "category": "direct", "answer_contains": ["新官堕落"]},
+  {"question": "《中国历代政治得失》的作者是谁？", "expect": "历代政治得失.md", "category": "direct", "answer_contains": ["钱穆"]},
+  {"question": "钱穆说唐代宰相分为哪三个衙门？", "expect": "历代政治得失.md", "category": "direct", "answer_contains": ["中书省"]},
+  {"question": "唐代田赋制度「配给人民耕地、年老缴还」的那一项叫什么？", "expect": "历代政治得失.md", "category": "paraphrase", "answer_contains": ["租"]},
+  {"question": "这本书按朝代分成几讲？", "expect": "历代政治得失.md", "category": "paraphrase", "answer_contains": ["五|5"]},
+  {"question": "《血酬定律》正编第一章的章名是什么？", "expect": ["血酬定律2009.md", "血酬定律2003.md"], "category": "direct", "answer_contains": ["匪变"]},
+  {"question": "土匪为什么愿意建立保护掠夺对象的秩序？", "expect": ["血酬定律2009.md", "血酬定律2003.md"], "category": "adversarial", "answer_contains": ["血酬"]},
+  {"question": "四川袍哥大爷侯少煊写过广汉什么时期的见闻？", "expect": ["血酬定律2009.md", "血酬定律2003.md"], "category": "direct", "answer_contains": ["匪"]},
+  {"question": "golang面试题合集里，Go 协程调度模型叫什么？", "expect": "golang面试题.md", "category": "direct", "answer_contains": ["GMP"]},
+  {"question": "Go 面试题里 array 和什么类型拿来做区别比较？", "expect": "golang面试题.md", "category": "paraphrase", "answer_contains": ["slice|切片"]},
+  {"question": "有缓存的和没有缓存的什么对象在 Go 里是常见面试题？", "expect": "golang面试题.md", "category": "direct", "answer_contains": ["channel"]},
+  {"question": "According to the study plan, which companies' interviews is it preparing for?", "expect": "interview-en.md", "category": "direct", "answer_contains": ["Google|Microsoft|Amazon"]},
+  {"question": "这份英文备考文档提到程序员面试要准备哪些核心科目？", "expect": "interview-en.md", "category": "adversarial", "answer_contains": []},
+  {"question": "吴思在库里留下了哪两本历史书？它们的共同主题是什么？", "expect": ["潜规则.md", "血酬定律2009.md", "血酬定律2003.md"], "category": "multihop", "answer_contains": ["吴思"]},
+  {"question": "《叫魂》提到的年份对应皇帝在位第几年？", "expect": "叫魂.md", "category": "multihop", "answer_contains": ["三十|33"]},
+  {"question": "《中国历代政治得失》2026年重印本的首印数是多少？", "expect": null, "category": "unanswerable"},
+  {"question": "《中国农民报》现在的股票价格是多少？", "expect": null, "category": "unanswerable"},
+  {"question": "黄仁宇《万历十五年》的销量排行如何？", "expect": null, "category": "unanswerable"},
+  {"question": "孔飞力因为《叫魂》获得了什么奖金，金额多少？", "expect": null, "category": "unanswerable"}
+ ]
+}
