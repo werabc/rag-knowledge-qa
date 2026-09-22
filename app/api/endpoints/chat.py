@@ -1,12 +1,13 @@
 """
-智能问答API
+智能问答API（/api/v1/chat）
 """
 
-from typing import List
+from fastapi import APIRouter, Query, Response
 
-from fastapi import APIRouter, HTTPException
-
-from app.models.schemas import ChatMessage, ChatSession, QueryRequest, QueryResponse
+from app.errors import ApiError
+from app.models.schemas import (AddFactRequest, ChatMessage, ChatSession,
+                                ClearedResult, FactItem, MemoryList, Page,
+                                QueryRequest, QueryResponse, RagStats)
 from app.services.agent_service import agent_service
 from app.services.memory_service import memory_service
 from app.services.qa_service import qa_service
@@ -15,7 +16,22 @@ from app.services.vector_store import vector_store
 router = APIRouter()
 
 
-@router.post("/agent", response_model=QueryResponse, summary="Agent 模式问答（多步工具调用）")
+@router.post("/query", response_model=QueryResponse, summary="智能问答",
+             tags=["智能问答"])
+async def query_documents(request: QueryRequest):
+    """检索→重排→生成→引用核验 全链路；trace 逐步返回"""
+    try:
+        return await qa_service.query(
+            question=request.question,
+            session_id=request.session_id,
+            use_history=request.use_history,
+        )
+    except Exception as e:
+        raise ApiError(500, "query_failed", f"查询处理失败：{str(e)[:300]}")
+
+
+@router.post("/agent", response_model=QueryResponse,
+             summary="Agent 模式问答（多步工具调用）", tags=["智能问答"])
 async def agent_query(request: QueryRequest):
     """L3 Agent：LLM 自主决定检索什么、检索几次（ReAct 循环），适合复合问题"""
     try:
@@ -25,100 +41,88 @@ async def agent_query(request: QueryRequest):
             use_history=request.use_history,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Agent 处理失败：{str(e)}")
+        raise ApiError(500, "agent_failed", f"Agent 处理失败：{str(e)[:300]}")
 
 
-@router.get("/memories", summary="长期记忆列表")
-async def list_memories():
-    """L4 跨会话事实库"""
-    return {"count": len(memory_service.list_facts()), "facts": memory_service.list_facts()}
-
-
-@router.post("/memories", summary="手动添加长期记忆")
-async def add_memory(fact: str):
-    item = memory_service.add_fact(fact, source="manual")
-    if not item:
-        raise HTTPException(status_code=400, detail="事实为空或已存在")
-    return item
-
-
-@router.delete("/memories/{fact_id}", summary="删除一条长期记忆")
-async def delete_memory(fact_id: str):
-    if memory_service.delete_fact(fact_id):
-        return {"message": "已删除", "id": fact_id}
-    raise HTTPException(status_code=404, detail="记忆不存在")
-
-
-@router.post("/query", response_model=QueryResponse, summary="智能问答")
-async def query_documents(request: QueryRequest):
-    """基于文档知识库的智能问答"""
-    try:
-        return await qa_service.query(
-            question=request.question,
-            session_id=request.session_id,
-            use_history=request.use_history,
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"查询处理失败：{str(e)}")
-
-
-@router.get("/sessions", response_model=List[ChatSession], summary="获取会话列表")
-async def get_sessions():
-    """获取所有对话会话"""
-    return await qa_service.get_all_sessions()
-
-
-@router.get("/sessions/{session_id}", response_model=ChatSession, summary="获取会话详情")
-async def get_session(session_id: str):
-    """获取指定会话的详细信息"""
-    session = await qa_service.get_session_history(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="会话不存在")
-    return session
-
-
-@router.delete("/sessions/{session_id}", summary="删除会话")
-async def delete_session(session_id: str):
-    """删除指定会话"""
-    if await qa_service.delete_session(session_id):
-        return {"message": "会话删除成功", "session_id": session_id}
-    raise HTTPException(status_code=404, detail="会话不存在")
-
-
-@router.get("/sessions/{session_id}/history", response_model=List[ChatMessage],
-            summary="获取对话历史")
-async def get_chat_history(session_id: str):
-    """获取指定会话的对话历史"""
-    session = await qa_service.get_session_history(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="会话不存在")
-    return session["messages"]
-
-
-@router.get("/stats", summary="获取RAG系统统计")
+@router.get("/stats", response_model=RagStats, summary="RAG 系统统计",
+            tags=["智能问答"])
 async def get_rag_stats():
-    """获取向量库与会话统计"""
     try:
         vector_stats = await vector_store.get_collection_stats()
         sessions = await qa_service.get_all_sessions()
         total_messages = sum(len(s["messages"]) for s in sessions)
-        return {
-            "vector_store": vector_stats,
-            "sessions": {
-                "total_sessions": len(sessions),
-                "total_messages": total_messages,
-            },
-        }
+        return RagStats(vector_store=vector_stats,
+                        sessions={"total_sessions": len(sessions),
+                                  "total_messages": total_messages})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取统计信息失败：{str(e)}")
+        raise ApiError(500, "stats_failed", f"获取统计失败：{str(e)[:300]}")
 
 
-@router.post("/clear-history", summary="清空对话历史")
-async def clear_history(session_id: str = None):
-    """清空指定会话；不传 session_id 则清空所有会话"""
-    if session_id:
-        if await qa_service.delete_session(session_id):
-            return {"message": f"会话 {session_id} 已清空"}
-        raise HTTPException(status_code=404, detail="会话不存在")
-    n = await qa_service.clear_all_sessions()
-    return {"message": f"已清空 {n} 个会话"}
+# ---------- 长期记忆（L4） ----------
+
+@router.get("/memories", response_model=MemoryList, summary="长期记忆列表",
+            tags=["长期记忆"])
+async def list_memories():
+    facts = memory_service.list_facts()
+    return MemoryList(count=len(facts), facts=facts)
+
+
+@router.post("/memories", response_model=FactItem, status_code=201,
+             summary="手动添加长期记忆", tags=["长期记忆"])
+async def add_memory(request: AddFactRequest):
+    item = memory_service.add_fact(request.fact, source="manual")
+    if not item:
+        raise ApiError(409, "fact_exists_or_empty", "事实为空或已存在")
+    return item
+
+
+@router.delete("/memories/{fact_id}", status_code=204, summary="删除一条长期记忆",
+               tags=["长期记忆"])
+async def delete_memory(fact_id: str):
+    if not memory_service.delete_fact(fact_id):
+        raise ApiError(404, "memory_not_found", f"记忆不存在: {fact_id}")
+    return Response(status_code=204)
+
+
+# ---------- 会话（短期记忆） ----------
+
+@router.get("/sessions", response_model=Page[ChatSession], summary="会话列表（分页）",
+            tags=["会话"])
+async def get_sessions(page: int = Query(1, ge=1),
+                       size: int = Query(20, ge=1, le=100)):
+    sessions = await qa_service.get_all_sessions()
+    start = (page - 1) * size
+    return Page[ChatSession](items=sessions[start:start + size],
+                             total=len(sessions), page=page, size=size)
+
+
+@router.delete("/sessions", response_model=ClearedResult, summary="清空全部会话",
+               tags=["会话"])
+async def clear_sessions():
+    return ClearedResult(cleared_sessions=await qa_service.clear_all_sessions())
+
+
+@router.get("/sessions/{session_id}", response_model=ChatSession, summary="会话详情",
+            tags=["会话"])
+async def get_session(session_id: str):
+    session = await qa_service.get_session_history(session_id)
+    if not session:
+        raise ApiError(404, "session_not_found", f"会话不存在: {session_id}")
+    return session
+
+
+@router.delete("/sessions/{session_id}", status_code=204, summary="删除会话",
+               tags=["会话"])
+async def delete_session(session_id: str):
+    if not await qa_service.delete_session(session_id):
+        raise ApiError(404, "session_not_found", f"会话不存在: {session_id}")
+    return Response(status_code=204)
+
+
+@router.get("/sessions/{session_id}/history", response_model=list[ChatMessage],
+            summary="对话历史", tags=["会话"])
+async def get_chat_history(session_id: str):
+    session = await qa_service.get_session_history(session_id)
+    if not session:
+        raise ApiError(404, "session_not_found", f"会话不存在: {session_id}")
+    return session["messages"]

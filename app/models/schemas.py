@@ -3,8 +3,25 @@
 """
 
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Generic, List, Optional, Dict, Any, TypeVar
 from pydantic import BaseModel, Field
+
+T = TypeVar("T")
+
+class Page(BaseModel, Generic[T]):
+    """统一分页信封"""
+    items: List[T] = Field(default_factory=list, description="当前页数据")
+    total: int = Field(0, description="总条数")
+    page: int = Field(1, description="页码，从1开始")
+    size: int = Field(20, description="每页条数")
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+    detail: Dict[str, Any] = Field(default_factory=dict)
+
+class ErrorResponse(BaseModel):
+    error: ErrorDetail
 
 class DocumentBase(BaseModel):
     """文档基础模型"""
@@ -83,3 +100,34 @@ class HealthResponse(BaseModel):
     service: str = Field(..., description="服务名称")
     version: str = Field(..., description="版本号")
     timestamp: datetime = Field(default_factory=datetime.now, description="检查时间")
+
+class ChunkListResponse(BaseModel):
+    doc_id: str
+    filename: str
+    chunk_count: int
+    chunks: List[Dict[str, Any]]
+
+class ReindexResult(BaseModel):
+    total: int = Field(0, description="台账内文档总数")
+    reindexed: int = Field(0, description="成功重嵌入数")
+    failed: List[str] = Field(default_factory=list, description="失败的 doc_id")
+
+class FactItem(BaseModel):
+    id: str
+    fact: str
+    source: str = "extracted"
+    created_at: str = ""
+
+class MemoryList(BaseModel):
+    count: int
+    facts: List[FactItem]
+
+class AddFactRequest(BaseModel):
+    fact: str = Field(..., min_length=1, description="要记住的原子事实")
+
+class ClearedResult(BaseModel):
+    cleared_sessions: int
+
+class RagStats(BaseModel):
+    vector_store: Dict[str, Any]
+    sessions: Dict[str, int]

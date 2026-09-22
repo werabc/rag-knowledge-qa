@@ -9,15 +9,19 @@ import os
 
 from app.api.endpoints import documents, chat
 from app.config import settings
+from app.errors import install_error_handlers
 
 # 创建FastAPI应用
 app = FastAPI(
     title="企业知识库问答系统",
-    description="基于RAG技术的智能问答系统，支持多种文档格式",
-    version="1.0.0",
+    description="基于RAG技术的智能问答系统。业务端点统一挂在 /api/v1 下；"
+                "失败响应契约：`{\"error\": {\"code\", \"message\", \"detail\"}}`。",
+    version="1.2.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+install_error_handlers(app)
 
 # 配置CORS
 app.add_middleware(
@@ -32,9 +36,9 @@ app.add_middleware(
 os.makedirs(settings.DOCUMENT_STORAGE_PATH, exist_ok=True)
 os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
 
-# 注册路由
-app.include_router(documents.router, prefix="/api/documents", tags=["文档管理"])
-app.include_router(chat.router, prefix="/api/chat", tags=["智能问答"])
+# 注册路由（业务端点统一 /api/v1）
+app.include_router(documents.router, prefix="/api/v1/documents")
+app.include_router(chat.router, prefix="/api/v1/chat")
 
 # 可视化面板
 app.mount("/ui", StaticFiles(directory=os.path.join("app", "static"), html=True), name="ui")
@@ -54,14 +58,9 @@ async def root():
     """系统首页"""
     return {
         "message": "欢迎使用企业知识库问答系统",
-        "version": "1.0.0",
+        "version": "1.2.0",
         "docs": "/docs",
-        "features": [
-            "文档上传和管理",
-            "智能问答",
-            "对话历史",
-            "多种文档格式支持"
-        ]
+        "api_base": "/api/v1",
     }
 
 @app.get("/health", tags=["健康检查"])
@@ -70,7 +69,7 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "企业知识库问答系统",
-        "version": "1.0.0"
+        "version": "1.2.0"
     }
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 ```
                         ┌──────────────────────────────────────────┐
  上传 .txt/.pdf/.docx   │                FastAPI (app/main.py)     │
- ─────────────────────► │  /api/documents/*   /api/chat/*   /ui    │
+ ─────────────────────► │  /api/v1/documents/*  /api/v1/chat/*  /ui │
                         └──────┬───────────────────┬───────────────┘
                                │                   │
                      DocumentService            QAService / AgentService
@@ -55,34 +55,36 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 | 问答 API | `app/api/endpoints/chat.py` | 查询、Agent 查询、会话增删查、历史、统计、清空、长期记忆增删查 |
 | 可视化面板 | `app/static/index.html` | 三页签：知识库 / 对话记忆（含长期记忆卡片）/ 问答调试（全链路 trace、Agent 逐 turn、Agent 模式开关） |
 
-## 4. API 参考
+## 4. API 参考（v1.2 起统一 `/api/v1` 前缀）
 
-### 文档管理 `/api/documents`
+**错误契约**：所有失败响应为 `{"error": {"code", "message", "detail"}}`，状态码语义化（400 参数错 / 404 不存在 / 409 冲突 / 413 超限 / 500 内部错）。删除成功返回 **204 无响应体**。列表端点统一分页信封 `{items, total, page, size}`。契约回归：`python -X utf8 scripts/api_contract_test.py`（21 项矩阵）。
+
+### 文档管理 `/api/v1/documents`
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`，超 `MAX_UPLOAD_SIZE_MB` 返回 413 |
-| GET | `/` | 文档台账列表 |
-| GET | `/{doc_id}` | 单个文档详情 |
+| POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`；400 unsupported_file_type / 413 file_too_large |
+| GET | `/` | 文档台账列表（分页 `?page=&size=`，size≤100） |
+| GET | `/{doc_id}` | 单个文档详情；404 document_not_found |
 | GET | `/{doc_id}/chunks` | 该文档全部分块明文 |
-| DELETE | `/{doc_id}` | 删向量分块 + BM25 + 台账 + 分块明文 |
-| POST | `/reindex` | **用当前 embedding 模型全量重建向量库+BM25**（切换模型后必调，见 §7） |
+| DELETE | `/{doc_id}` | 删向量分块 + BM25 + 台账 + 分块明文；成功 204 |
+| POST | `/reindex` | **用当前 embedding 模型全量重建向量库+BM25**（切换模型后必调，见 §7）；并发再入 409 |
 | GET | `/stats/summary` | 文档数/分块数/总大小/类型分布 |
 
-### 智能问答 `/api/chat`
+### 智能问答 `/api/v1/chat`
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| POST | `/query` | 入参 `{question, session_id?, use_history=true}`；返回 `{answer, sources[], confidence, session_id, trace[]}` |
+| POST | `/query` | 入参 `{question, session_id?, use_history=true}`；返回 `{answer, sources[]（含 cited 标记）, confidence, session_id, trace[]}` |
 | POST | `/agent` | **Agent 模式（L3）**：同 `/query` 入参出参，但走 ReAct 循环，LLM 自主决定检索次数与工具；trace 含 `agent` 步骤（逐 turn 思考/工具/观察） |
-| GET | `/memories` | 长期记忆事实列表（L4） |
-| POST | `/memories?fact=` | 手动添加一条事实 |
-| DELETE | `/memories/{fact_id}` | 删除单条事实 |
-| GET | `/sessions` | 全部会话 |
-| GET | `/sessions/{id}` | 会话详情（含消息与 trace） |
+| GET | `/memories` | 长期记忆事实列表（L4）`{count, facts[]}` |
+| POST | `/memories` | 手动添加事实，body `{fact}`；成功 201，重复/空 409 |
+| DELETE | `/memories/{fact_id}` | 删除单条事实；成功 204，不存在 404 |
+| GET | `/sessions` | 会话列表（分页） |
+| DELETE | `/sessions` | 清空全部会话，返回 `{cleared_sessions}` |
+| GET | `/sessions/{id}` | 会话详情（含消息与 trace）；404 session_not_found |
 | GET | `/sessions/{id}/history` | 仅消息列表 |
-| DELETE | `/sessions/{id}` | 删除会话 |
-| POST | `/clear-history?session_id=` | 清空指定会话；不带参数清空全部 |
+| DELETE | `/sessions/{id}` | 删除会话；成功 204 |
 | GET | `/stats` | 向量库分块数 + 会话/消息数 |
 
 ### 其他

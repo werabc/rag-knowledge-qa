@@ -33,7 +33,7 @@ def evaluate():
     rows = []
     for c in cases:
         t0 = time.perf_counter()
-        r = requests.post(f"{BASE}/api/chat/query", json={
+        r = requests.post(f"{BASE}/api/v1/chat/query", json={
             "question": c["question"], "use_history": False}, timeout=180)
         r.raise_for_status()
         data = r.json()
