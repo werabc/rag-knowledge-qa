@@ -61,7 +61,7 @@ details summary{cursor:pointer;color:var(--dim);font-size:12px}
   <section id="tab-kb">
     <div class="card">
       <div class="row">
-        <input type="file" id="upfile" accept=".txt,.pdf,.docx">
+        <input type="file" id="upfile" accept=".txt,.md,.pdf,.docx">
         <button class="act" style="flex:none" onclick="uploadDoc()">上传入库</button>
       </div>
       <div class="dim">上传链路：提取文本 → 切块 → 嵌入（EMBEDDING_MODEL_NAME，默认 bge-small-zh）→ Chroma 向量库 + BM25 + 分块明文 + 台账</div>

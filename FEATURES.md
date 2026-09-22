@@ -12,7 +12,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 
 ```
                         ┌──────────────────────────────────────────┐
- 上传 .txt/.pdf/.docx   │                FastAPI (app/main.py)     │
+ 上传 .txt/.md/.pdf/.docx   │                FastAPI (app/main.py)     │
  ─────────────────────► │  /api/v1/documents/*  /api/v1/chat/*  /ui │
                         └──────┬───────────────────┬───────────────┘
                                │                   │
@@ -65,7 +65,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| POST | `/upload` | multipart 上传 `.txt/.pdf/.docx`；PDF 逐页提取，无文本层的扫描页自动 OCR（页码+ocr 标记入元数据）；400 unsupported_file_type / 413 file_too_large |
+| POST | `/upload` | multipart 上传 `.txt/.md/.pdf/.docx`；PDF 逐页提取，无文本层的扫描页自动 OCR（页码+ocr 标记入元数据）；400 unsupported_file_type / 413 file_too_large |
 | GET | `/` | 文档台账列表（分页 `?page=&size=`，size≤100） |
 | GET | `/{doc_id}` | 单个文档详情；404 document_not_found |
 | GET | `/{doc_id}/chunks` | 该文档全部分块明文，JSON 数组，每块 `{text, page_num, ocr, section}`（非 PDF 页码为 null；旧格式纯字符串自动升级） |

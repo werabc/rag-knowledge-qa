@@ -24,7 +24,7 @@ python run.py
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| POST | `/documents/upload` | 上传 PDF/DOCX/TXT，返回 doc_id 与分块数 |
+| POST | `/documents/upload` | 上传 PDF/DOCX/TXT/MD，返回 doc_id 与分块数 |
 | GET | `/documents` | 文档列表（分页：page/size） |
 | GET | `/documents/{id}/chunks` | 分块明文（含 page_num/ocr 元数据） |
 | POST | `/documents/reindex` | 换嵌入模型后重建向量库 + BM25 |

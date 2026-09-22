@@ -17,13 +17,13 @@ router = APIRouter()
 
 _reindexing = False
 
-_ALLOWED_TYPES = [".pdf", ".docx", ".txt"]
+_ALLOWED_TYPES = [".pdf", ".docx", ".txt", ".md"]
 
 
 @router.post("/upload", response_model=DocumentResponse, summary="上传文档",
              tags=["文档管理"])
 async def upload_document(file: UploadFile = File(...)):
-    """上传 .txt/.pdf/.docx：提取文本 → 切块 → 向量库 + BM25 + 明文 + 台账"""
+    """上传 .txt/.md/.pdf/.docx：提取文本 → 切块 → 向量库 + BM25 + 明文 + 台账"""
     safe_name = os.path.basename(file.filename or "document.txt")
     file_ext = os.path.splitext(safe_name)[1].lower()
 
