@@ -1,0 +1,104 @@
+{
+ "generated_at": "2026-09-22 11:16:31",
+ "cases": 11,
+ "retrieval_rrf_only": {
+  "hit@1": 1.0,
+  "hit@4": 1.0,
+  "MRR": 1.0
+ },
+ "retrieval_with_rerank": {
+  "hit@1": 1.0,
+  "hit@4": 1.0,
+  "MRR": 1.0
+ },
+ "per_case": [
+  {
+   "question": "朱雀系统的采购预算是多少？",
+   "expect": "decoy_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 17.9
+  },
+  {
+   "question": "朱雀系统单节点支持多少并发用户？",
+   "expect": "decoy_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 9.8
+  },
+  {
+   "question": "王志刚担任什么角色？",
+   "expect": "decoy_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 20.4
+  },
+  {
+   "question": "客服机器人小鹤的响应时间是多少？",
+   "expect": "decoy_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 13.9
+  },
+  {
+   "question": "产品路线图里第三季度的目标是什么？",
+   "expect": "roadmap_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 9.2
+  },
+  {
+   "question": "混合召回的负责人是谁？",
+   "expect": "roadmap_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 8.7
+  },
+  {
+   "question": "检索延迟要降到多少毫秒以内？",
+   "expect": "roadmap_zh.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 10.2
+  },
+  {
+   "question": "What is NovaTech's flagship product?",
+   "expect": "kb_sample.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 12.2
+  },
+  {
+   "question": "When was QuantumLeap launched?",
+   "expect": "kb_sample.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 8.6
+  },
+  {
+   "question": "星辰编辑器支持多少人同时在线协作？",
+   "expect": "star_editor.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 12.5
+  },
+  {
+   "question": "星辰编辑器内测版什么时候发布、谁负责？",
+   "expect": "star_editor.txt",
+   "rrf_rank": 1,
+   "final_rank": 1,
+   "rerank_mode": "llm",
+   "seconds": 11.9
+  }
+ ]
+}

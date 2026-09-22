@@ -1,0 +1,16 @@
+{
+  "description": "检索评估金标集：问题 → 期望命中文档。覆盖中文直查/关键词/语义改写/英文四类。需服务在跑、知识库含对应4篇文档。",
+  "cases": [
+    {"question": "朱雀系统的采购预算是多少？", "expect": "decoy_zh.txt"},
+    {"question": "朱雀系统单节点支持多少并发用户？", "expect": "decoy_zh.txt"},
+    {"question": "王志刚担任什么角色？", "expect": "decoy_zh.txt"},
+    {"question": "客服机器人小鹤的响应时间是多少？", "expect": "decoy_zh.txt"},
+    {"question": "产品路线图里第三季度的目标是什么？", "expect": "roadmap_zh.txt"},
+    {"question": "混合召回的负责人是谁？", "expect": "roadmap_zh.txt"},
+    {"question": "检索延迟要降到多少毫秒以内？", "expect": "roadmap_zh.txt"},
+    {"question": "What is NovaTech's flagship product?", "expect": "kb_sample.txt"},
+    {"question": "When was QuantumLeap launched?", "expect": "kb_sample.txt"},
+    {"question": "星辰编辑器支持多少人同时在线协作？", "expect": "star_editor.txt"},
+    {"question": "星辰编辑器内测版什么时候发布、谁负责？", "expect": "star_editor.txt"}
+  ]
+}
