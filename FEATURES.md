@@ -118,6 +118,7 @@ D:\rag\
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | 1000 / 200 | 切块参数 |
 | `SEARCH_K` | 4 | 融合后进入上下文的分块数 |
 | `HYBRID_BM25` | True | 双路召回开关 |
+| `CITATION_VERIFY` | True | 生成后引用核验（防幻觉）开关 |
 | `QUERY_REWRITE` / `LLM_RERANK` | True / True | 指代消解改写、LLM 重排开关 |
 | `RERANK_CANDIDATES` | 8 | 召回池大小（重排输入条数） |
 | `AGENT_MAX_STEPS` | 5 | L3 Agent ReAct 循环最大轮数，超限强制收口 |
@@ -153,6 +154,9 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 2. 重启服务（不同模型维度不同，旧库不兼容）；
 3. `POST /api/documents/reindex` —— 从 `data/chunks/` 明文全量重嵌入，无需重新上传。
 
+### 引用核验（防幻觉，零额外 LLM 往返）
+生成后、写记忆前，用规则校验答案里的 `[资料N]`/`【资料N】` 引用：编号超出来源数 → 从答案中**剔除**（模型引用了不存在的资料即幻觉信号）；通篇无引用 → 末尾**补默认来源行**。trace 的 `citation` 步骤记录 发现/采信/剔除 的编号集合，响应 `sources[].cited` 标记哪条真被答案引用，面板同步渲染。mode：`ok / stripped_invalid / appended_default / no_sources / disabled`。
+
 ### 会话记忆
 `session_id` 缺省时服务端自动生成并在响应回传，客户端带上即续聊。最近 `HISTORY_ROUNDS=6` 条消息进 prompt。每轮问答（含 trace）即时落盘 `sessions.json`。
 
@@ -162,7 +166,7 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 ### 生成回退
 LLM 调用失败（网络/配额）自动回退抽取式回答（直接罗列 top 分块），不中断服务；trace 的 generation 步骤会记录 `mode=extractive_fallback` 与错误信息。
 
-## 8. Trace 字段（问答响应 `trace[]`，7 步）
+## 8. Trace 字段（问答响应 `trace[]`，8 步）
 
 | step | 耗时 | detail 关键字段 |
 |---|---|---|
@@ -171,6 +175,7 @@ LLM 调用失败（网络/配额）自动回退抽取式回答（直接罗列 to
 | `rerank` | ✓ | `mode=llm/disabled/skipped/fallback`、`before[]`（RRF 原序）、`after[]`（重排后 top4） |
 | `context` | ✓ | `chars`、`source_count`、`strategy=top_k_concatenation` |
 | `generation` | ✓ | `mode=llm`、`model`、`base_url`、`history_messages_used`、`prompt_chars`、`prompt_preview`(前500字)；失败时 `mode=extractive_fallback`+`error` |
+| `citation` | ✓ | `mode=ok/stripped_invalid/appended_default/no_sources/disabled`（可组合）、`source_count`、`found[]/cited[]/stripped[]` 引用编号 |
 | `memory` | ✓ | 会话写入情况 |
 | `total` | ✓ | 端到端总耗时 |
 

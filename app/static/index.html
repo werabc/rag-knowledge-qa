@@ -177,6 +177,13 @@ function renderTrace(trace){
         d.before.map((b,i)=>`<tr><td class="dim">${esc(b)}</td><td>${d.after[i]?esc(d.after[i]):'<span class=dim>—</span>'}</td></tr>`).join('')+`</table>`;
       if(d.error)body+=`<b style="color:#e06c75"> error: ${esc(d.error)}</b>`;
     }
+    else if(t.step==='citation'){
+      const ok=d.mode==='ok';
+      body=`<span class="dim">mode=${esc(d.mode)} · 来源${d.source_count??0}条 · 发现引用[${(d.found||[]).join(',')||'无'}] → 采信[${(d.cited||[]).join(',')||'无'}]</span>`+
+        ((d.stripped||[]).length?` <b style="color:#e06c75">剔除越界引用: ${d.stripped.join(', ')}</b>`:'')+
+        (d.mode&&d.mode.includes('appended_default')?` <b style="color:#e5c07b">模型未标引用，已补默认来源</b>`:'')+
+        (ok?' <b style="color:#98c379">✓ 引用均可信</b>':'');
+    }
     else if(t.step==='retrieval'){
       if(d.hits){body=`<table class="hits"><tr><th>#</th><th>文档</th><th>分数</th><th>内容预览</th></tr>`+
         (d.hits||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.score.toFixed(3)}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;}
@@ -216,7 +223,7 @@ async function runQuery(){
     <pre style="max-height:none">${esc(r.answer)}</pre>
     ${renderTrace(r.trace||[])}</div>
     <div class="card"><h4>来源片段（${r.sources.length}）</h4>`+
-    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
+    r.sources.map((s,i)=>`<details><summary>[${i+1}] ${esc(s.filename)} · 向量${s.vec_score??'-'} / BM25 ${s.bm25_score??'-'}${s.cited?' · <b style="color:#98c379">被答案引用</b>':''}</summary><pre>${esc(s.content)}</pre></details>`).join('')+'</div>';
   stats();
 }
 async function loadFacts(){

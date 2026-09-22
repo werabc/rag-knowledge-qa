@@ -24,6 +24,8 @@ SYSTEM_PROMPT = (
 
 HISTORY_ROUNDS = 6  # 参与 prompt 的最近消息条数
 
+CITE_RE = re.compile(r"[【\[]资料(\d+)[】\]]")  # 匹配 [资料3] / 【资料3】
+
 
 class QAService:
     def __init__(self):
@@ -121,6 +123,11 @@ class QAService:
             gen_detail = {"mode": "extractive", "reason": "OPENAI_API_KEY 未配置"}
         _step("generation", t0, answer_chars=len(answer), **gen_detail)
 
+        # 3.5 引用核验（防幻觉：剔除越界引用、未引用兜底；纯规则零额外 LLM 往返）
+        t0 = time.perf_counter()
+        answer, cited, cite_detail = self._verify_citations(answer, results)
+        _step("citation", t0, **cite_detail)
+
         # 4. 写入会话记忆
         t0 = time.perf_counter()
         sid = session_id or str(uuid.uuid4())
@@ -151,8 +158,9 @@ class QAService:
                     "bm25_score": round(r["bm25_score"], 4),
                     "filename": r["metadata"].get("filename", ""),
                     "doc_id": r["metadata"].get("doc_id", ""),
+                    "cited": (i + 1) in cited,
                 }
-                for r in results
+                for i, r in enumerate(results)
             ],
             "confidence": round(confidence, 4),
             "session_id": sid,
@@ -205,6 +213,31 @@ class QAService:
         for m in merged:
             m["score"] = round(m["rrf"], 5)
         return merged
+
+    @staticmethod
+    def _verify_citations(answer: str, results: List[Dict[str, Any]]):
+        """引用核验：模型标了不存在的资料编号则剔除；通篇没引用则补默认来源。返回 (答案, 采信编号, trace明细)"""
+        n = len(results)
+        if not settings.CITATION_VERIFY:
+            return answer, set(), {"mode": "disabled", "source_count": n}
+        if n == 0:
+            return answer, set(), {"mode": "no_sources", "found": []}
+        found = {int(m) for m in CITE_RE.findall(answer)}
+        valid = {i for i in found if 1 <= i <= n}
+        invalid = sorted(i for i in found if not 1 <= i <= n)
+        cleaned, actions = answer, []
+        if invalid:
+            cleaned = CITE_RE.sub(
+                lambda m: m.group(0) if 1 <= int(m.group(1)) <= n else "", answer)
+            actions.append("stripped_invalid")
+        if not valid:
+            default_cites = "、".join(f"资料{i}" for i in range(1, n + 1))
+            cleaned = cleaned.rstrip() + f"\n\n（引用：{default_cites}）"
+            actions.append("appended_default")
+        return cleaned, valid, {
+            "mode": "+".join(actions) if actions else "ok",
+            "source_count": n, "found": sorted(found),
+            "cited": sorted(valid), "stripped": invalid}
 
     # ---------- LLM 辅助调用 ----------
 
