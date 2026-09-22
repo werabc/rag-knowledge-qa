@@ -33,7 +33,9 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 200
     SEARCH_K: int = 4
     HYBRID_BM25: bool = True   # 向量+BM25 双路召回(RRF融合)
-    BM25_TOP_K: int = 4
+    QUERY_REWRITE: bool = True   # 多轮指代消解：把追问改写成自包含查询再检索
+    LLM_RERANK: bool = True      # LLM listwise 重排（融合召回后、上下文前）
+    RERANK_CANDIDATES: int = 8   # 召回池大小=重排输入条数
 
     # FastAPI配置
     APP_HOST: str = "0.0.0.0"

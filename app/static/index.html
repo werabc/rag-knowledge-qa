@@ -156,7 +156,19 @@ function renderTrace(trace){
   const cls={retrieval:'',context:'ctx',generation:'gen',memory:'mem'};
   return '<details><summary>全链路 trace（'+trace.length+'步）</summary>'+trace.filter(t=>t.step!=='total').map(t=>{
     const d=t.detail||{};let body='';
-    if(t.step==='retrieval'){
+    if(t.step==='query_rewrite'){
+      body=`<span class="dim">mode=${esc(d.mode)}${d.reason?'（'+esc(d.reason)+'）':''}</span>`;
+      if(d.original&&d.rewritten!==d.original)body+=`<div><s class="dim">${esc(d.original)}</s> → <b>${esc(d.rewritten)}</b></div>`;
+      else body+=`<div>${esc(d.rewritten||d.original||'')}</div>`;
+      if(d.error)body+=`<b style="color:#e06c75"> error: ${esc(d.error)}</b>`;
+    }
+    else if(t.step==='rerank'){
+      body=`<span class="dim">mode=${esc(d.mode)}${d.reason?'（'+esc(d.reason)+'）':''} 召回池→top${(d.after||[]).length}</span>`;
+      if(d.before&&d.after)body+=`<table class="hits"><tr><th>RRF原序</th><th>重排后</th></tr>`+
+        d.before.map((b,i)=>`<tr><td class="dim">${esc(b)}</td><td>${d.after[i]?esc(d.after[i]):'<span class=dim>—</span>'}</td></tr>`).join('')+`</table>`;
+      if(d.error)body+=`<b style="color:#e06c75"> error: ${esc(d.error)}</b>`;
+    }
+    else if(t.step==='retrieval'){
       if(d.hits){body=`<table class="hits"><tr><th>#</th><th>文档</th><th>分数</th><th>内容预览</th></tr>`+
         (d.hits||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.score.toFixed(3)}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;}
       else{const ch=d.channels||{};

@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import re
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -84,13 +85,20 @@ class QAService:
                 "detail": detail,
             })
 
-        # 1. 混合检索（向量语义 + BM25关键词，RRF融合）
+        # 0. 查询改写（多轮指代消解）
         t0 = time.perf_counter()
-        vec_results = await vector_store.search_similar(question, k=settings.SEARCH_K)
-        bm25_results = (bm25_index.search(question, k=settings.BM25_TOP_K)
+        search_query, rw_detail = await self._rewrite_query(
+            question, session_id, use_history)
+        _step("query_rewrite", t0, **rw_detail)
+
+        # 1. 混合检索（向量语义 + BM25关键词，RRF融合），扩召回供重排
+        pool = settings.RERANK_CANDIDATES if settings.LLM_RERANK else settings.SEARCH_K
+        t0 = time.perf_counter()
+        vec_results = await vector_store.search_similar(search_query, k=pool)
+        bm25_results = (bm25_index.search(search_query, k=pool)
                         if settings.HYBRID_BM25 else [])
-        results = self._rrf_merge(vec_results, bm25_results, cap=settings.SEARCH_K)
-        _step("retrieval", t0, query=question, k=settings.SEARCH_K,
+        results = self._rrf_merge(vec_results, bm25_results, cap=pool)
+        _step("retrieval", t0, query=search_query, k=pool,
               channels={
                   "vector": [{"filename": r["metadata"].get("filename", ""),
                               "score": round(r["score"], 4), "preview": r["content"][:60]}
@@ -102,6 +110,11 @@ class QAService:
                        "rrf": m["score"], "vec_score": round(m["vec_score"], 4),
                        "bm25_score": round(m["bm25_score"], 4), "preview": m["content"][:80]}
                       for i, m in enumerate(results)])
+
+        # 1.5 LLM listwise 重排 → 截取 top SEARCH_K
+        t0 = time.perf_counter()
+        results, rr_detail = await self._llm_rerank(search_query, results)
+        _step("rerank", t0, **rr_detail)
 
         # 2. 上下文构建
         t0 = time.perf_counter()
@@ -179,6 +192,91 @@ class QAService:
         for m in merged:
             m["score"] = round(m["rrf"], 5)
         return merged
+
+    # ---------- LLM 辅助调用 ----------
+
+    async def _llm_chat(self, messages: List[Dict[str, str]],
+                        temperature: float = 0.1) -> str:
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(
+            api_key=settings.OPENAI_API_KEY,
+            base_url=settings.OPENAI_API_BASE,
+        )
+        resp = await client.chat.completions.create(
+            model=settings.LLM_MODEL,
+            messages=messages,
+            temperature=temperature,
+        )
+        return (resp.choices[0].message.content or "").strip()
+
+    async def _rewrite_query(self, question: str, session_id: Optional[str],
+                             use_history: bool):
+        """有历史时把追问改写成自包含查询（指代消解）；失败或无需改写返回原问题"""
+        if not (settings.QUERY_REWRITE and settings.OPENAI_API_KEY
+                and use_history and session_id and session_id in self.sessions
+                and self.sessions[session_id]["messages"]):
+            return question, {"mode": "skipped",
+                              "reason": "首轮/无历史/未配置LLM", "rewritten": question}
+        history = self.sessions[session_id]["messages"][-HISTORY_ROUNDS:]
+        dialog = "\n".join(
+            f"{'用户' if m['role'] == 'user' else '助手'}: {m['content'][:200]}"
+            for m in history)
+        prompt = (
+            "根据对话历史，把用户的最新问题改写成一个不依赖历史、可独立检索的查询。"
+            "若已自包含则原样输出。只输出查询本身，不要解释。\n\n"
+            f"对话历史：\n{dialog}\n\n最新问题：{question}"
+        )
+        try:
+            rewritten = await self._llm_chat(
+                [{"role": "user", "content": prompt}], temperature=0.0)
+            rewritten = rewritten.strip('"「」').splitlines()[0].strip()
+            if rewritten and rewritten != question and len(rewritten) < 200:
+                return rewritten, {"mode": "llm", "original": question,
+                                   "rewritten": rewritten}
+            return question, {"mode": "no_change", "original": question,
+                              "rewritten": question}
+        except Exception as e:
+            logger.exception("查询改写失败，使用原问题检索")
+            return question, {"mode": "fallback", "original": question,
+                              "rewritten": question, "error": str(e)[:200]}
+
+    async def _llm_rerank(self, query: str, candidates: List[Dict[str, Any]]):
+        """LLM listwise 重排：按与问题的相关度对候选排序，截取 top SEARCH_K"""
+        before = [c["metadata"].get("filename", "") for c in candidates]
+        if not settings.LLM_RERANK:
+            return candidates[:settings.SEARCH_K], {"mode": "disabled", "before": before}
+        if not settings.OPENAI_API_KEY or len(candidates) <= 1:
+            return candidates[:settings.SEARCH_K], {
+                "mode": "skipped", "reason": "未配置LLM或候选≤1", "before": before}
+        listing = "\n".join(
+            f"{i + 1}. {c['content'][:200]}" for i, c in enumerate(candidates))
+        prompt = (
+            "以下是候选资料片段。请按与问题的相关度从高到低对全部候选重新排序，"
+            f"必须输出全部 {len(candidates)} 个编号的 JSON 数组（如 [3,1,5,2,4]），不要其他内容。\n\n"
+            f"问题：{query}\n\n候选资料：\n{listing}"
+        )
+        try:
+            raw = await self._llm_chat([{"role": "user", "content": prompt}],
+                                       temperature=0.0)
+            m = re.search(r"\[[\s\d,]+\]", raw)
+            order = json.loads(m.group(0)) if m else None
+            n = len(candidates)
+            # 容错：模型可能只给出部分排名（如最相关的几条），已列出的置顶、其余按 RRF 原序补齐
+            picked = [i for i in (order or []) if isinstance(i, int) and 1 <= i <= n]
+            picked = list(dict.fromkeys(picked))
+            if not picked:
+                raise ValueError(f"重排输出不合法: {raw[:100]}")
+            full = picked + [i for i in range(1, n + 1) if i not in picked]
+            ranked = [candidates[i - 1] for i in full][:settings.SEARCH_K]
+            return ranked, {"mode": "llm", "model": settings.LLM_MODEL,
+                            "partial" if len(picked) < n else "full_rank": True,
+                            "before": before,
+                            "after": [c["metadata"].get("filename", "") for c in ranked]}
+        except Exception as e:
+            logger.exception("LLM 重排失败，沿用 RRF 顺序")
+            return candidates[:settings.SEARCH_K], {
+                "mode": "fallback", "before": before,
+                "after": before[:settings.SEARCH_K], "error": str(e)[:200]}
 
     async def _generate_with_llm(self, question: str, context: str,
                                  session_id: Optional[str], use_history: bool,
