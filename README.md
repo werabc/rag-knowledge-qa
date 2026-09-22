@@ -105,11 +105,11 @@ python run.py
 
 ### 智能问答
 
-- `POST /api/chat/query` - 智能问答
-- `GET /api/chat/sessions` - 获取会话列表
-- `GET /api/chat/sessions/{session_id}` - 获取会话详情
-- `DELETE /api/chat/sessions/{session_id}` - 删除会话
-- `GET /api/chat/sessions/{session_id}/history` - 获取对话历史
+- `POST /api/v1/chat/query` - 智能问答
+- `GET /api/v1/chat/sessions` - 获取会话列表
+- `GET /api/v1/chat/sessions/{session_id}` - 获取会话详情
+- `DELETE /api/v1/chat/sessions/{session_id}` - 删除会话
+- `GET /api/v1/chat/sessions/{session_id}/history` - 获取对话历史
 
 ## 🎯 使用示例
 
@@ -125,7 +125,7 @@ curl -X POST "http://127.0.0.1:8000/api/documents/upload" \
 ### 2. 智能问答
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/chat/query" \
+curl -X POST "http://127.0.0.1:8000/api/v1/chat/query" \
   -H "accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
@@ -166,7 +166,7 @@ curl -X POST "http://127.0.0.1:8000/api/chat/query" \
 ### 集成新的LLM
 
 1. 在 `.env` 中配置 `OPENAI_API_KEY` / `OPENAI_API_BASE` / `LLM_MODEL`
-2. 生成逻辑位于 `app/services/qa_service.py` 的 `_generate_with_llm`
+2. 生成逻辑位于 `app/services/qa_service.py` 的 `query_stream`（流式生成器，`query` 为其薄壳）
 
 ### 数据库迁移
 

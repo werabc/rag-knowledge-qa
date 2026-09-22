@@ -77,32 +77,43 @@ class QAService:
 
     async def query(self, question: str, session_id: Optional[str] = None,
                     use_history: bool = True) -> Dict[str, Any]:
+        """非流式入口：消费 query_stream，返回 done 事件里的完整响应"""
+        final = None
+        async for ev in self.query_stream(question, session_id, use_history):
+            if ev["event"] == "done":
+                final = ev["data"]
+        return final
+
+    async def query_stream(self, question: str, session_id: Optional[str] = None,
+                           use_history: bool = True):
+        """主流程的异步生成器：每完成一步 yield SSE 事件；生成阶段逐 token yield。
+        事件：step(trace逐步) / token(回答增量) / citation(引用核验) / done(完整响应)"""
         import time
         t_total = time.perf_counter()
         trace: List[Dict[str, Any]] = []
 
-        def _step(name: str, t0: float, **detail):
-            trace.append({
-                "step": name,
-                "ms": round((time.perf_counter() - t0) * 1000, 1),
-                "detail": detail,
-            })
+        def _step(name: str, t0: float, **detail) -> Dict[str, Any]:
+            d = {"step": name,
+                 "ms": round((time.perf_counter() - t0) * 1000, 1),
+                 "detail": detail}
+            trace.append(d)
+            return d
 
         # 0. 查询改写（多轮指代消解）
         t0 = time.perf_counter()
         search_query, rw_detail = await self._rewrite_query(
             question, session_id, use_history)
-        _step("query_rewrite", t0, **rw_detail)
+        yield {"event": "step", "data": _step("query_rewrite", t0, **rw_detail)}
 
         # 1. 混合检索（向量语义 + BM25关键词，RRF融合），扩召回供重排
         t0 = time.perf_counter()
         results, ret_detail = await self.hybrid_search(search_query)
-        _step("retrieval", t0, **ret_detail)
+        yield {"event": "step", "data": _step("retrieval", t0, **ret_detail)}
 
         # 1.5 LLM listwise 重排 → 截取 top SEARCH_K
         t0 = time.perf_counter()
         results, rr_detail = await self._llm_rerank(search_query, results)
-        _step("rerank", t0, **rr_detail)
+        yield {"event": "step", "data": _step("rerank", t0, **rr_detail)}
 
         # 2. 上下文构建
         t0 = time.perf_counter()
@@ -110,23 +121,51 @@ class QAService:
             f"[资料{i + 1}] (来源: {r['metadata'].get('filename', '未知文档')})\n{r['content']}"
             for i, r in enumerate(results)
         )
-        _step("context", t0, chars=len(context), source_count=len(results),
-              strategy="top_k_concatenation")
+        yield {"event": "step", "data": _step(
+            "context", t0, chars=len(context), source_count=len(results),
+            strategy="top_k_concatenation")}
 
-        # 3. 生成
+        # 3. 生成（LLM 流式逐 token；失败/未配置回退抽取式整段推送）
         t0 = time.perf_counter()
+        answer = ""
         if settings.OPENAI_API_KEY:
-            answer, gen_detail = await self._generate_with_llm(
-                question, context, session_id, use_history, results)
+            try:
+                from openai import AsyncOpenAI
+                messages, n_history, user_prompt = self._build_messages(
+                    question, context, session_id, use_history)
+                client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY,
+                                     base_url=settings.OPENAI_API_BASE)
+                stream = await client.chat.completions.create(
+                    model=settings.LLM_MODEL, messages=messages,
+                    temperature=0.2, stream=True)
+                async for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        piece = chunk.choices[0].delta.content
+                        answer += piece
+                        yield {"event": "token", "data": {"t": piece}}
+                gen_detail = {"mode": "llm_stream", "model": settings.LLM_MODEL,
+                              "base_url": settings.OPENAI_API_BASE,
+                              "history_messages_used": n_history,
+                              "prompt_chars": sum(len(m["content"]) for m in messages),
+                              "prompt_preview": user_prompt[:500]}
+            except Exception as e:
+                logger.exception("LLM 流式调用失败，回退抽取式回答")
+                answer = self._extractive_answer(question, results)
+                gen_detail = {"mode": "extractive_fallback", "error": str(e)[:300]}
+                yield {"event": "token", "data": {"t": answer}}
         else:
             answer = self._extractive_answer(question, results)
             gen_detail = {"mode": "extractive", "reason": "OPENAI_API_KEY 未配置"}
-        _step("generation", t0, answer_chars=len(answer), **gen_detail)
+            yield {"event": "token", "data": {"t": answer}}
+        yield {"event": "step",
+               "data": _step("generation", t0, answer_chars=len(answer), **gen_detail)}
 
         # 3.5 引用核验（防幻觉：剔除越界引用、未引用兜底；纯规则零额外 LLM 往返）
         t0 = time.perf_counter()
         answer, cited, cite_detail = self._verify_citations(answer, results)
-        _step("citation", t0, **cite_detail)
+        step = _step("citation", t0, **cite_detail)
+        yield {"event": "citation", "data": {"detail": cite_detail, "answer": answer}}
+        yield {"event": "step", "data": step}
 
         # 4. 写入会话记忆
         t0 = time.perf_counter()
@@ -134,9 +173,10 @@ class QAService:
         self._append_message(sid, question, answer, results)
         self.sessions[sid]["messages"][-1]["trace"] = trace
         self._save_sessions()
-        _step("memory", t0, session_id=sid,
-              total_messages=len(self.sessions[sid]["messages"]),
-              store=self._store_file)
+        yield {"event": "step", "data": _step(
+            "memory", t0, session_id=sid,
+            total_messages=len(self.sessions[sid]["messages"]),
+            store=self._store_file)}
 
         # L4：后台抽取长期事实，不阻塞响应
         if settings.LONGTERM_MEMORY:
@@ -148,7 +188,7 @@ class QAService:
 
         confidence = max((r["vec_score"] for r in results), default=0.0)
 
-        return {
+        yield {"event": "done", "data": {
             "answer": answer,
             "sources": [
                 {
@@ -165,7 +205,7 @@ class QAService:
             "confidence": round(confidence, 4),
             "session_id": sid,
             "trace": trace,
-        }
+        }}
 
     async def hybrid_search(self, query: str):
         """双路召回+RRF融合（不含改写/重排），返回 (候选列表, trace明细)。供问答主流程与 Agent 工具复用"""
@@ -324,48 +364,20 @@ class QAService:
                 "mode": "fallback", "before": before,
                 "after": before[:settings.SEARCH_K], "error": str(e)[:200]}
 
-    async def _generate_with_llm(self, question: str, context: str,
-                                 session_id: Optional[str], use_history: bool,
-                                 results: List[Dict[str, Any]]):
-        """调用 OpenAI 兼容接口生成回答，失败时回退抽取式。返回 (answer, 生成细节)"""
-        try:
-            from openai import AsyncOpenAI
-
-            client = AsyncOpenAI(
-                api_key=settings.OPENAI_API_KEY,
-                base_url=settings.OPENAI_API_BASE,
-            )
-
-            messages = [{"role": "system", "content": SYSTEM_PROMPT
-                         + (memory_service.context_block(question)
-                            if settings.LONGTERM_MEMORY else "")}]
-            n_history = 0
-            if use_history and session_id and session_id in self.sessions:
-                for msg in self.sessions[session_id]["messages"][-HISTORY_ROUNDS:]:
-                    messages.append({"role": msg["role"], "content": msg["content"]})
-                    n_history += 1
-            user_prompt = f"参考资料：\n{context or '（无检索结果）'}\n\n问题：{question}"
-            messages.append({"role": "user", "content": user_prompt})
-
-            resp = await client.chat.completions.create(
-                model=settings.LLM_MODEL,
-                messages=messages,
-                temperature=0.2,
-            )
-            detail = {
-                "mode": "llm",
-                "model": settings.LLM_MODEL,
-                "base_url": settings.OPENAI_API_BASE,
-                "history_messages_used": n_history,
-                "prompt_chars": sum(len(m["content"]) for m in messages),
-                "prompt_preview": user_prompt[:500],
-            }
-            answer = resp.choices[0].message.content
-            return (answer or self._extractive_answer(question, results)), detail
-        except Exception as e:
-            logger.exception("LLM 调用失败，回退抽取式回答")
-            return (self._extractive_answer(question, results),
-                    {"mode": "extractive_fallback", "error": str(e)[:300]})
+    def _build_messages(self, question: str, context: str,
+                        session_id: Optional[str], use_history: bool):
+        """构建生成阶段的消息列表，返回 (messages, 历史消息条数, user_prompt)"""
+        messages = [{"role": "system", "content": SYSTEM_PROMPT
+                     + (memory_service.context_block(question)
+                        if settings.LONGTERM_MEMORY else "")}]
+        n_history = 0
+        if use_history and session_id and session_id in self.sessions:
+            for msg in self.sessions[session_id]["messages"][-HISTORY_ROUNDS:]:
+                messages.append({"role": msg["role"], "content": msg["content"]})
+                n_history += 1
+        user_prompt = f"参考资料：\n{context or '（无检索结果）'}\n\n问题：{question}"
+        messages.append({"role": "user", "content": user_prompt})
+        return messages, n_history, user_prompt
 
     def _extractive_answer(self, question: str, results: List[Dict[str, Any]]) -> str:
         if not results:

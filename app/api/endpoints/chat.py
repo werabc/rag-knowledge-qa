@@ -2,7 +2,11 @@
 智能问答API（/api/v1/chat）
 """
 
+import json
+from typing import AsyncGenerator
+
 from fastapi import APIRouter, Query, Response
+from fastapi.responses import StreamingResponse
 
 from app.errors import ApiError
 from app.models.schemas import (AddFactRequest, ChatMessage, ChatSession,
@@ -28,6 +32,30 @@ async def query_documents(request: QueryRequest):
         )
     except Exception as e:
         raise ApiError(500, "query_failed", f"查询处理失败：{str(e)[:300]}")
+
+
+def _sse(event: str, data) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+@router.post("/stream", summary="智能问答（SSE 流式）", tags=["智能问答"])
+async def stream_query(request: QueryRequest):
+    """全链路事件流：step（trace 逐步）→ token（回答增量）→ citation（引用核验）→ done（完整响应）"""
+    async def gen() -> AsyncGenerator[str, None]:
+        try:
+            async for ev in qa_service.query_stream(
+                question=request.question,
+                session_id=request.session_id,
+                use_history=request.use_history,
+            ):
+                yield _sse(ev["event"], ev["data"])
+        except Exception as e:
+            yield _sse("error", {"code": "stream_failed",
+                                 "message": str(e)[:300]})
+
+    return StreamingResponse(gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache",
+                                      "X-Accel-Buffering": "no"})
 
 
 @router.post("/agent", response_model=QueryResponse,

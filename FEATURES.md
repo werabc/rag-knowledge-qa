@@ -76,6 +76,7 @@ Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | POST | `/query` | 入参 `{question, session_id?, use_history=true}`；返回 `{answer, sources[]（含 cited 标记）, confidence, session_id, trace[]}` |
+| POST | `/stream` | **SSE 流式问答（G2）**：同 `/query` 入参，响应 `text/event-stream`，事件 `step / token / citation / done / error`（协议见 §8）；`/query` 即消费同一生成器取 `done` |
 | POST | `/agent` | **Agent 模式（L3）**：同 `/query` 入参出参，但走 ReAct 循环，LLM 自主决定检索次数与工具；trace 含 `agent` 步骤（逐 turn 思考/工具/观察） |
 | GET | `/memories` | 长期记忆事实列表（L4）`{count, facts[]}` |
 | POST | `/memories` | 手动添加事实，body `{fact}`；成功 201，重复/空 409 |
@@ -143,13 +144,13 @@ RRF 融合取召回池 8 条，连同问题交给 LLM 按相关度重排，取 t
 bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索文章：」（文档侧不加），中文短问句相似度显著优于 MiniLM（实测正确文档向量分 0.65~0.77，MiniLM 时代约 0.18~0.54 且排序不稳）。
 
 ### Agent 模式：ReAct 工具循环（L3）
-`POST /api/chat/agent`：LLM 在循环里自主决定「查什么、查几次、何时收口」。协议为 JSON-in-text（模型无关，不依赖 function-calling API）：每轮模型输出 `{"thought":…,"tool":…,"args":…}` 调工具，或 `{"thought":…,"final":…}` 收敛。工具三个：`kb_search`（复用 hybrid_search 双路召回+RRF）、`kb_stats`（库规模）、`session_history`（本会话历史）。防线：≤`AGENT_MAX_STEPS` 轮、达上限 for-else 强制收口、JSON 解析失败按 protocol_fallback 处理；各轮检回的分块去重汇总为 sources，与普通模式共用同一条记忆落盘管线。实测复合对比问题会自动规划 2 次不同角度的 kb_search。
+`POST /api/v1/chat/agent`：LLM 在循环里自主决定「查什么、查几次、何时收口」。协议为 JSON-in-text（模型无关，不依赖 function-calling API）：每轮模型输出 `{"thought":…,"tool":…,"args":…}` 调工具，或 `{"thought":…,"final":…}` 收敛。工具三个：`kb_search`（复用 hybrid_search 双路召回+RRF）、`kb_stats`（库规模）、`session_history`（本会话历史）。防线：≤`AGENT_MAX_STEPS` 轮、达上限 for-else 强制收口、JSON 解析失败按 protocol_fallback 处理；各轮检回的分块去重汇总为 sources，与普通模式共用同一条记忆落盘管线。实测复合对比问题会自动规划 2 次不同角度的 kb_search。
 
 ### 长期记忆（L4）
-每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/chat/memories` + 面板卡片）。
+每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/v1/chat/memories` + 面板卡片）。
 
 ### 检索评估（L5）
-`eval/golden_set.json`：11 条「问题 → 应命中文档」金标（跨 4 个文档，含中英文、关键词式与语义式问法）。`python -X utf8 scripts/evaluate_retrieval.py` 对每条跑一次 `/api/chat/query`，从 trace 取 RRF 融合序、从 sources 取重排后序，双通道各算 hit@1 / hit@4 / MRR 写入 `eval/report.json`。当前基线：**两通道均 1.0（11/11 rank1）**——语料小，指标主要防回退（改参数/换模型后重跑对照）。
+`eval/golden_set.json`：11 条「问题 → 应命中文档」金标（跨 4 个文档，含中英文、关键词式与语义式问法）。`python -X utf8 scripts/evaluate_retrieval.py` 对每条跑一次 `/api/v1/chat/query`，从 trace 取 RRF 融合序、从 sources 取重排后序，双通道各算 hit@1 / hit@4 / MRR 写入 `eval/report.json`。当前基线：**两通道均 1.0（11/11 rank1）**——语料小，指标主要防回退（改参数/换模型后重跑对照）。
 
 ### 切换 embedding 模型（三步）
 1. `.env` 改 `EMBEDDING_MODEL_NAME`（模型名或本地目录）；
@@ -176,12 +177,26 @@ LLM 调用失败（网络/配额）自动回退抽取式回答（直接罗列 to
 | `retrieval` | ✓ | `query`（改写后）、`k`（召回池）、`channels.vector[] / channels.bm25[]`（各路命中）、`merged[]`（rank/filename/rrf/vec_score/bm25_score/preview） |
 | `rerank` | ✓ | `mode=llm/disabled/skipped/fallback`、`before[]`（RRF 原序）、`after[]`（重排后 top4） |
 | `context` | ✓ | `chars`、`source_count`、`strategy=top_k_concatenation` |
-| `generation` | ✓ | `mode=llm`、`model`、`base_url`、`history_messages_used`、`prompt_chars`、`prompt_preview`(前500字)；失败时 `mode=extractive_fallback`+`error` |
+| `generation` | ✓ | `mode=llm_stream`、`model`、`base_url`、`history_messages_used`、`prompt_chars`、`prompt_preview`(前500字)；流式失败回退 `extractive_fallback`+`error`，未配 key 时 `extractive` |
 | `citation` | ✓ | `mode=ok/stripped_invalid/appended_default/no_sources/disabled`（可组合）、`source_count`、`found[]/cited[]/stripped[]` 引用编号 |
 | `memory` | ✓ | 会话写入情况 |
 | `total` | ✓ | 端到端总耗时 |
 
-trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Agent 模式（`/api/chat/agent`）trace 不同：核心是一条 `agent` 步骤，`detail.turns[]` 逐轮记录 `{turn, ms, mode(tool/final/forced_final/protocol_fallback), thought, tool, args, observation}`。
+trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Agent 模式（`/api/v1/chat/agent`）trace 不同：核心是一条 `agent` 步骤，`detail.turns[]` 逐轮记录 `{turn, ms, mode(tool/final/forced_final/protocol_fallback), thought, tool, args, observation}`。
+
+### SSE 流式协议（`POST /api/v1/chat/stream`）
+
+每帧 `event: <名>\ndata: <JSON>\n\n`，事件时序：
+
+| 事件 | data | 说明 |
+|---|---|---|
+| `step` | 单条 trace 步骤对象 | 每完成一步实时推送（query_rewrite→retrieval→rerank→context→generation→citation→memory），面板据此逐步点亮 |
+| `token` | `{t: "增量文本"}` | LLM 生成段逐 token 推送；抽取式回退时整段一条 |
+| `citation` | `{detail, answer}` | 引用核验后的最终答案与明细（流式答案被规则改写时客户端据此纠正） |
+| `done` | 与 `/query` 响应同构的完整对象 | 收尾；会话记忆此时已落盘 |
+| `error` | `{code, message}` | 生成器异常兜底（正常流程不出现） |
+
+面板勾选「流式输出（SSE）」即走此端点：token 打字机追加 + trace 实时点亮，done 后切标准渲染。契约测试断言事件序列（step 开头、token≥1、citation 恰好 1、done 收尾）。
 
 ## 9. 已知边界
 

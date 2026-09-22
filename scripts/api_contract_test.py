@@ -5,6 +5,7 @@ G1 REST 契约测试：端点 × 状态码 × 错误体形状矩阵。
 """
 
 import io
+import json
 import sys
 
 sys.path.insert(0, ".")
@@ -89,6 +90,59 @@ with TestClient(app) as c:
     r = c.post(f"{BASE}/chat/query", json={})
     check("query 缺 question → 400", err_shape_ok(r, 400), r.text[:200])
 
+    # G2 SSE：临时断掉 LLM key 走抽取式，事件序列确定、不碰网络
+    from app.config import settings as _s
+    _saved_key = _s.OPENAI_API_KEY
+    _s.OPENAI_API_KEY = ""
+    try:
+        r = c.post(f"{BASE}/documents/upload", files={"file": (
+            "contract_stream.txt",
+            io.BytesIO("契约流式测试文档。RRF 融合公式是 1 除以 60 加 rank。".encode()),
+            "text/plain")})
+        stream_doc_id = r.json().get("id") if r.status_code == 200 else None
+        events = []
+        with c.stream("POST", f"{BASE}/chat/stream",
+                      json={"question": "RRF 融合公式是什么", "use_history": False}) as sr:
+            check("stream 响应为 text/event-stream",
+                  sr.status_code == 200
+                  and sr.headers.get("content-type", "").startswith("text/event-stream"),
+                  f"{sr.status_code} {sr.headers.get('content-type')}")
+            ev_name, data_lines = None, []
+            for line in sr.iter_lines():
+                if line.startswith("event: "):
+                    ev_name = line[7:]
+                elif line.startswith("data: "):
+                    data_lines.append(line[6:])
+                elif line == "" and ev_name:
+                    events.append((ev_name, json.loads("\n".join(data_lines))))
+                    ev_name, data_lines = None, []
+        names = [e for e, _ in events]
+        steps = [d["step"] for e, d in events if e == "step"]
+        done = next((d for e, d in events if e == "done"), None)
+        tokens = [d for e, d in events if e == "token"]
+        cits = [d for e, d in events if e == "citation"]
+        check("stream 事件序列：step→token→citation→done",
+              names[0] == "step" and steps[0] == "query_rewrite"
+              and "retrieval" in steps and "generation" in steps
+              and len(tokens) >= 1 and len(cits) == 1
+              and names[-1] == "done", str(names[:12]))
+        check("stream token 拼接出非空答案",
+              any("60" in t.get("t", "") for t in tokens), str(tokens)[:120])
+        check("stream done 含完整响应", done is not None
+              and done.get("answer") and "trace" in done and "session_id" in done,
+              str(done)[:150])
+        check("stream 生成步骤标注 extractive",
+              "generation" in steps
+              and [d for e, d in events if e == "step"
+                   and d["step"] == "generation"][0]["detail"].get("mode")
+              == "extractive", str(steps))
+        if stream_doc_id:
+            c.delete(f"{BASE}/documents/{stream_doc_id}")
+        if done:
+            c.delete(f"{BASE}/chat/sessions/{done['session_id']}")
+    finally:
+        _s.OPENAI_API_KEY = _saved_key
+
     fact = "契约测试专用事实-可删除"
     r = c.post(f"{BASE}/chat/memories", json={"fact": fact})
     ok_add = r.status_code == 201 and "id" in r.json()
@@ -120,7 +174,8 @@ with TestClient(app) as c:
         f"{BASE}/documents/upload", f"{BASE}/documents/",
         f"{BASE}/documents/{{doc_id}}", f"{BASE}/documents/{{doc_id}}/chunks",
         f"{BASE}/documents/reindex", f"{BASE}/documents/stats/summary",
-        f"{BASE}/chat/query", f"{BASE}/chat/agent", f"{BASE}/chat/stats",
+        f"{BASE}/chat/query", f"{BASE}/chat/stream", f"{BASE}/chat/agent",
+        f"{BASE}/chat/stats",
         f"{BASE}/chat/memories", f"{BASE}/chat/memories/{{fact_id}}",
         f"{BASE}/chat/sessions", f"{BASE}/chat/sessions/{{session_id}}",
         f"{BASE}/chat/sessions/{{session_id}}/history",
