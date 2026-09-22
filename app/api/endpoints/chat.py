@@ -7,10 +7,24 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import ChatMessage, ChatSession, QueryRequest, QueryResponse
+from app.services.agent_service import agent_service
 from app.services.qa_service import qa_service
 from app.services.vector_store import vector_store
 
 router = APIRouter()
+
+
+@router.post("/agent", response_model=QueryResponse, summary="Agent 模式问答（多步工具调用）")
+async def agent_query(request: QueryRequest):
+    """L3 Agent：LLM 自主决定检索什么、检索几次（ReAct 循环），适合复合问题"""
+    try:
+        return await agent_service.run(
+            question=request.question,
+            session_id=request.session_id,
+            use_history=request.use_history,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Agent 处理失败：{str(e)}")
 
 
 @router.post("/query", response_model=QueryResponse, summary="智能问答")

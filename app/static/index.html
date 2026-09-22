@@ -85,6 +85,7 @@ details summary{cursor:pointer;color:var(--dim);font-size:12px}
       <div class="row">
         <input id="sid" placeholder="session_id（留空自动新建）">
         <label class="chk"><input type="checkbox" id="hist" checked style="width:auto">使用对话历史</label>
+        <label class="chk"><input type="checkbox" id="agentmode" style="width:auto">Agent模式（多步检索）</label>
         <button class="act" style="flex:none" onclick="runQuery()">发送</button>
       </div>
     </div>
@@ -176,6 +177,15 @@ function renderTrace(trace){
         <table class="hits"><tr><th>#</th><th>文档</th><th>RRF</th><th>向量分</th><th>BM25分</th><th>预览</th></tr>`+
         (d.merged||[]).map(h=>`<tr><td>${h.rank}</td><td>${esc(h.filename)}</td><td>${h.rrf}</td><td>${h.vec_score||'—'}</td><td>${h.bm25_score||'—'}</td><td class="dim">${esc(h.preview)}</td></tr>`).join('')+`</table>`;}
     }
+    else if(t.step==='agent'){
+      const turns=d.turns||[];
+      body=`<div class="dim">model=${esc(d.model)} 步数 ${turns.length}/${d.max_steps}</div>`+turns.map(t2=>{
+        const badge=t2.mode==='tool'?`<b>${esc(t2.tool)}</b> ${esc(JSON.stringify(t2.args))}`:t2.mode==='final'?'<b>final</b>':esc(t2.mode);
+        return `<div class="step"><h4>turn ${t2.turn} <span class="badge">${t2.ms}ms</span> ${badge}</h4>`+
+          (t2.thought?`<div class="dim">💭 ${esc(t2.thought)}</div>`:'')+
+          (t2.observation?`<details><summary class="dim">观察</summary><pre>${esc(t2.observation)}</pre></details>`:'')+
+          (t2.raw?`<pre>${esc(t2.raw)}</pre>`:'')+`</div>`;}).join('');
+    }
     else if(t.step==='generation')body=`<span class="dim">mode=${esc(d.mode)} ${d.model?'model='+esc(d.model):''} ${d.history_messages_used!==undefined?'历史='+d.history_messages_used+'条':''} prompt=${d.prompt_chars||'-'}字 ${d.error?'<b style="color:#e06c75">error: '+esc(d.error)+'</b>':''}</span>`+
       (d.prompt_preview?`<details><summary>发给LLM的prompt预览</summary><pre>${esc(d.prompt_preview)}</pre></details>`:'');
     else if(t.step==='memory')body=`<span class="dim">session=${esc(d.session_id).slice(0,8)}… 累计${d.total_messages}条 → ${esc(d.store)}</span>`;
@@ -189,7 +199,8 @@ async function runQuery(){
   const q=$('#q').value.trim();if(!q)return toast('输入问题');
   $('#dbgout').innerHTML='<div class="card dim">处理中…（检索+LLM生成可能需几秒）</div>';
   const t0=performance.now();
-  const r=await api('/api/chat/query',{method:'POST',headers:{'Content-Type':'application/json'},
+  const agent=$('#agentmode').checked;
+  const r=await api(agent?'/api/chat/agent':'/api/chat/query',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({question:q,session_id:$('#sid').value||null,use_history:$('#hist').checked})});
   $('#sid').value=r.session_id;
   $('#dbgout').innerHTML=`<div class="card">

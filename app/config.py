@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     QUERY_REWRITE: bool = True   # 多轮指代消解：把追问改写成自包含查询再检索
     LLM_RERANK: bool = True      # LLM listwise 重排（融合召回后、上下文前）
     RERANK_CANDIDATES: int = 8   # 召回池大小=重排输入条数
+    AGENT_MAX_STEPS: int = 5     # L3 Agent ReAct 最大步数
 
     # FastAPI配置
     APP_HOST: str = "0.0.0.0"

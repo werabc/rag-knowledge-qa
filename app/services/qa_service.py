@@ -92,24 +92,9 @@ class QAService:
         _step("query_rewrite", t0, **rw_detail)
 
         # 1. 混合检索（向量语义 + BM25关键词，RRF融合），扩召回供重排
-        pool = settings.RERANK_CANDIDATES if settings.LLM_RERANK else settings.SEARCH_K
         t0 = time.perf_counter()
-        vec_results = await vector_store.search_similar(search_query, k=pool)
-        bm25_results = (bm25_index.search(search_query, k=pool)
-                        if settings.HYBRID_BM25 else [])
-        results = self._rrf_merge(vec_results, bm25_results, cap=pool)
-        _step("retrieval", t0, query=search_query, k=pool,
-              channels={
-                  "vector": [{"filename": r["metadata"].get("filename", ""),
-                              "score": round(r["score"], 4), "preview": r["content"][:60]}
-                             for r in vec_results],
-                  "bm25": [{"filename": r["filename"], "score": r["score"],
-                            "preview": r["content"][:60]} for r in bm25_results],
-              },
-              merged=[{"rank": i + 1, "filename": m["metadata"].get("filename", ""),
-                       "rrf": m["score"], "vec_score": round(m["vec_score"], 4),
-                       "bm25_score": round(m["bm25_score"], 4), "preview": m["content"][:80]}
-                      for i, m in enumerate(results)])
+        results, ret_detail = await self.hybrid_search(search_query)
+        _step("retrieval", t0, **ret_detail)
 
         # 1.5 LLM listwise 重排 → 截取 top SEARCH_K
         t0 = time.perf_counter()
@@ -168,6 +153,29 @@ class QAService:
             "session_id": sid,
             "trace": trace,
         }
+
+    async def hybrid_search(self, query: str):
+        """双路召回+RRF融合（不含改写/重排），返回 (候选列表, trace明细)。供问答主流程与 Agent 工具复用"""
+        pool = settings.RERANK_CANDIDATES if settings.LLM_RERANK else settings.SEARCH_K
+        vec_results = await vector_store.search_similar(query, k=pool)
+        bm25_results = (bm25_index.search(query, k=pool)
+                        if settings.HYBRID_BM25 else [])
+        results = self._rrf_merge(vec_results, bm25_results, cap=pool)
+        detail = {
+            "query": query, "k": pool,
+            "channels": {
+                "vector": [{"filename": r["metadata"].get("filename", ""),
+                            "score": round(r["score"], 4), "preview": r["content"][:60]}
+                           for r in vec_results],
+                "bm25": [{"filename": r["filename"], "score": r["score"],
+                          "preview": r["content"][:60]} for r in bm25_results],
+            },
+            "merged": [{"rank": i + 1, "filename": m["metadata"].get("filename", ""),
+                        "rrf": m["score"], "vec_score": round(m["vec_score"], 4),
+                        "bm25_score": round(m["bm25_score"], 4), "preview": m["content"][:80]}
+                       for i, m in enumerate(results)],
+        }
+        return results, detail
 
     @staticmethod
     def _rrf_merge(vec_results: List[Dict], bm25_results: List[Dict],
