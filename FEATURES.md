@@ -4,7 +4,7 @@
 
 ## 1. 系统概览
 
-本地部署的检索增强问答系统：上传文档 → 切块 → 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，未配置时抽取式回退）→ 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 golden set 评估基线（hit@k/MRR）。全程带链路 trace，可在 `/ui` 面板可视化。
+本地部署的检索增强问答系统：上传文档 → 切块 → 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，支持 **SSE 流式**，未配置时抽取式回退）→ 引用核验防幻觉 → 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 26 条五类金标（含对抗/多跳/不可回答拒答）+ `--strict` 回归门禁。全程带链路 trace，可在 `/ui` 面板可视化。
 
 Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-L5 全部落地。
 
@@ -149,13 +149,15 @@ bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索�
 ### 长期记忆（L4）
 每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/v1/chat/memories` + 面板卡片）。
 
-### 检索评估（L5）
-`eval/golden_set.json`：11 条「问题 → 应命中文档」金标（跨 4 个文档，含中英文、关键词式与语义式问法）。`python -X utf8 scripts/evaluate_retrieval.py` 对每条跑一次 `/api/v1/chat/query`，从 trace 取 RRF 融合序、从 sources 取重排后序，双通道各算 hit@1 / hit@4 / MRR 写入 `eval/report.json`。当前基线：**两通道均 1.0（11/11 rank1）**——语料小，指标主要防回退（改参数/换模型后重跑对照）。
+### 检索评估（L5/G3）
+`eval/golden_set.json`：**26 条**金标，五类——`direct` 直查(11) / `paraphrase` 同义改写(5) / `adversarial` 对抗：跨文档近似句抢位(4) / `multihop` 多跳：expect 为文档列表任一命中(3) / `unanswerable` 不可回答：期望拒答(3)。`python -X utf8 scripts/evaluate_retrieval.py` 逐条跑 `/api/v1/chat/query`，双通道（RRF 序 / 重排后序）算 hit@1 / hit@4 / MRR，不可回答题用拒答词典正则匹配答案判 `refusal_accuracy`，分类别指标 + 逐题明细写入 `eval/report.json`。
+
+**回归门禁**：`--update-baseline` 把核心指标固化为 `eval/baseline.json`；`--strict` 逐叶子对比基线，任一指标低于即 **exit 1 拦截**。实测：`LLM_RERANK=False` 重启后 strict 点名 `with_rerank.hit@1 0.913→0.826`、`adversarial 1.0→0.5` 等三项拦截；恢复配置后 strict 通过。当前基线：重排通道 hit@1 0.913 / MRR 0.935、拒答 1.0（paraphrase 类 hit@1 0.6 为 kb_sample 单大分块稀释所致，留作提升空间）。
 
 ### 切换 embedding 模型（三步）
 1. `.env` 改 `EMBEDDING_MODEL_NAME`（模型名或本地目录）；
 2. 重启服务（不同模型维度不同，旧库不兼容）；
-3. `POST /api/documents/reindex` —— 从 `data/chunks/` 明文全量重嵌入，无需重新上传。
+3. `POST /api/v1/documents/reindex` —— 从 `data/chunks/` 明文全量重嵌入，无需重新上传。
 
 ### 引用核验（防幻觉，零额外 LLM 往返）
 生成后、写记忆前，用规则校验答案里的 `[资料N]`/`【资料N】` 引用：编号超出来源数 → 从答案中**剔除**（模型引用了不存在的资料即幻觉信号）；通篇无引用 → 末尾**补默认来源行**。trace 的 `citation` 步骤记录 发现/采信/剔除 的编号集合，响应 `sources[].cited` 标记哪条真被答案引用，面板同步渲染。mode：`ok / stripped_invalid / appended_default / no_sources / disabled`。
@@ -201,7 +203,7 @@ trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Ag
 ## 9. 已知边界
 
 - **LLM 重排/改写各多一次 LLM 往返**：LongCat 实测单次 3~11s，重排是端到端最大耗时项；对延迟敏感可 `LLM_RERANK=False`（RRF 兜底质量已可用）。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
-- **评估基线在 tiny 语料上**：11 条金标、4 个文档，两通道指标全 1.0，区分度有限；价值在于改动后防回退对照，语料扩大后需补充困难样本。
+- **评估仍在 tiny 语料上**：26 条金标（含对抗/多跳/不可回答）已比 v1.0 的 11 条有区分度（paraphrase 类 hit@1 仅 0.6），但 4 文档池子仍小；拒答判定基于词典正则，LLM 措辞变化可能造成同配置下 ±1 题抖动。
 - **BM25 全内存**：启动时从台账+分块明文重建，语料规模适合万级分块以内；检索为线性扫描词频表，数据量大需换倒排跳过。
 - **reindex 是破坏性重建**：先删集合再重灌，期间检索结果不完整；分块明文丢失的文档无法恢复（原始文件上传后即删，只保留明文）。
 - **单进程文件存储**：sessions/documents 为 JSON 整文件读写，无并发锁，不适合多 worker 横向扩展。

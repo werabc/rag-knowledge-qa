@@ -96,12 +96,12 @@ python run.py
 
 ### 文档管理
 
-- `POST /api/documents/upload` - 上传文档
+- `POST /api/v1/documents/upload` - 上传文档
 - `GET /api/documents` - 获取文档列表
-- `GET /api/documents/{doc_id}` - 获取文档详情
-- `DELETE /api/documents/{doc_id}` - 删除文档
-- `GET /api/documents/{doc_id}/chunks` - 查看文档分块明文
-- `GET /api/documents/stats/summary` - 获取文档统计
+- `GET /api/v1/documents/{doc_id}` - 获取文档详情
+- `DELETE /api/v1/documents/{doc_id}` - 删除文档
+- `GET /api/v1/documents/{doc_id}/chunks` - 查看文档分块明文
+- `GET /api/v1/documents/stats/summary` - 获取文档统计
 
 ### 智能问答
 
@@ -116,7 +116,7 @@ python run.py
 ### 1. 上传文档
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/documents/upload" \
+curl -X POST "http://127.0.0.1:8000/api/v1/documents/upload" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@your_document.pdf"

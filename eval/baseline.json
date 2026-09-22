@@ -1,0 +1,18 @@
+{
+ "retrieval_rrf_only": {
+  "hit@1": 0.826,
+  "MRR": 0.895
+ },
+ "retrieval_with_rerank": {
+  "hit@1": 0.913,
+  "hit@4": 1.0,
+  "MRR": 0.935
+ },
+ "refusal_accuracy": 1.0,
+ "by_category": {
+  "adversarial": 1.0,
+  "direct": 1.0,
+  "multihop": 1.0,
+  "paraphrase": 0.6
+ }
+}
