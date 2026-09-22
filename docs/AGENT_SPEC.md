@@ -9,9 +9,9 @@
 |---|---|---|---|---|
 | L1 | 固定流水线 RAG | 检索→拼上下文→生成，一条路走到底 | 代码写死 | ✅ `qa_service.query()`（v1.0 前） |
 | L2 | 检索增强 | 查询改写、混合召回+RRF、重排 | 代码写死，但环节可开关 | ✅ `1c4eebc`（rewrite/rerank/reindex） |
-| L3 | 工具调用 Agent | LLM 自主决定「查什么、查几次、够不够」，ReAct 循环 | **LLM** | 🚧 `agent_service.py` + `/api/chat/agent` |
-| L4 | 记忆分层 | 短期会话记忆之外，跨会话长期事实记忆（抽取→存储→注入） | LLM 抽取，规则召回 | 🚧 `memory_service.py` + `/api/chat/memories` |
-| L5 | 评估与自省 | golden set 量化检索质量（hit@k/MRR），迭代有基线 | 评估脚本 | 🚧 `scripts/evaluate_retrieval.py` |
+| L3 | 工具调用 Agent | LLM 自主决定「查什么、查几次、够不够」，ReAct 循环 | **LLM** | ✅ `agent_service.py` + `/api/chat/agent`（`c2bb7b2`，实测复合问题自主规划 2 次 kb_search） |
+| L4 | 记忆分层 | 短期会话记忆之外，跨会话长期事实记忆（抽取→存储→注入） | LLM 抽取，规则召回 | ✅ `memory_service.py` + `/api/chat/memories`（`0b2eac9`，实测 use_history=false 仍认出用户身份） |
+| L5 | 评估与自省 | golden set 量化检索质量（hit@k/MRR），迭代有基线 | 评估脚本 | ✅ `scripts/evaluate_retrieval.py`（`5710b70`，11 条金标双通道基线 hit@1/hit@4/MRR 全 1.0） |
 
 ## L1 固定流水线（已达）
 

@@ -1,10 +1,12 @@
 # 功能文档 — 企业知识库问答系统（RAG）
 
-> 版本：v1.0 · 更新日期：2026-09-21 · 对应提交：`f7c89ba`
+> 版本：v1.1 · 更新日期：2026-09-22 · 对应提交：`5710b70`
 
 ## 1. 系统概览
 
-本地部署的检索增强问答系统：上传文档 → 切块 → 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，未配置时抽取式回退）→ 多轮会话记忆。全程带链路 trace，可在 `/ui` 面板可视化。
+本地部署的检索增强问答系统：上传文档 → 切块 → 向量化入库 → 查询改写（多轮指代消解）→ 混合检索（向量 + BM25，RRF 融合）→ LLM 重排 → 拼接上下文 → LLM 生成（OpenAI 兼容接口，未配置时抽取式回退）→ 多轮会话记忆 + 跨会话长期记忆。另提供 **Agent 模式**（ReAct 循环，LLM 自主决定检索次数与工具）。检索质量有 golden set 评估基线（hit@k/MRR）。全程带链路 trace，可在 `/ui` 面板可视化。
+
+Agent 能力按 L1-L5 分级规范建设，见 `docs/AGENT_SPEC.md`；当前 L1-L5 全部落地。
 
 ## 2. 架构
 
@@ -14,14 +16,21 @@
  ─────────────────────► │  /api/documents/*   /api/chat/*   /ui    │
                         └──────┬───────────────────┬───────────────┘
                                │                   │
-                     DocumentService            QAService
+                     DocumentService            QAService / AgentService
                      ├ 文本提取(PyPDF2/docx)      ├ 查询改写(指代消解, LLM)
                      ├ 切块(1000/200)             ├ 向量召回 ──► VectorStore ──► ChromaDB(512维,cosine)
                      ├ 写向量库 + BM25增量        ├ BM25召回 ──► BM25Index(内存, jieba分词)
                      └ 台账 documents.json        ├ RRF融合(k=60, 召回池8) → LLM重排 → top4
-                       分块明文 chunks/*.json     ├ 上下文拼接 [资料N]
+                       分块明文 chunks/*.json     ├ 上下文拼接 [资料N] + 长期记忆注入system prompt
                                                  ├ LLM生成(LongCat) / 抽取式回退
-                                                 └ 会话记忆 sessions.json
+                        Agent模式(L3)：同一LLM在 ├ 会话记忆 sessions.json
+                        ReAct循环(≤5步)里自主调  └ 长期记忆 MemoryService(L4)
+                        kb_search/kb_stats/         ├ 答后异步抽取事实 → longterm.json
+                        session_history 工具        └ 按词重叠召回
+
+                        评估(L5)：eval/golden_set.json 11条金标
+                        scripts/evaluate_retrieval.py → hit@1/hit@4/MRR
+                        双通道报告(仅RRF vs RRF+重排) → eval/report.json
                                │
                         Embeddings（EMBEDDING_MODEL_NAME 决定）
                         ├ 默认 MiniLM → chromadb 内置 ONNX（无需 torch）
@@ -38,10 +47,13 @@
 | 向量存储 | `app/services/vector_store.py` | chromadb 1.x PersistentClient，cosine HNSW，自定义 EF 接入，recreate_collection |
 | 嵌入服务 | `app/services/embeddings.py` | 按配置加载 sentence-transformers；bge 查询前缀；失败回退内置 MiniLM |
 | BM25 | `app/services/bm25_index.py` | jieba 分词倒排 + Lucene idf 公式 BM25；启动时从台账+分块明文重建 |
-| 问答服务 | `app/services/qa_service.py` | 查询改写→检索→融合→LLM重排→上下文→生成→记忆 主流程 + trace 采集 |
+| 问答服务 | `app/services/qa_service.py` | 查询改写→检索→融合→LLM重排→上下文→生成→记忆 主流程 + trace 采集；`hybrid_search` 供 Agent 复用 |
+| Agent 服务 | `app/services/agent_service.py` | L3：ReAct 循环（JSON-in-text 协议），LLM 自主调用 kb_search/kb_stats/session_history，步数上限+强制收口+解析兜底 |
+| 长期记忆 | `app/services/memory_service.py` | L4：答后异步 LLM 抽取原子事实、去重落盘 longterm.json，按词重叠召回注入 prompt |
+| 检索评估 | `scripts/evaluate_retrieval.py` | L5：跑 golden set，输出 RRF 与 RRF+重排双通道 hit@1/hit@4/MRR |
 | 文档 API | `app/api/endpoints/documents.py` | 上传（流式限流+文件名清洗）、列表、详情、删除、分块查看、reindex、统计 |
-| 问答 API | `app/api/endpoints/chat.py` | 查询、会话增删查、历史、统计、清空 |
-| 可视化面板 | `app/static/index.html` | 三页签：知识库 / 对话记忆 / 问答调试（全链路 trace） |
+| 问答 API | `app/api/endpoints/chat.py` | 查询、Agent 查询、会话增删查、历史、统计、清空、长期记忆增删查 |
+| 可视化面板 | `app/static/index.html` | 三页签：知识库 / 对话记忆（含长期记忆卡片）/ 问答调试（全链路 trace、Agent 逐 turn、Agent 模式开关） |
 
 ## 4. API 参考
 
@@ -62,6 +74,10 @@
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | POST | `/query` | 入参 `{question, session_id?, use_history=true}`；返回 `{answer, sources[], confidence, session_id, trace[]}` |
+| POST | `/agent` | **Agent 模式（L3）**：同 `/query` 入参出参，但走 ReAct 循环，LLM 自主决定检索次数与工具；trace 含 `agent` 步骤（逐 turn 思考/工具/观察） |
+| GET | `/memories` | 长期记忆事实列表（L4） |
+| POST | `/memories?fact=` | 手动添加一条事实 |
+| DELETE | `/memories/{fact_id}` | 删除单条事实 |
 | GET | `/sessions` | 全部会话 |
 | GET | `/sessions/{id}` | 会话详情（含消息与 trace） |
 | GET | `/sessions/{id}/history` | 仅消息列表 |
@@ -80,8 +96,11 @@ D:\rag\
 ├── data\
 │   ├── documents.json        # 文档台账（上传即落盘；启动时与向量库对账）
 │   ├── chunks\{doc_id}.json  # 分块明文（查看分块、reindex 的数据源）
-│   └── sessions.json         # 会话记忆（含每条回答的 trace）
+│   ├── sessions.json         # 会话记忆（含每条回答的 trace）
+│   └── longterm.json         # 长期记忆事实（L4，去重后 ≤200 条）
 ├── vector_db\                # ChromaDB PersistentClient（512 维 cosine）
+├── eval\                     # golden_set.json 金标集 + report.json 最近一次评估报告
+├── scripts\evaluate_retrieval.py  # L5 评估脚本
 ├── models\bge-small-zh-v1.5\ # 本地嵌入权重（gitignore，95MB）
 └── app\                      # 代码
 ```
@@ -101,6 +120,8 @@ D:\rag\
 | `HYBRID_BM25` | True | 双路召回开关 |
 | `QUERY_REWRITE` / `LLM_RERANK` | True / True | 指代消解改写、LLM 重排开关 |
 | `RERANK_CANDIDATES` | 8 | 召回池大小（重排输入条数） |
+| `AGENT_MAX_STEPS` | 5 | L3 Agent ReAct 循环最大轮数，超限强制收口 |
+| `LONGTERM_MEMORY` | True | L4 长期记忆开关（抽取+召回注入） |
 | `CHROMA_PERSIST_DIRECTORY` / `CHROMA_COLLECTION_NAME` | `./vector_db` / `documents` | 向量库位置 |
 | `DOCUMENT_STORAGE_PATH` / `MAX_UPLOAD_SIZE_MB` | `./data` / 50 | 文档存储 |
 
@@ -117,6 +138,15 @@ RRF 融合取召回池 8 条，连同问题交给 LLM 按相关度重排，取 t
 
 ### 中文嵌入
 bge 系列查询侧自动加前缀「为这个句子生成表示以用于检索文章：」（文档侧不加），中文短问句相似度显著优于 MiniLM（实测正确文档向量分 0.65~0.77，MiniLM 时代约 0.18~0.54 且排序不稳）。
+
+### Agent 模式：ReAct 工具循环（L3）
+`POST /api/chat/agent`：LLM 在循环里自主决定「查什么、查几次、何时收口」。协议为 JSON-in-text（模型无关，不依赖 function-calling API）：每轮模型输出 `{"thought":…,"tool":…,"args":…}` 调工具，或 `{"thought":…,"final":…}` 收敛。工具三个：`kb_search`（复用 hybrid_search 双路召回+RRF）、`kb_stats`（库规模）、`session_history`（本会话历史）。防线：≤`AGENT_MAX_STEPS` 轮、达上限 for-else 强制收口、JSON 解析失败按 protocol_fallback 处理；各轮检回的分块去重汇总为 sources，与普通模式共用同一条记忆落盘管线。实测复合对比问题会自动规划 2 次不同角度的 kb_search。
+
+### 长期记忆（L4）
+每轮回答后 `asyncio.create_task` 异步让 LLM 从对话中抽取原子事实（如用户身份、项目名），归一化去重后写 `data/longterm.json`（上限 200 条 FIFO）。新问题按 jieba 分词与事实计算词重叠分（`overlap/√|fact_tokens|`）召回 top 事实，以「【长期记忆】」段注入 system prompt。因此 `use_history=false` 的全新会话仍能认出用户身份（实测通过）。可查看/手动添加/删除（`/api/chat/memories` + 面板卡片）。
+
+### 检索评估（L5）
+`eval/golden_set.json`：11 条「问题 → 应命中文档」金标（跨 4 个文档，含中英文、关键词式与语义式问法）。`python -X utf8 scripts/evaluate_retrieval.py` 对每条跑一次 `/api/chat/query`，从 trace 取 RRF 融合序、从 sources 取重排后序，双通道各算 hit@1 / hit@4 / MRR 写入 `eval/report.json`。当前基线：**两通道均 1.0（11/11 rank1）**——语料小，指标主要防回退（改参数/换模型后重跑对照）。
 
 ### 切换 embedding 模型（三步）
 1. `.env` 改 `EMBEDDING_MODEL_NAME`（模型名或本地目录）；
@@ -144,11 +174,12 @@ LLM 调用失败（网络/配额）自动回退抽取式回答（直接罗列 to
 | `memory` | ✓ | 会话写入情况 |
 | `total` | ✓ | 端到端总耗时 |
 
-trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。
+trace 同时存进会话消息，`/ui` 问答调试页签逐层展开渲染。Agent 模式（`/api/chat/agent`）trace 不同：核心是一条 `agent` 步骤，`detail.turns[]` 逐轮记录 `{turn, ms, mode(tool/final/forced_final/protocol_fallback), thought, tool, args, observation}`。
 
 ## 9. 已知边界
 
-- **LLM 重排/改写各多一次 LLM 往返**：LongCat 实测单次 3~11s，重排是端到端最大耗时项；对延迟敏感可 `LLM_RERANK=False`（RRF 兜底质量已可用）。
+- **LLM 重排/改写各多一次 LLM 往返**：LongCat 实测单次 3~11s，重排是端到端最大耗时项；对延迟敏感可 `LLM_RERANK=False`（RRF 兜底质量已可用）。Agent 模式耗时 = 轮数 × LLM 往返，通常比 `/query` 慢数倍，适合复杂多跳问题而非常规问答。
+- **评估基线在 tiny 语料上**：11 条金标、4 个文档，两通道指标全 1.0，区分度有限；价值在于改动后防回退对照，语料扩大后需补充困难样本。
 - **BM25 全内存**：启动时从台账+分块明文重建，语料规模适合万级分块以内；检索为线性扫描词频表，数据量大需换倒排跳过。
 - **reindex 是破坏性重建**：先删集合再重灌，期间检索结果不完整；分块明文丢失的文档无法恢复（原始文件上传后即删，只保留明文）。
 - **单进程文件存储**：sessions/documents 为 JSON 整文件读写，无并发锁，不适合多 worker 横向扩展。
