@@ -41,9 +41,9 @@ class Settings(BaseSettings):
     LONGTERM_MEMORY: bool = True  # L4 跨会话长期记忆（事实抽取+注入）
 
     # FastAPI配置
-    APP_HOST: str = "0.0.0.0"
+    APP_HOST: str = "127.0.0.1"
     APP_PORT: int = 8000
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     # 安全配置
     SECRET_KEY: str = "your-secret-key-here"

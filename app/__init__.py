@@ -1,5 +1,5 @@
 """
-企业知识库问答系统 - RAG Agent
+RAG 知识库问答系统 - RAG Agent
 """
 
 __version__ = "1.0.0"

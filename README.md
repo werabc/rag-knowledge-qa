@@ -1,216 +1,67 @@
-# 企业知识库问答系统 - RAG Agent
+# RAG 知识库问答系统
 
-基于Python + FastAPI的RAG（检索增强生成）智能问答系统，支持多种文档格式的智能问答。
+本地部署的中文知识库问答服务。完整链路：文档上传 → 逐页提取/分块（扫描页自动 OCR）→ Chroma 向量召回 + jieba BM25 双路 → RRF 融合 → LLM 重排 → 生成 → 引用核验 → 会话/长期记忆。全链路 trace 可视化。
 
-## 🚀 功能特性
+功能细节、存储布局、trace 字段见 [FEATURES.md](FEATURES.md)；能力分级与工程化基线见 [docs/AGENT_SPEC.md](docs/AGENT_SPEC.md)。
 
-- **多格式文档支持**: PDF（逐页页码元数据，无文本层的中文扫描件自动 OCR）、Word、TXT
-- **智能问答**: 基于文档内容的智能问答
-- **对话历史**: 支持多轮对话和历史记录
-- **文档管理**: 上传、删除、查看文档信息
-- **向量检索**: 使用ChromaDB进行高效的相似度检索
-- **本地部署**: 支持本地开发和部署
-
-## 📁 项目结构
-
-```
-D:\rag\
-├── app/                          # 应用主目录
-│   ├── main.py                  # FastAPI应用入口
-│   ├── config.py                # 配置管理 (pydantic-settings)
-│   ├── models/schemas.py        # Pydantic模型定义
-│   ├── services/                # 业务服务
-│   │   ├── document_service.py  # 文档提取与分块，写入向量库
-│   │   ├── qa_service.py        # 问答核心：检索→上下文→生成→会话记忆
-│   │   └── vector_store.py      # ChromaDB向量存储 (内置ONNX MiniLM embedding)
-│   └── api/endpoints/
-│       ├── documents.py         # 文档管理API
-│       └── chat.py              # 问答API
-├── data/                        # 文档分块与会话持久化 (sessions.json)
-├── vector_db/                   # ChromaDB持久化目录
-├── test_data/                   # 测试文档
-├── requirements.txt             # 依赖包列表
-├── .env.example                 # 环境变量示例
-├── test_system.py               # 端到端测试脚本 (需先启动服务)
-├── run.py                       # 启动脚本
-└── RAG_System_Plan.md           # 系统规划文档
-```
-
-## 🛠️ 技术栈
-
-- **Web框架**: FastAPI
-- **向量数据库**: ChromaDB 1.x (PersistentClient, cosine空间)
-- **嵌入模型**: 默认本地 bge-small-zh-v1.5（sentence-transformers，查询侧加检索指令前缀）；可切回 chromadb 内置 ONNX MiniLM，切换后需 `POST /api/v1/documents/reindex`
-- **LLM生成**: OpenAI兼容接口（已接美团LongCat），未配置key时自动回退抽取式回答
-- **文档分块**: langchain-text-splitters
-- **文档处理**: PyMuPDF（逐页提取+扫描页渲染位图）、rapidocr-onnxruntime（中文 OCR）、python-docx
-- **数据验证**: Pydantic v2 + pydantic-settings
-
-## 📋 前置要求
-
-- Python 3.8+
-- pip (Python包管理器)
-- 足够的磁盘空间用于存储文档和向量数据库
-
-## 🚀 快速开始
-
-### 1. 安装依赖
+## 快速开始
 
 ```bash
-# 创建虚拟环境 (推荐)
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Linux/Mac
-
-# 安装依赖包
-pip install -r requirements.txt
-```
-
-### 2. 配置环境变量
-
-```bash
-# 复制环境变量示例文件
-copy .env.example .env
-
-# 编辑 .env 文件，配置以下变量：
-# - OPENAI_API_KEY (如果使用OpenAI API)
-# - CHROMA_PERSIST_DIRECTORY (向量数据库存储路径)
-# - DOCUMENT_STORAGE_PATH (文档存储路径)
-```
-
-### 3. 启动服务
-
-```bash
-# 启动FastAPI服务
+pip install -r requirements.txt        # Windows 可加 -i https://pypi.tuna.tsinghua.edu.cn/simple
+copy .env.example .env                 # 填 OPENAI_API_KEY / OPENAI_API_BASE / LLM_MODEL（任意 OpenAI 兼容接口）
 python run.py
 ```
 
-### 4. 访问系统
+- 面板：http://127.0.0.1:8000/ui （知识库管理 / 对话记忆 / 问答 trace 调试）
+- API 文档：http://127.0.0.1:8000/docs
+- 不配 LLM key 也能跑：回答自动降级为抽取式（不依赖外部服务）
+- 嵌入模型默认加载本地目录 `models/bge-small-zh-v1.5`（需自行下载权重；.gitignore 已排除）。换嵌入模型后必须 `POST /api/v1/documents/reindex` 全量重建向量库
+- 演示语料在 `test_data/`（含 4 个 txt）；扫描件演示用 `python scripts/make_scan_pdf.py` 生成
 
-- **API文档**: http://127.0.0.1:8000/docs
-- **可视化面板**: http://127.0.0.1:8000/ui （知识库管理 / 对话记忆 / 全链路trace调试）
-- **系统首页**: http://127.0.0.1:8000
-- **健康检查**: http://127.0.0.1:8000/health
+## 主要端点（/api/v1）
 
-## 📚 API接口
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| POST | `/documents/upload` | 上传 PDF/DOCX/TXT，返回 doc_id 与分块数 |
+| GET | `/documents` | 文档列表（分页：page/size） |
+| GET | `/documents/{id}/chunks` | 分块明文（含 page_num/ocr 元数据） |
+| POST | `/documents/reindex` | 换嵌入模型后重建向量库 + BM25 |
+| POST | `/chat/query` | 问答（非流式），返回答案/来源/完整 trace |
+| POST | `/chat/stream` | 问答（SSE：step → token → citation → done） |
+| POST | `/chat/agent` | ReAct Agent，LLM 自主决定检索次数与收口 |
+| GET/DELETE | `/chat/memories` | 跨会话长期记忆（答后自动抽取，可查可删） |
 
-### 文档管理
+错误统一为 `{"error": {"code", "message", "detail"}}`，状态码 400/404/409/413/502 语义化。
 
-- `POST /api/v1/documents/upload` - 上传文档
-- `GET /api/documents` - 获取文档列表
-- `GET /api/v1/documents/{doc_id}` - 获取文档详情
-- `DELETE /api/v1/documents/{doc_id}` - 删除文档
-- `GET /api/v1/documents/{doc_id}/chunks` - 查看文档分块明文
-- `GET /api/v1/documents/stats/summary` - 获取文档统计
-
-### 智能问答
-
-- `POST /api/v1/chat/query` - 智能问答
-- `GET /api/v1/chat/sessions` - 获取会话列表
-- `GET /api/v1/chat/sessions/{session_id}` - 获取会话详情
-- `DELETE /api/v1/chat/sessions/{session_id}` - 删除会话
-- `GET /api/v1/chat/sessions/{session_id}/history` - 获取对话历史
-
-## 🎯 使用示例
-
-### 1. 上传文档
+## 验证与回归
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/v1/documents/upload" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@your_document.pdf"
+python scripts/api_contract_test.py               # 26 项端点×状态码契约矩阵
+python -X utf8 scripts/evaluate_retrieval.py      # 29 条六类金标：hit@k / MRR / 拒答正确率
+python -X utf8 scripts/evaluate_retrieval.py --strict            # 回归门禁：任一核心指标低于 eval/baseline.json 则退出码非零
+python -X utf8 scripts/evaluate_retrieval.py --update-baseline   # 有意变更语料/配置后固化基线
 ```
 
-### 2. 智能问答
+改动检索/重排/嵌入链路后必须跑 `--strict`。增删知识库文档必须同步 `eval/golden_set.json` 并刷新基线。
 
-```bash
-curl -X POST "http://127.0.0.1:8000/api/v1/chat/query" \
-  -H "accept: application/json" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "question": "这个文档的主要内容是什么？",
-    "use_history": true
-  }'
+## 目录结构
+
+```
+app/
+  api/endpoints/     documents.py / chat.py（/api/v1 路由）
+  services/          qa_service（主流水线+trace）· agent_service（ReAct）· document_service
+                     （提取/分块/OCR）· vector_store（Chroma）· bm25_index · embeddings · memory_service
+  static/            /ui 面板（单文件）
+  config.py errors.py main.py models/schemas.py
+scripts/             api_contract_test · evaluate_retrieval · make_scan_pdf
+eval/                golden_set.json · baseline.json · report.json
+test_data/           演示语料（txt）
+docs/                AGENT_SPEC.md（能力分级 L1-L5 + 工程化基座）
+data/ vector_db/ models/ .env   运行时产物与密钥，均不入库
 ```
 
-## ⚙️ 配置说明
+## 边界
 
-### 环境变量配置
-
-| 变量名 | 默认值 | 说明 |
-|--------|--------|------|
-| `OPENAI_API_KEY` | 空 | LLM密钥；为空时回答走抽取式回退 |
-| `OPENAI_API_BASE` | `https://api.openai.com/v1` | OpenAI兼容接口地址，如LongCat：`https://api.longcat.chat/openai/v1` |
-| `LLM_MODEL` | `gpt-4o-mini` | 模型名，如 `LongCat-2.0` |
-| `EMBEDDING_MODEL_NAME` | `all-MiniLM-L6-v2` | 嵌入模型（当前由chromadb内置ONNX实现） |
-| `CHROMA_PERSIST_DIRECTORY` | `./vector_db` | 向量数据库存储路径 |
-| `DOCUMENT_STORAGE_PATH` | `./data` | 文档存储路径 |
-| `CHUNK_SIZE` | `1000` | 文档分块大小 |
-| `CHUNK_OVERLAP` | `200` | 分块重叠大小 |
-| `SEARCH_K` | `4` | 返回相似文档数量 |
-
-### RAG参数调优
-
-- **CHUNK_SIZE**: 文档分块大小，建议1000-2000
-- **CHUNK_OVERLAP**: 分块重叠，建议100-300
-- **SEARCH_K**: 返回的相似文档数量，建议3-6
-
-## 🔧 开发指南
-
-### 添加新的文档格式支持
-
-1. 在 `app/services/document_service.py` 中添加新的 `_extract_*` 方法
-2. 更新 `app/api/endpoints/documents.py` 的 `allowed_types`
-
-### 集成新的LLM
-
-1. 在 `.env` 中配置 `OPENAI_API_KEY` / `OPENAI_API_BASE` / `LLM_MODEL`
-2. 生成逻辑位于 `app/services/qa_service.py` 的 `query_stream`（流式生成器，`query` 为其薄壳）
-
-### 数据库迁移
-
-当前使用ChromaDB作为向量数据库，如需迁移到其他数据库：
-
-1. 修改 `app/services/vector_store.py` 中的实现
-2. 更新配置文件中的数据库连接参数
-
-## 🧪 测试
-
-```bash
-# 先启动服务: python run.py
-python test_system.py   # 端到端测试：上传→查询→会话
-```
-
-## 📝 注意事项
-
-1. **文件大小限制**: 默认最大50MB，可在 `.env` 中调整
-2. **支持格式**: 目前支持PDF、DOCX、TXT格式；扫描版 PDF 的无文本页会自动走 OCR（首次有模型加载冷启动，较慢属正常）。可用 `python scripts/make_scan_pdf.py` 生成一个中文扫描件演示 PDF（`data/scan_xuanhe.pdf`，零文本层）
-3. **存储空间**: 确保有足够的磁盘空间存储文档和向量数据库
-4. **性能**: 大量文档时建议使用更好的硬件或分布式部署
-
-## 🤝 贡献指南
-
-1. Fork项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建Pull Request
-
-## 📄 许可证
-
-本项目使用MIT许可证 - 详见LICENSE文件
-
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 创建GitHub Issue
-- 发送邮件至项目维护者
-
-## 🔗 相关资源
-
-- [FastAPI官方文档](https://fastapi.tiangolo.com/)
-- [LangChain文档](https://python.langchain.com/)
-- [ChromaDB文档](https://docs.trychroma.com/)
-- [RAG最佳实践](https://research.trychroma.com/rag-best-practices)
+- 单进程、无鉴权、无多租户：定位本地学习/演示，不打算做
+- Agent 模式不流式；SSE 仅覆盖固定流水线
+- OCR 表格页按行拼接，不做版面还原

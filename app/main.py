@@ -13,7 +13,7 @@ from app.errors import install_error_handlers
 
 # 创建FastAPI应用
 app = FastAPI(
-    title="企业知识库问答系统",
+    title="RAG 知识库问答系统",
     description="基于RAG技术的智能问答系统。业务端点统一挂在 /api/v1 下；"
                 "失败响应契约：`{\"error\": {\"code\", \"message\", \"detail\"}}`。",
     version="1.2.0",
@@ -57,7 +57,7 @@ async def startup_event():
 async def root():
     """系统首页"""
     return {
-        "message": "欢迎使用企业知识库问答系统",
+        "message": "欢迎使用RAG 知识库问答系统",
         "version": "1.2.0",
         "docs": "/docs",
         "api_base": "/api/v1",
@@ -68,7 +68,7 @@ async def health_check():
     """系统健康检查"""
     return {
         "status": "healthy",
-        "service": "企业知识库问答系统",
+        "service": "RAG 知识库问答系统",
         "version": "1.2.0"
     }
 
